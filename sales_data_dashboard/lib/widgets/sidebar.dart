@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import '../theme.dart';
 
 class Sidebar extends StatelessWidget {
@@ -7,17 +8,19 @@ class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 260,
+      width: 260.dp,
       color: Colors.white,
       child: Column(
         children: [
-          const SizedBox(height: 30),
-          ListTile(
-            leading: const CircleAvatar(
+          SizedBox(
+            height: 30.dp,
+          ),
+          const ListTile(
+            leading: CircleAvatar(
               backgroundImage: AssetImage('assets/avatar.png'),
             ),
-            title: const Text("Onky Soerya N."),
-            subtitle: const Text("Admin Manager"),
+            title: Text("Onky Soerya N."),
+            subtitle: Text("Admin Manager"),
           ),
           const Divider(),
           _sidebarItem(Icons.dashboard, "Dashboard"),
@@ -31,7 +34,10 @@ class Sidebar extends StatelessWidget {
 
   Widget _sidebarItem(IconData icon, String label) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.grey),
+      leading: Icon(
+        icon,
+        color: AppColors.grey,
+      ),
       title: Text(label),
       hoverColor: AppColors.primary.withOpacity(0.1),
     );

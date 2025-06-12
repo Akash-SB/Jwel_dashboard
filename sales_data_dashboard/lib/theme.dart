@@ -14,7 +14,7 @@ class AppColors {
 final appTheme = ThemeData(
   fontFamily: 'Inter',
   scaffoldBackgroundColor: AppColors.background,
-  colorScheme: ColorScheme.light(
+  colorScheme: const ColorScheme.light(
     primary: AppColors.primary,
     secondary: AppColors.accent,
   ),

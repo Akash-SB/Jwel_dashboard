@@ -14,6 +14,7 @@ class InvoiceDashboardApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Invoice Dashboard',
+      debugShowCheckedModeBanner: false,
       theme: appTheme,
       home: const Scaffold(
         body: Row(

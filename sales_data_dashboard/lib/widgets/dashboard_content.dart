@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import '../theme.dart';
 
 class DashboardContent extends StatelessWidget {
@@ -7,14 +8,14 @@ class DashboardContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.all(24.dp),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _header(),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.dp),
           _summaryCards(),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.dp),
           _invoiceTable(),
         ],
       ),
@@ -25,16 +26,27 @@ class DashboardContent extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text("Invoices", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        ElevatedButton(onPressed: () {}, child: const Text("Create an Invoice"))
+        Text(
+          "Invoices",
+          style: TextStyle(
+            fontSize: 24.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {},
+          child: const Text(
+            "Create an Invoice",
+          ),
+        )
       ],
     );
   }
 
   Widget _summaryCards() {
-    return Row(
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [
+      children: [
         SummaryCard(title: "Overdue", value: "120.80 US\$"),
         SummaryCard(title: "Due soon", value: "0.00 US\$"),
         SummaryCard(title: "Avg. payment time", value: "24 days"),
@@ -55,9 +67,12 @@ class DashboardContent extends StatelessWidget {
           children: [
             _tableHeader(),
             const Divider(),
-            _invoiceRow("INV842004", "Paid", "25 Jul 2021", "Jackson Balabala", "200.00", "0.00"),
-            _invoiceRow("INV842007", "Overdue", "18 Jul 2021", "Clarisa Hercules", "840.00", "840.00"),
-            _invoiceRow("INV842005", "Draft", "20 Jul 2021", "Claudia Emmay", "45.00", "45.00"),
+            _invoiceRow("INV842004", "Paid", "25 Jul 2021", "Jackson Balabala",
+                "200.00", "0.00"),
+            _invoiceRow("INV842007", "Overdue", "18 Jul 2021",
+                "Clarisa Hercules", "840.00", "840.00"),
+            _invoiceRow("INV842005", "Draft", "20 Jul 2021", "Claudia Emmay",
+                "45.00", "45.00"),
           ],
         ),
       ),
@@ -65,8 +80,8 @@ class DashboardContent extends StatelessWidget {
   }
 
   Widget _tableHeader() {
-    return Row(
-      children: const [
+    return const Row(
+      children: [
         Expanded(child: Text("Number")),
         Expanded(child: Text("Status")),
         Expanded(child: Text("Date")),
@@ -77,7 +92,8 @@ class DashboardContent extends StatelessWidget {
     );
   }
 
-  Widget _invoiceRow(String number, String status, String date, String customer, String total, String due) {
+  Widget _invoiceRow(String number, String status, String date, String customer,
+      String total, String due) {
     Color statusColor;
     switch (status) {
       case "Paid":
@@ -95,7 +111,9 @@ class DashboardContent extends StatelessWidget {
       children: [
         Expanded(child: Text(number)),
         Expanded(
-          child: Text(status, style: TextStyle(color: statusColor, fontWeight: FontWeight.bold)),
+          child: Text(status,
+              style:
+                  TextStyle(color: statusColor, fontWeight: FontWeight.bold)),
         ),
         Expanded(child: Text(date)),
         Expanded(child: Text(customer)),
@@ -123,7 +141,9 @@ class SummaryCard extends StatelessWidget {
             children: [
               Text(title, style: const TextStyle(color: AppColors.grey)),
               const SizedBox(height: 8),
-              Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Text(value,
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold)),
             ],
           ),
         ),
