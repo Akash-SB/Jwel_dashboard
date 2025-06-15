@@ -5,8 +5,11 @@ class SettingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Invoice Screen'),
+    return Container(
+      color: Colors.white,
+      child: const Center(
+        child: Text('Settings Screen'),
+      ),
     );
   }
 }

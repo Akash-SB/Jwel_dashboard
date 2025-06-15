@@ -39,6 +39,7 @@ dependencies:
   fl_chart: ^0.64.0
   mobx: ^2.5.0
   get_it: ^8.0.3
+  flutter_mobx: ^2.3.0
 
 dev_dependencies:
   flutter_test:

@@ -14,6 +14,10 @@ class AppColors {
 final appTheme = ThemeData(
   fontFamily: 'Inter',
   scaffoldBackgroundColor: AppColors.background,
+  dividerColor: Colors.grey.shade300,
+  dataTableTheme: DataTableThemeData(
+    dividerThickness: 0.8,
+  ),
   colorScheme: const ColorScheme.light(
     primary: AppColors.primary,
     secondary: AppColors.accent,

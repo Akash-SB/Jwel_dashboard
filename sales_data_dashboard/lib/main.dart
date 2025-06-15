@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/screens/index_screen/index_screen.dart';
 import 'theme.dart';
-import 'widgets/sidebar.dart';
-import 'widgets/dashboard_content.dart';
 
 void main() {
   runApp(const InvoiceDashboardApp());

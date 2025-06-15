@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/app_routes.dart';
@@ -37,42 +38,50 @@ class _IndexScreenState extends State<IndexScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          Container(
-            color: Colors.white,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 30.dp,
-                ),
-                const ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: AssetImage('assets/avatar.png'),
+      body: Observer(builder: (context) {
+        return Row(
+          children: [
+            Container(
+              width: 20.w,
+              // color: Colors.white,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 30.dp,
                   ),
-                  title: Text("Onky Soerya N."),
-                  subtitle: Text("Admin Manager"),
-                ),
-                const Divider(),
-                _sidebarItem(Icons.dashboard, "Dashboard"),
-                _sidebarItem(Icons.receipt_long, "Invoices"),
-                _sidebarItem(Icons.settings, "Settings"),
-              ],
+                  const ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: AssetImage('assets/avatar.png'),
+                    ),
+                    title: Text("Onky Soerya N."),
+                    subtitle: Text("Admin Manager"),
+                  ),
+                  const Divider(),
+                  _sidebarItem(Icons.dashboard, "Dashboard", 0),
+                  _sidebarItem(Icons.receipt_long, "Invoices", 1),
+                  _sidebarItem(Icons.person_3_rounded, "Users", 2),
+                  _sidebarItem(Icons.settings, "Settings", 3),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: Navigator(
-              key: _navigatorKey,
-              initialRoute: AppRoutes.tabRoutes[userDataStore.tabIndex],
-              onGenerateRoute: AppRoutes.generateRoute,
+            Expanded(
+              child: Navigator(
+                key: _navigatorKey,
+                initialRoute: AppRoutes.dashboard,
+                onGenerateRoute: AppRoutes.generateRoute,
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _sidebarItem(IconData icon, String label) {
+  void _navigateTo(String route) {
+    _navigatorKey.currentState?.pushReplacementNamed(route);
+  }
+
+  Widget _sidebarItem(IconData icon, String label, int index) {
     return ListTile(
       leading: Icon(
         icon,
@@ -80,6 +89,9 @@ class _IndexScreenState extends State<IndexScreen> {
       ),
       title: Text(label),
       hoverColor: AppColors.primary.withOpacity(0.1),
+      onTap: () {
+        _navigateTo(AppRoutes.tabRoutes[index]);
+      },
     );
   }
 }

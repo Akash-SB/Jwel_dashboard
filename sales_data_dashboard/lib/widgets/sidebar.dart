@@ -39,6 +39,7 @@ class Sidebar extends StatelessWidget {
       ),
       title: Text(label),
       hoverColor: AppColors.primary.withOpacity(0.1),
+      onTap: () {},
     );
   }
 }
