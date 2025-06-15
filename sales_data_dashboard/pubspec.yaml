@@ -37,6 +37,8 @@ dependencies:
   flutter_svg: ^2.0.7
   responsive_builder: ^0.5.0
   fl_chart: ^0.64.0
+  mobx: ^2.5.0
+  get_it: ^8.0.3
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +50,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+  build_runner: ^2.4.13
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

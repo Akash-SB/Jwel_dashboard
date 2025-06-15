@@ -25,7 +25,6 @@ class Sidebar extends StatelessWidget {
           const Divider(),
           _sidebarItem(Icons.dashboard, "Dashboard"),
           _sidebarItem(Icons.receipt_long, "Invoices"),
-          _sidebarItem(Icons.payment, "Payment Setup"),
           _sidebarItem(Icons.settings, "Settings"),
         ],
       ),

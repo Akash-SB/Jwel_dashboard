@@ -30,6 +30,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   if (!window.Create(L"sales_data_dashboard", origin, size)) {
     return EXIT_FAILURE;
   }
+  LONG style = GetWindowLong(window.GetHandle(), GWL_STYLE);
+  style &= ~WS_SIZEBOX; // Remove resize border
+  SetWindowLong(window.GetHandle(), GWL_STYLE, style);
   window.SetQuitOnClose(true);
 
   ::MSG msg;
