@@ -4,8 +4,7 @@ import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/app_routes.dart';
 import 'package:sales_data_dashboard/theme.dart';
 
-import '../../widgets/dashboard_content.dart';
-import '../../widgets/sidebar.dart';
+import 'store/userdata_store.dart';
 
 class IndexScreen extends StatefulWidget {
   const IndexScreen({super.key});
@@ -15,23 +14,23 @@ class IndexScreen extends StatefulWidget {
 }
 
 class _IndexScreenState extends State<IndexScreen> {
-  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
-  // late NavigationStore navStore;
+  // final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  late UserDataStore userDataStore;
 
   @override
   void initState() {
     super.initState();
-    // if (!GetIt.I.isRegistered<NavigationStore>()) {
-    //   GetIt.I.registerLazySingleton<NavigationStore>(() => NavigationStore());
-    // }
-    // navStore = GetIt.I<NavigationStore>();
+    if (!GetIt.I.isRegistered<UserDataStore>()) {
+      GetIt.I.registerLazySingleton<UserDataStore>(() => UserDataStore());
+    }
+    userDataStore = GetIt.I<UserDataStore>();
   }
 
   @override
   void dispose() {
-    // if (GetIt.I.isRegistered<NavigationStore>()) {
-    //   GetIt.I.unregister<NavigationStore>();
-    // }
+    if (GetIt.I.isRegistered<UserDataStore>()) {
+      GetIt.I.unregister<UserDataStore>();
+    }
     super.dispose();
   }
 
@@ -41,7 +40,6 @@ class _IndexScreenState extends State<IndexScreen> {
       body: Row(
         children: [
           Container(
-            width: 260.dp,
             color: Colors.white,
             child: Column(
               children: [
@@ -65,7 +63,7 @@ class _IndexScreenState extends State<IndexScreen> {
           Expanded(
             child: Navigator(
               key: _navigatorKey,
-              initialRoute: AppRoutes.tabRoutes[0],
+              initialRoute: AppRoutes.tabRoutes[userDataStore.tabIndex],
               onGenerateRoute: AppRoutes.generateRoute,
             ),
           ),

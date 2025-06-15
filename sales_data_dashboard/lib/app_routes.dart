@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/screens/dashboard_screen.dart/dashboard_sccreen.dart';
+import 'package:sales_data_dashboard/screens/index_screen/index_screen.dart';
 import 'package:sales_data_dashboard/screens/invoice_screen.dart/invoice_screen.dart';
 import 'package:sales_data_dashboard/screens/setting_screen/setting_screen.dart';
 
@@ -21,7 +22,7 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const SettingScreen());
 
       default:
-        return MaterialPageRoute(builder: (_) => const DashboardSccreen());
+        return MaterialPageRoute(builder: (_) => const IndexScreen());
     }
   }
 
