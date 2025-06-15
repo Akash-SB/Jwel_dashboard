@@ -3,6 +3,8 @@ import 'package:sales_data_dashboard/screens/dashboard_screen.dart/dashboard_scc
 import 'package:sales_data_dashboard/screens/invoice_screen.dart/invoice_screen.dart';
 import 'package:sales_data_dashboard/screens/setting_screen/setting_screen.dart';
 
+import 'screens/user_management_screen.dart/user_management_screen.dart';
+
 class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String invoices = '/invoices';
@@ -16,7 +18,7 @@ class AppRoutes {
     final selectedRoute = switch (settings.name) {
       dashboard => const DashboardSccreen(),
       invoices => const InvoiceScreen(),
-      users => const InvoiceScreen(),
+      users => const UserManagementScreen(),
       setting => const SettingScreen(),
       _ => const DashboardSccreen()
     };
@@ -26,7 +28,7 @@ class AppRoutes {
       transitionsBuilder: (_, animation, __, child) {
         return FadeTransition(opacity: animation, child: child);
       },
-      transitionDuration: Duration(milliseconds: 300),
+      transitionDuration: const Duration(milliseconds: 300),
     );
   }
 

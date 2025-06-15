@@ -736,7 +736,7 @@ class _TransactionsTableState extends State<TransactionsTable> {
                 const DataColumn(label: Text('Name')),
               ],
               source: _dataSource,
-              rowsPerPage: 10,
+              rowsPerPage: 5,
               showCheckboxColumn: false,
               showEmptyRows: false,
             ),
