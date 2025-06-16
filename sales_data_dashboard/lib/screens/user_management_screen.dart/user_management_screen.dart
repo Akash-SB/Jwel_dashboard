@@ -19,18 +19,6 @@ class UserDataSourse extends DataTableSource {
 
   UserDataSourse(this._allUserData) : _filteredData = List.from(_allUserData);
 
-  // void filter(String searchQuery, String? typeFilter) {
-  //   _filteredData = _allUserData.where((txn) {
-  //     final matchesSearch =
-  //         txn.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-  //             txn.parameter.toLowerCase().contains(searchQuery.toLowerCase());
-  //     final matchesType =
-  //         typeFilter == null || txn.type == typeFilter || typeFilter == 'All';
-  //     return matchesSearch && matchesType;
-  //   }).toList();
-  //   notifyListeners();
-  // }
-
   void sort<T>(
       Comparable<T> Function(UserDataModel txn) getField, bool ascending) {
     _filteredData.sort((a, b) {
