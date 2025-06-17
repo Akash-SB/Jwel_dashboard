@@ -19,7 +19,15 @@ class LoginButton extends StatelessWidget {
         backgroundColor: Colors.blueAccent,
       ),
       onPressed: onPressed,
-      child: Center(child: Text(label, style: const TextStyle(fontSize: 16))),
+      child: Center(
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+          ),
+        ),
+      ),
     );
   }
 }

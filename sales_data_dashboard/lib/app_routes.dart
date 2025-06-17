@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/screens/dashboard_screen.dart/dashboard_sccreen.dart';
+import 'package:sales_data_dashboard/screens/index_screen/index_screen.dart';
 import 'package:sales_data_dashboard/screens/invoice_screen.dart/invoice_screen.dart';
 import 'package:sales_data_dashboard/screens/setting_screen/setting_screen.dart';
 
@@ -7,6 +8,7 @@ import 'screens/user_management_screen.dart/user_management_screen.dart';
 
 class AppRoutes {
   static const String dashboard = '/dashboard';
+  static const String index = '/index';
   static const String invoices = '/invoices';
   static const String users = '/users';
   static const String setting = '/setting';
@@ -16,6 +18,7 @@ class AppRoutes {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final selectedRoute = switch (settings.name) {
+      index => const IndexScreen(),
       dashboard => const DashboardSccreen(),
       invoices => const InvoiceScreen(),
       users => const UserManagementScreen(),

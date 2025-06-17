@@ -1,13 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:sales_data_dashboard/screens/login_screen/store/login_screen_store.dart';
 import 'package:sales_data_dashboard/screens/login_screen/view/login_button.dart';
 import 'package:sales_data_dashboard/screens/login_screen/view/login_carousal_widget.dart';
 import 'package:sales_data_dashboard/screens/login_screen/view/login_custom_textfield.dart';
+import 'package:get_it/get_it.dart';
 
-class LoginScreen extends StatelessWidget {
+import '../../../app_routes.dart';
+
+final getIt = GetIt.instance;
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+  bool isButtonEnabled = false;
+  late final LoginScreenStore loginStore;
 
-  LoginScreen({super.key});
+  @override
+  void initState() {
+    super.initState();
+    // Register only if not already
+    if (!getIt.isRegistered<LoginScreenStore>()) {
+      getIt.registerFactory<LoginScreenStore>(() => LoginScreenStore());
+    }
+
+    loginStore = getIt<LoginScreenStore>();
+
+    // Singleton: Single instance created immediately
+    // if (!getIt.isRegistered<LoginScreenStore>(instanceName: 'singleton')) {
+    //   getIt.registerSingleton<LoginScreenStore>(
+    //     LoginScreenStore(),
+    //     instanceName: 'singleton',
+    //   );
+    // }
+
+    // For singleton (always same instance)
+// final loginStoreSingleton = getIt<LoginScreenStore>(instanceName: 'singleton');
+
+    // Lazy Singleton: Single instance created on first access
+    // if (!getIt.isRegistered<LoginScreenStore>(instanceName: 'lazy')) {
+    //   getIt.registerLazySingleton<LoginScreenStore>(
+    //     () => LoginScreenStore(),
+    //     instanceName: 'lazy',
+    //   );
+    // }
+
+// For lazy singleton (first time created, then reused)
+// final loginStoreLazy = getIt<LoginScreenStore>(instanceName: 'lazy');
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    // unregister factory store
+    // if (getIt.isRegistered<LoginScreenStore>()) {
+    //   getIt.unregister<LoginScreenStore>();
+    // }
+
+    //If you use lazySingleton and want to clear the instance but keep it registered, use:
+    // getIt.resetLazySingleton<LoginScreenStore>();
+    //This keeps the registration but resets the instance so that a new one is created on next use.
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,71 +123,78 @@ class LoginScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 48.0),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Welcome Back to Real Nest!",
+                        "Welcome Back\nto Real Nest!",
                         style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
+                          fontSize: 38,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      const SizedBox(height: 12),
-                      const Text("Sign in your account"),
+                      const SizedBox(height: 28),
+                      const Text(
+                        "Sign in your account",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 24),
                       LoginCustomTextfield(
-                        hint: 'Your Email',
+                        hint: 'UserName',
                         icon: Icons.email,
+                        onChanged: loginStore.setEmail,
+                        label: 'Enter Your UserName',
                         controller: emailController,
+                        validator: (value) => value == null || value.isEmpty
+                            ? "Username cannot be empty"
+                            : null,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 28),
                       LoginCustomTextfield(
                         hint: 'Password',
+                        onChanged: loginStore.setPassword,
                         icon: Icons.lock,
                         obscure: true,
                         controller: passwordController,
+                        label: 'Enter Your Password',
+                        validator: (value) => value == null || value.isEmpty
+                            ? "Password cannot be empty"
+                            : null,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Checkbox(value: true, onChanged: (_) {}),
-                              const Text("Remember Me"),
-                            ],
+                      const SizedBox(height: 56),
+                      Observer(builder: (context) {
+                        return AbsorbPointer(
+                          absorbing: !loginStore.isValid,
+                          child: Opacity(
+                            opacity: loginStore.isValid ? 1 : 0.5,
+                            child: LoginButton(
+                              label: 'Login',
+                              onPressed: () async {
+                                final success = await loginStore.login();
+                                if (success) {
+                                  if (!mounted) return;
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.index,
+                                  );
+                                } else {
+                                  if (!mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Please Enter Valid Credentials',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                           ),
-                          TextButton(
-                              onPressed: () {},
-                              child: const Text("Forgot Password?")),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      LoginButton(label: 'Login', onPressed: () {}),
-                      const SizedBox(height: 20),
-                      const Center(child: Text("Instant Login")),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          OutlinedButton.icon(
-                            icon: const Icon(Icons.g_mobiledata),
-                            onPressed: () {},
-                            label: const Text("Sign in with Google"),
-                          ),
-                          const SizedBox(width: 12),
-                          OutlinedButton.icon(
-                            icon: const Icon(Icons.apple),
-                            onPressed: () {},
-                            label: const Text("Sign in with Apple"),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Center(
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text("Don't have an account? Register"),
-                        ),
-                      )
+                        );
+                      }),
                     ],
                   ),
                 ),
