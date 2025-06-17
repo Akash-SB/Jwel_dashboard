@@ -7,8 +7,6 @@ import 'package:sales_data_dashboard/screens/login_screen/view/login_carousal_wi
 import 'package:sales_data_dashboard/screens/login_screen/view/login_custom_textfield.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../app_routes.dart';
-
 final getIt = GetIt.instance;
 
 class LoginScreen extends StatefulWidget {

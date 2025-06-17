@@ -1,9 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:sales_data_dashboard/screens/index_screen/index_screen.dart';
+import 'package:sales_data_dashboard/firebase_options.dart';
 import 'package:sales_data_dashboard/screens/login_screen/view/login_screen.dart';
 import 'theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const InvoiceDashboardApp());
 }
 
