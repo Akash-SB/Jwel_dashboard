@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:sales_data_dashboard/screens/index_screen/index_screen.dart';
 import 'package:sales_data_dashboard/screens/login_screen/store/login_screen_store.dart';
 import 'package:sales_data_dashboard/screens/login_screen/view/login_button.dart';
 import 'package:sales_data_dashboard/screens/login_screen/view/login_carousal_widget.dart';
@@ -142,28 +143,32 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      LoginCustomTextfield(
-                        hint: 'UserName',
-                        icon: Icons.email,
-                        onChanged: loginStore.setEmail,
-                        label: 'Enter Your UserName',
-                        controller: emailController,
-                        validator: (value) => value == null || value.isEmpty
-                            ? "Username cannot be empty"
-                            : null,
-                      ),
+                      Observer(builder: (context) {
+                        return LoginCustomTextfield(
+                          hint: 'UserName',
+                          icon: Icons.email,
+                          onChanged: loginStore.setEmail,
+                          label: 'Enter Your UserName',
+                          controller: emailController,
+                          validator: (value) => value == null || value.isEmpty
+                              ? "Username cannot be empty"
+                              : null,
+                        );
+                      }),
                       const SizedBox(height: 28),
-                      LoginCustomTextfield(
-                        hint: 'Password',
-                        onChanged: loginStore.setPassword,
-                        icon: Icons.lock,
-                        obscure: true,
-                        controller: passwordController,
-                        label: 'Enter Your Password',
-                        validator: (value) => value == null || value.isEmpty
-                            ? "Password cannot be empty"
-                            : null,
-                      ),
+                      Observer(builder: (context) {
+                        return LoginCustomTextfield(
+                          hint: 'Password',
+                          onChanged: loginStore.setPassword,
+                          icon: Icons.lock,
+                          obscure: true,
+                          controller: passwordController,
+                          label: 'Enter Your Password',
+                          validator: (value) => value == null || value.isEmpty
+                              ? "Password cannot be empty"
+                              : null,
+                        );
+                      }),
                       const SizedBox(height: 56),
                       Observer(builder: (context) {
                         return AbsorbPointer(
@@ -174,18 +179,30 @@ class _LoginScreenState extends State<LoginScreen> {
                               label: 'Login',
                               onPressed: () async {
                                 final success = await loginStore.login();
-                                if (success) {
+                                if (success &&
+                                    loginStore.email == 'Admin' &&
+                                    loginStore.password == 'Admin@123') {
                                   if (!mounted) return;
-                                  Navigator.pushNamed(
+                                  Navigator.push(
                                     context,
-                                    AppRoutes.index,
+                                    MaterialPageRoute<void>(
+                                      builder: (BuildContext context) =>
+                                          const IndexScreen(),
+                                    ),
                                   );
                                 } else {
                                   if (!mounted) return;
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
+                                      backgroundColor: Colors.redAccent,
+                                      dismissDirection: DismissDirection.down,
                                       content: Text(
-                                        'Please Enter Valid Credentials',
+                                        ' Please Enter Valid Credentials',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   );

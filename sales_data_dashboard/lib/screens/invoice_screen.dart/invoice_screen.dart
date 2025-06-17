@@ -9,7 +9,7 @@ class InvoiceScreen extends StatelessWidget {
     return Container(
       child: Padding(
         padding: EdgeInsets.all(20.dp),
-        child: TransactionsTable(),
+        child: const TransactionsTable(),
       ),
     );
   }
@@ -608,7 +608,7 @@ class Transaction {
 }
 
 class TransactionsTable extends StatefulWidget {
-  const TransactionsTable({Key? key}) : super(key: key);
+  const TransactionsTable({super.key});
 
   @override
   State<TransactionsTable> createState() => _TransactionsTableState();
@@ -642,7 +642,7 @@ class _TransactionsTableState extends State<TransactionsTable> {
 
   @override
   Widget build(BuildContext context) {
-    Widget _header() {
+    Widget header() {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -667,7 +667,7 @@ class _TransactionsTableState extends State<TransactionsTable> {
       body: Column(
         children: [
           // Filters and Search
-          _header(),
+          header(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -700,7 +700,7 @@ class _TransactionsTableState extends State<TransactionsTable> {
               ],
             ),
           ),
-          Container(
+          SizedBox(
             width: double.maxFinite,
             child: PaginatedDataTable(
               header: const Text('Transaction Records'),

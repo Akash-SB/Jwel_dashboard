@@ -15,7 +15,7 @@ final appTheme = ThemeData(
   fontFamily: 'Inter',
   scaffoldBackgroundColor: AppColors.background,
   dividerColor: Colors.grey.shade300,
-  dataTableTheme: DataTableThemeData(
+  dataTableTheme: const DataTableThemeData(
     dividerThickness: 0.8,
   ),
   colorScheme: const ColorScheme.light(

@@ -117,7 +117,7 @@ class UserDataModel {
 }
 
 class TransactionsTable extends StatefulWidget {
-  const TransactionsTable({Key? key}) : super(key: key);
+  const TransactionsTable({super.key});
 
   @override
   State<TransactionsTable> createState() => _TransactionsTableState();
@@ -151,7 +151,7 @@ class _TransactionsTableState extends State<TransactionsTable> {
 
   @override
   Widget build(BuildContext context) {
-    Widget _header() {
+    Widget header() {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -176,7 +176,7 @@ class _TransactionsTableState extends State<TransactionsTable> {
       body: Column(
         children: [
           // Filters and Search
-          _header(),
+          header(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -209,7 +209,7 @@ class _TransactionsTableState extends State<TransactionsTable> {
               ],
             ),
           ),
-          Container(
+          SizedBox(
             width: double.maxFinite,
             child: PaginatedDataTable(
               header: Row(
@@ -262,32 +262,32 @@ class _TransactionsTableState extends State<TransactionsTable> {
               ),
               sortColumnIndex: _sortColumnIndex,
               sortAscending: _sortAscending,
-              columns: [
+              columns: const [
                 DataColumn(
-                  label: const Text('Name'),
+                  label: Text('Name'),
                   // onSort: (colIndex, _) =>
                   //     _sort((txn) => txn.parameter, colIndex),
                 ),
                 DataColumn(
-                  label: const Text('Mobile Number'),
+                  label: Text('Mobile Number'),
                   // onSort: (colIndex, _) => _sort((txn) => txn.date, colIndex),
                 ),
                 DataColumn(
-                  label: const Text('GST Number'),
+                  label: Text('GST Number'),
                   // numeric: true,
                   // onSort: (colIndex, _) => _sort((txn) => txn.carat, colIndex),
                 ),
                 DataColumn(
-                  label: const Text('Days Of Interest'),
+                  label: Text('Days Of Interest'),
                   // numeric: true,
                   // onSort: (colIndex, _) => _sort((txn) => txn.rate, colIndex),
                 ),
                 DataColumn(
-                  label: const Text('User Type'),
+                  label: Text('User Type'),
                   // numeric: true,
                   // onSort: (colIndex, _) => _sort((txn) => txn.amount, colIndex),
                 ),
-                const DataColumn(label: Text('Address')),
+                DataColumn(label: Text('Address')),
               ],
               source: _dataSource,
               rowsPerPage: 5,

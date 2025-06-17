@@ -16,6 +16,6 @@ class InvoiceDashboardApp extends StatelessWidget {
         title: 'Invoice Dashboard',
         debugShowCheckedModeBanner: false,
         theme: appTheme,
-        home: LoginScreen());
+        home: const LoginScreen());
   }
 }

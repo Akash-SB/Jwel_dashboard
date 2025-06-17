@@ -41,7 +41,7 @@ class _IndexScreenState extends State<IndexScreen> {
       body: Observer(builder: (context) {
         return Row(
           children: [
-            Container(
+            SizedBox(
               width: 20.w,
               // color: Colors.white,
               child: Column(

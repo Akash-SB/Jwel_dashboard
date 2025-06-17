@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
-import 'package:sales_data_dashboard/screens/invoice_screen.dart/invoice_screen.dart';
 
 import '../../theme.dart';
 

@@ -33,7 +33,6 @@ abstract class _LoginScreenStore with Store {
   @action
   Future<bool> login() async {
     if (!isValid) return false;
-    await Future.delayed(const Duration(seconds: 1));
     return true;
   }
 }
