@@ -25,7 +25,7 @@ class TransactionDataSource extends DataTableSource {
     _filteredData = _allData.where((txn) {
       final matchesSearch =
           txn.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-              txn.parameter.toLowerCase().contains(searchQuery.toLowerCase());
+              txn.invoiceId.toLowerCase().contains(searchQuery.toLowerCase());
       final matchesType =
           typeFilter == null || txn.type == typeFilter || typeFilter == 'All';
       return matchesSearch && matchesType;
@@ -50,7 +50,7 @@ class TransactionDataSource extends DataTableSource {
     if (index >= _filteredData.length) return null;
     final txn = _filteredData[index];
     return DataRow(cells: [
-      DataCell(Text(txn.parameter)),
+      DataCell(Text(txn.invoiceId)),
       DataCell(Text(txn.date)),
       DataCell(Text(txn.carat.toStringAsFixed(2))),
       DataCell(Text(txn.rate.toStringAsFixed(2))),
@@ -84,7 +84,7 @@ class TransactionDataSource extends DataTableSource {
 
 final List<Transaction> _sampleData = [
   Transaction(
-    parameter: 'INV842002',
+    invoiceId: 'INV842002',
     date: '27th Jul 2021',
     carat: 68.89,
     rate: 1600.00,
@@ -94,7 +94,7 @@ final List<Transaction> _sampleData = [
     name: 'Kim Girocking',
   ),
   Transaction(
-    parameter: 'INV842004',
+    invoiceId: 'INV842004',
     date: '25th Jul 2021',
     carat: 70.5,
     rate: 1550.00,
@@ -104,7 +104,7 @@ final List<Transaction> _sampleData = [
     name: 'Jackson Balabala',
   ),
   Transaction(
-    parameter: 'INV842005',
+    invoiceId: 'INV842005',
     date: '20th Jul 2021',
     carat: 55.20,
     rate: 1700.00,
@@ -114,7 +114,7 @@ final List<Transaction> _sampleData = [
     name: 'Claudia Emmay',
   ),
   Transaction(
-    parameter: 'INV842006',
+    invoiceId: 'INV842006',
     date: '20th Jul 2021',
     carat: 80.10,
     rate: 1620.00,
@@ -124,7 +124,7 @@ final List<Transaction> _sampleData = [
     name: 'Park Jo Soo',
   ),
   Transaction(
-    parameter: 'INV842007',
+    invoiceId: 'INV842007',
     date: '18th Jul 2021',
     carat: 65.00,
     rate: 1580.00,
@@ -134,7 +134,7 @@ final List<Transaction> _sampleData = [
     name: 'Clarisa Hercules',
   ),
   Transaction(
-    parameter: 'INV842002',
+    invoiceId: 'INV842002',
     date: '27th Jul 2021',
     carat: 68.89,
     rate: 1600.00,
@@ -144,7 +144,7 @@ final List<Transaction> _sampleData = [
     name: 'Kim Girocking',
   ),
   Transaction(
-    parameter: 'INV842004',
+    invoiceId: 'INV842004',
     date: '25th Jul 2021',
     carat: 70.5,
     rate: 1550.00,
@@ -154,7 +154,7 @@ final List<Transaction> _sampleData = [
     name: 'Jackson Balabala',
   ),
   Transaction(
-    parameter: 'INV842005',
+    invoiceId: 'INV842005',
     date: '20th Jul 2021',
     carat: 55.20,
     rate: 1700.00,
@@ -164,7 +164,7 @@ final List<Transaction> _sampleData = [
     name: 'Claudia Emmay',
   ),
   Transaction(
-    parameter: 'INV842006',
+    invoiceId: 'INV842006',
     date: '20th Jul 2021',
     carat: 80.10,
     rate: 1620.00,
@@ -174,7 +174,7 @@ final List<Transaction> _sampleData = [
     name: 'Park Jo Soo',
   ),
   Transaction(
-    parameter: 'INV842007',
+    invoiceId: 'INV842007',
     date: '18th Jul 2021',
     carat: 65.00,
     rate: 1580.00,
@@ -184,7 +184,7 @@ final List<Transaction> _sampleData = [
     name: 'Clarisa Hercules',
   ),
   Transaction(
-    parameter: 'INV842002',
+    invoiceId: 'INV842002',
     date: '27th Jul 2021',
     carat: 68.89,
     rate: 1600.00,
@@ -194,7 +194,7 @@ final List<Transaction> _sampleData = [
     name: 'Kim Girocking',
   ),
   Transaction(
-    parameter: 'INV842004',
+    invoiceId: 'INV842004',
     date: '25th Jul 2021',
     carat: 70.5,
     rate: 1550.00,
@@ -204,7 +204,7 @@ final List<Transaction> _sampleData = [
     name: 'Jackson Balabala',
   ),
   Transaction(
-    parameter: 'INV842005',
+    invoiceId: 'INV842005',
     date: '20th Jul 2021',
     carat: 55.20,
     rate: 1700.00,
@@ -214,7 +214,7 @@ final List<Transaction> _sampleData = [
     name: 'Claudia Emmay',
   ),
   Transaction(
-    parameter: 'INV842006',
+    invoiceId: 'INV842006',
     date: '20th Jul 2021',
     carat: 80.10,
     rate: 1620.00,
@@ -224,7 +224,7 @@ final List<Transaction> _sampleData = [
     name: 'Park Jo Soo',
   ),
   Transaction(
-    parameter: 'INV842007',
+    invoiceId: 'INV842007',
     date: '18th Jul 2021',
     carat: 65.00,
     rate: 1580.00,
@@ -234,7 +234,7 @@ final List<Transaction> _sampleData = [
     name: 'Clarisa Hercules',
   ),
   Transaction(
-    parameter: 'INV842002',
+    invoiceId: 'INV842002',
     date: '27th Jul 2021',
     carat: 68.89,
     rate: 1600.00,
@@ -244,7 +244,7 @@ final List<Transaction> _sampleData = [
     name: 'Kim Girocking',
   ),
   Transaction(
-    parameter: 'INV842004',
+    invoiceId: 'INV842004',
     date: '25th Jul 2021',
     carat: 70.5,
     rate: 1550.00,
@@ -254,7 +254,7 @@ final List<Transaction> _sampleData = [
     name: 'Jackson Balabala',
   ),
   Transaction(
-    parameter: 'INV842005',
+    invoiceId: 'INV842005',
     date: '20th Jul 2021',
     carat: 55.20,
     rate: 1700.00,
@@ -264,7 +264,7 @@ final List<Transaction> _sampleData = [
     name: 'Claudia Emmay',
   ),
   Transaction(
-    parameter: 'INV842006',
+    invoiceId: 'INV842006',
     date: '20th Jul 2021',
     carat: 80.10,
     rate: 1620.00,
@@ -274,7 +274,7 @@ final List<Transaction> _sampleData = [
     name: 'Park Jo Soo',
   ),
   Transaction(
-    parameter: 'INV842007',
+    invoiceId: 'INV842007',
     date: '18th Jul 2021',
     carat: 65.00,
     rate: 1580.00,
@@ -284,7 +284,7 @@ final List<Transaction> _sampleData = [
     name: 'Clarisa Hercules',
   ),
   Transaction(
-    parameter: 'INV842002',
+    invoiceId: 'INV842002',
     date: '27th Jul 2021',
     carat: 68.89,
     rate: 1600.00,
@@ -294,7 +294,7 @@ final List<Transaction> _sampleData = [
     name: 'Kim Girocking',
   ),
   Transaction(
-    parameter: 'INV842004',
+    invoiceId: 'INV842004',
     date: '25th Jul 2021',
     carat: 70.5,
     rate: 1550.00,
@@ -304,7 +304,7 @@ final List<Transaction> _sampleData = [
     name: 'Jackson Balabala',
   ),
   Transaction(
-    parameter: 'INV842005',
+    invoiceId: 'INV842005',
     date: '20th Jul 2021',
     carat: 55.20,
     rate: 1700.00,
@@ -314,7 +314,7 @@ final List<Transaction> _sampleData = [
     name: 'Claudia Emmay',
   ),
   Transaction(
-    parameter: 'INV842006',
+    invoiceId: 'INV842006',
     date: '20th Jul 2021',
     carat: 80.10,
     rate: 1620.00,
@@ -324,7 +324,7 @@ final List<Transaction> _sampleData = [
     name: 'Park Jo Soo',
   ),
   Transaction(
-    parameter: 'INV842007',
+    invoiceId: 'INV842007',
     date: '18th Jul 2021',
     carat: 65.00,
     rate: 1580.00,
@@ -334,7 +334,7 @@ final List<Transaction> _sampleData = [
     name: 'Clarisa Hercules',
   ),
   Transaction(
-    parameter: 'INV842002',
+    invoiceId: 'INV842002',
     date: '27th Jul 2021',
     carat: 68.89,
     rate: 1600.00,
@@ -344,7 +344,7 @@ final List<Transaction> _sampleData = [
     name: 'Kim Girocking',
   ),
   Transaction(
-    parameter: 'INV842004',
+    invoiceId: 'INV842004',
     date: '25th Jul 2021',
     carat: 70.5,
     rate: 1550.00,
@@ -354,7 +354,7 @@ final List<Transaction> _sampleData = [
     name: 'Jackson Balabala',
   ),
   Transaction(
-    parameter: 'INV842005',
+    invoiceId: 'INV842005',
     date: '20th Jul 2021',
     carat: 55.20,
     rate: 1700.00,
@@ -364,7 +364,7 @@ final List<Transaction> _sampleData = [
     name: 'Claudia Emmay',
   ),
   Transaction(
-    parameter: 'INV842006',
+    invoiceId: 'INV842006',
     date: '20th Jul 2021',
     carat: 80.10,
     rate: 1620.00,
@@ -374,7 +374,7 @@ final List<Transaction> _sampleData = [
     name: 'Park Jo Soo',
   ),
   Transaction(
-    parameter: 'INV842007',
+    invoiceId: 'INV842007',
     date: '18th Jul 2021',
     carat: 65.00,
     rate: 1580.00,
@@ -384,7 +384,7 @@ final List<Transaction> _sampleData = [
     name: 'Clarisa Hercules',
   ),
   Transaction(
-    parameter: 'INV842002',
+    invoiceId: 'INV842002',
     date: '27th Jul 2021',
     carat: 68.89,
     rate: 1600.00,
@@ -394,7 +394,7 @@ final List<Transaction> _sampleData = [
     name: 'Kim Girocking',
   ),
   Transaction(
-    parameter: 'INV842004',
+    invoiceId: 'INV842004',
     date: '25th Jul 2021',
     carat: 70.5,
     rate: 1550.00,
@@ -404,7 +404,7 @@ final List<Transaction> _sampleData = [
     name: 'Jackson Balabala',
   ),
   Transaction(
-    parameter: 'INV842005',
+    invoiceId: 'INV842005',
     date: '20th Jul 2021',
     carat: 55.20,
     rate: 1700.00,
@@ -414,7 +414,7 @@ final List<Transaction> _sampleData = [
     name: 'Claudia Emmay',
   ),
   Transaction(
-    parameter: 'INV842006',
+    invoiceId: 'INV842006',
     date: '20th Jul 2021',
     carat: 80.10,
     rate: 1620.00,
@@ -424,7 +424,7 @@ final List<Transaction> _sampleData = [
     name: 'Park Jo Soo',
   ),
   Transaction(
-    parameter: 'INV842007',
+    invoiceId: 'INV842007',
     date: '18th Jul 2021',
     carat: 65.00,
     rate: 1580.00,
@@ -434,7 +434,7 @@ final List<Transaction> _sampleData = [
     name: 'Clarisa Hercules',
   ),
   Transaction(
-    parameter: 'INV842002',
+    invoiceId: 'INV842002',
     date: '27th Jul 2021',
     carat: 68.89,
     rate: 1600.00,
@@ -444,7 +444,7 @@ final List<Transaction> _sampleData = [
     name: 'Kim Girocking',
   ),
   Transaction(
-    parameter: 'INV842004',
+    invoiceId: 'INV842004',
     date: '25th Jul 2021',
     carat: 70.5,
     rate: 1550.00,
@@ -454,7 +454,7 @@ final List<Transaction> _sampleData = [
     name: 'Jackson Balabala',
   ),
   Transaction(
-    parameter: 'INV842005',
+    invoiceId: 'INV842005',
     date: '20th Jul 2021',
     carat: 55.20,
     rate: 1700.00,
@@ -464,7 +464,7 @@ final List<Transaction> _sampleData = [
     name: 'Claudia Emmay',
   ),
   Transaction(
-    parameter: 'INV842006',
+    invoiceId: 'INV842006',
     date: '20th Jul 2021',
     carat: 80.10,
     rate: 1620.00,
@@ -474,7 +474,7 @@ final List<Transaction> _sampleData = [
     name: 'Park Jo Soo',
   ),
   Transaction(
-    parameter: 'INV842007',
+    invoiceId: 'INV842007',
     date: '18th Jul 2021',
     carat: 65.00,
     rate: 1580.00,
@@ -484,7 +484,7 @@ final List<Transaction> _sampleData = [
     name: 'Clarisa Hercules',
   ),
   Transaction(
-    parameter: 'INV842002',
+    invoiceId: 'INV842002',
     date: '27th Jul 2021',
     carat: 68.89,
     rate: 1600.00,
@@ -494,7 +494,7 @@ final List<Transaction> _sampleData = [
     name: 'Kim Girocking',
   ),
   Transaction(
-    parameter: 'INV842004',
+    invoiceId: 'INV842004',
     date: '25th Jul 2021',
     carat: 70.5,
     rate: 1550.00,
@@ -504,7 +504,7 @@ final List<Transaction> _sampleData = [
     name: 'Jackson Balabala',
   ),
   Transaction(
-    parameter: 'INV842005',
+    invoiceId: 'INV842005',
     date: '20th Jul 2021',
     carat: 55.20,
     rate: 1700.00,
@@ -514,7 +514,7 @@ final List<Transaction> _sampleData = [
     name: 'Claudia Emmay',
   ),
   Transaction(
-    parameter: 'INV842006',
+    invoiceId: 'INV842006',
     date: '20th Jul 2021',
     carat: 80.10,
     rate: 1620.00,
@@ -524,7 +524,7 @@ final List<Transaction> _sampleData = [
     name: 'Park Jo Soo',
   ),
   Transaction(
-    parameter: 'INV842007',
+    invoiceId: 'INV842007',
     date: '18th Jul 2021',
     carat: 65.00,
     rate: 1580.00,
@@ -534,7 +534,7 @@ final List<Transaction> _sampleData = [
     name: 'Clarisa Hercules',
   ),
   Transaction(
-    parameter: 'INV842002',
+    invoiceId: 'INV842002',
     date: '27th Jul 2021',
     carat: 68.89,
     rate: 1600.00,
@@ -544,7 +544,7 @@ final List<Transaction> _sampleData = [
     name: 'Kim Girocking',
   ),
   Transaction(
-    parameter: 'INV842004',
+    invoiceId: 'INV842004',
     date: '25th Jul 2021',
     carat: 70.5,
     rate: 1550.00,
@@ -554,7 +554,7 @@ final List<Transaction> _sampleData = [
     name: 'Jackson Balabala',
   ),
   Transaction(
-    parameter: 'INV842005',
+    invoiceId: 'INV842005',
     date: '20th Jul 2021',
     carat: 55.20,
     rate: 1700.00,
@@ -564,7 +564,7 @@ final List<Transaction> _sampleData = [
     name: 'Claudia Emmay',
   ),
   Transaction(
-    parameter: 'INV842006',
+    invoiceId: 'INV842006',
     date: '20th Jul 2021',
     carat: 80.10,
     rate: 1620.00,
@@ -574,7 +574,7 @@ final List<Transaction> _sampleData = [
     name: 'Park Jo Soo',
   ),
   Transaction(
-    parameter: 'INV842007',
+    invoiceId: 'INV842007',
     date: '18th Jul 2021',
     carat: 65.00,
     rate: 1580.00,
@@ -586,7 +586,7 @@ final List<Transaction> _sampleData = [
 ];
 
 class Transaction {
-  final String parameter;
+  final String invoiceId;
   final String date;
   final double carat;
   final double rate;
@@ -596,7 +596,7 @@ class Transaction {
   final String name;
 
   Transaction({
-    required this.parameter,
+    required this.invoiceId,
     required this.date,
     required this.carat,
     required this.rate,
@@ -708,9 +708,9 @@ class _TransactionsTableState extends State<TransactionsTable> {
               sortAscending: _sortAscending,
               columns: [
                 DataColumn(
-                  label: const Text('Parameter'),
+                  label: const Text('Invoive Id'),
                   onSort: (colIndex, _) =>
-                      _sort((txn) => txn.parameter, colIndex),
+                      _sort((txn) => txn.invoiceId, colIndex),
                 ),
                 DataColumn(
                   label: const Text('Date'),
