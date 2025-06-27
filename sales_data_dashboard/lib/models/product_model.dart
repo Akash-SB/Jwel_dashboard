@@ -1,5 +1,15 @@
 class ProductModel {
+  final int? id;
+  final String hsnCode;
+  final String prodName;
+  final String size;
+  final String carat;
+  final String rate;
+  final String amount;
+  final String? description;
+
   ProductModel({
+    this.id,
     required this.hsnCode,
     required this.prodName,
     required this.size,
@@ -9,11 +19,14 @@ class ProductModel {
     this.description,
   });
 
-  final String hsnCode;
-  final String prodName;
-  final String size;
-  final String carat;
-  final String rate;
-  final String amount;
-  final String? description;
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'hsnCode': hsnCode,
+        'prodName': prodName,
+        'size': size,
+        'carat': carat,
+        'rate': rate,
+        'amount': amount,
+        'description': description,
+      };
 }

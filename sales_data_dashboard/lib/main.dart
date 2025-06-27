@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/firebase_options.dart';
+import 'package:sales_data_dashboard/screens/index_screen/index_screen.dart';
 import 'package:sales_data_dashboard/screens/login_screen/view/login_screen.dart';
 import 'theme.dart';
 
@@ -21,6 +22,6 @@ class InvoiceDashboardApp extends StatelessWidget {
         title: 'Invoice Dashboard',
         debugShowCheckedModeBanner: false,
         theme: appTheme,
-        home: const LoginScreen());
+        home: const IndexScreen());
   }
 }

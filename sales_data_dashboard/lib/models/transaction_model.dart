@@ -1,4 +1,4 @@
-import 'package:sales_data_dashboard/models/usertype_enum.dart';
+import 'package:sales_data_dashboard/models/app_enum.dart';
 
 class TransactionModel {
   TransactionModel({
