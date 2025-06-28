@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:sales_data_dashboard/screens/index_screen/index_screen.dart';
-import 'package:sales_data_dashboard/screens/login_screen/store/login_screen_store.dart';
-import 'package:sales_data_dashboard/screens/login_screen/view/login_button.dart';
-import 'package:sales_data_dashboard/screens/login_screen/view/login_carousal_widget.dart';
-import 'package:sales_data_dashboard/screens/login_screen/view/login_custom_textfield.dart';
+import 'package:sales_data_dashboard/screens/home/index_screen.dart';
+import 'package:sales_data_dashboard/screens/login/store/login_screen_store.dart';
+import 'package:sales_data_dashboard/screens/login/view/login_button.dart';
+import 'package:sales_data_dashboard/screens/login/view/login_carousal_widget.dart';
+import 'package:sales_data_dashboard/screens/login/view/login_custom_textfield.dart';
 import 'package:get_it/get_it.dart';
 
 final getIt = GetIt.instance;
