@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sales_data_dashboard/screens/dashboard_screen.dart/dashboard_sccreen.dart';
-import 'package:sales_data_dashboard/screens/index_screen/index_screen.dart';
-import 'package:sales_data_dashboard/screens/invoice_screen.dart/invoice_screen.dart';
-import 'package:sales_data_dashboard/screens/setting_screen/setting_screen.dart';
+import 'package:sales_data_dashboard/screens/dashboard/dashboard_sccreen.dart';
+import 'package:sales_data_dashboard/screens/home/index_screen.dart';
+import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
+import 'package:sales_data_dashboard/screens/settings/setting_screen.dart';
 
-import 'screens/user_management_screen.dart/user_management_screen.dart';
+import 'screens/user_management/user_management_screen.dart';
 
 class AppRoutes {
   static const String dashboard = '/dashboard';
