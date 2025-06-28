@@ -41,10 +41,12 @@ class _IndexScreenState extends State<IndexScreen> {
       body: Observer(builder: (context) {
         return Row(
           children: [
-            SizedBox(
-              width: 20.w,
-              // color: Colors.white,
+            Container(
+              width: 18.w,
+              padding: EdgeInsets.symmetric(horizontal: 16.dp),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   SizedBox(
                     height: 30.dp,
@@ -52,15 +54,37 @@ class _IndexScreenState extends State<IndexScreen> {
                   const ListTile(
                     leading: CircleAvatar(
                       backgroundImage: AssetImage('assets/avatar.png'),
+                      child: Icon(Icons.assignment_ind_outlined,
+                          color: Colors.white),
                     ),
-                    title: Text("Onky Soerya N."),
-                    subtitle: Text("Admin Manager"),
+                    title: Text("AdminPRO"),
                   ),
-                  const Divider(),
-                  _sidebarItem(Icons.dashboard, "Dashboard", 0),
-                  _sidebarItem(Icons.receipt_long, "Invoices", 1),
-                  _sidebarItem(Icons.person_3_rounded, "Users", 2),
-                  _sidebarItem(Icons.settings, "Settings", 3),
+                  SizedBox(
+                    height: 30.dp,
+                  ),
+                  Observer(builder: (context) {
+                    return Expanded(
+                      child: ListView.builder(
+                        itemCount: 4,
+                        itemBuilder: (context, index) {
+                          final icons = [
+                            Icons.dashboard,
+                            Icons.receipt_long,
+                            Icons.person_3_rounded,
+                            Icons.settings,
+                          ];
+                          final labels = [
+                            "Dashboard",
+                            "Invoices",
+                            "Users",
+                            "Settings",
+                          ];
+                          return _sidebarItem(
+                              icons[index], labels[index], index);
+                        },
+                      ),
+                    );
+                  }),
                 ],
               ),
             ),
@@ -82,15 +106,31 @@ class _IndexScreenState extends State<IndexScreen> {
   }
 
   Widget _sidebarItem(IconData icon, String label, int index) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: AppColors.grey,
-      ),
-      title: Text(label),
-      hoverColor: AppColors.primary.withOpacity(0.1),
-      onTap: () {
-        _navigateTo(AppRoutes.tabRoutes[index]);
+    return Observer(
+      builder: (context) {
+        final isSelected = userDataStore.tabIndex == index;
+        return ListTile(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          leading: Icon(
+            icon,
+            color: isSelected ? const Color(0xFF2563EB) : AppColors.grey,
+          ),
+          title: Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? const Color(0xFF2563EB) : AppColors.grey,
+            ),
+          ),
+          hoverColor: AppColors.primary.withOpacity(0.1),
+          onTap: () {
+            userDataStore.setTab(index);
+            _navigateTo(AppRoutes.tabRoutes[index]);
+          },
+          selected: isSelected,
+          selectedTileColor: const Color(0xFFEFF6FF),
+        );
       },
     );
   }
