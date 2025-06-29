@@ -5,10 +5,10 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import '../Models/product_model.dart';
-import '../Models/transaction_model.dart';
+import '../models/invoice_model.dart';
 
 Future<void> generateTransactionInvoicePdf(
-    TransactionModel tx, List<ProductModel> products) async {
+    InvoiceModel tx, List<ProductModel> products) async {
   final pdf = pw.Document();
 
   // Optional logo (place your logo in assets/images/logo.png)

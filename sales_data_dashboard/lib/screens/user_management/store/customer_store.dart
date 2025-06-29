@@ -3,7 +3,7 @@ import 'package:mobx/mobx.dart';
 
 import '../../../models/customer_model.dart';
 
-part '../../user_management/store/customer_store.g.dart';
+part 'customer_store.g.dart';
 
 class CustomerStore = _CustomerStore with _$CustomerStore;
 

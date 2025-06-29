@@ -44,12 +44,12 @@ dependencies:
   sqflite: ^2.4.1
   excel: ^2.0.4
   pdf: ^3.10.4
-  printing: ^5.11.0
   file_saver: 0.2.14
   path_provider: ^2.1.2
   permission_handler: ^11.3.0
   cloud_firestore: ^5.6.9
   printing: ^5.14.2
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

@@ -13,15 +13,31 @@ mixin _$TransactionStore on _TransactionStore, Store {
       Atom(name: '_TransactionStore.transactions', context: context);
 
   @override
-  ObservableList<TransactionModel> get transactions {
+  ObservableList<InvoiceModel> get transactions {
     _$transactionsAtom.reportRead();
     return super.transactions;
   }
 
   @override
-  set transactions(ObservableList<TransactionModel> value) {
+  set transactions(ObservableList<InvoiceModel> value) {
     _$transactionsAtom.reportWrite(value, super.transactions, () {
       super.transactions = value;
+    });
+  }
+
+  late final _$isUploadingAtom =
+      Atom(name: '_TransactionStore.isUploading', context: context);
+
+  @override
+  bool get isUploading {
+    _$isUploadingAtom.reportRead();
+    return super.isUploading;
+  }
+
+  @override
+  set isUploading(bool value) {
+    _$isUploadingAtom.reportWrite(value, super.isUploading, () {
+      super.isUploading = value;
     });
   }
 
@@ -37,15 +53,25 @@ mixin _$TransactionStore on _TransactionStore, Store {
       AsyncAction('_TransactionStore.addTransaction', context: context);
 
   @override
-  Future<void> addTransaction(TransactionModel transaction) {
+  Future<void> addTransaction(InvoiceModel transaction) {
     return _$addTransactionAsyncAction
         .run(() => super.addTransaction(transaction));
+  }
+
+  late final _$uploadTransactionListAsyncAction =
+      AsyncAction('_TransactionStore.uploadTransactionList', context: context);
+
+  @override
+  Future<void> uploadTransactionList(List<InvoiceModel> sampleData) {
+    return _$uploadTransactionListAsyncAction
+        .run(() => super.uploadTransactionList(sampleData));
   }
 
   @override
   String toString() {
     return '''
-transactions: ${transactions}
+transactions: ${transactions},
+isUploading: ${isUploading}
     ''';
   }
 }

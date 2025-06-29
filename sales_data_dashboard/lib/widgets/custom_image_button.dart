@@ -49,7 +49,7 @@ class CustomImageButton extends StatelessWidget {
             Text(
               text,
               style: TextStyle(
-                fontSize: 5.sp,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'app_enum.dart';
 
 class CustomerModel {
@@ -28,4 +30,8 @@ class CustomerModel {
         'address': address,
         'daysOfInterest': daysOfInterest,
       };
+
+  static fromDocument(QueryDocumentSnapshot<Map<String, dynamic>> doc) {}
+
+  copyWith({required String id}) {}
 }

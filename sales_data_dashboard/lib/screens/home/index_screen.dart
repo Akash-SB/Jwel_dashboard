@@ -42,7 +42,7 @@ class _IndexScreenState extends State<IndexScreen> {
         return Row(
           children: [
             Container(
-              width: 18.w,
+              width: 15.w,
               padding: EdgeInsets.symmetric(horizontal: 16.dp),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,12 +71,14 @@ class _IndexScreenState extends State<IndexScreen> {
                             Icons.dashboard,
                             Icons.receipt_long,
                             Icons.person_3_rounded,
+                            Icons.inventory_2,
                             Icons.settings,
                           ];
                           final labels = [
                             "Dashboard",
                             "Invoices",
                             "Users",
+                            "Products",
                             "Settings",
                           ];
                           return _sidebarItem(

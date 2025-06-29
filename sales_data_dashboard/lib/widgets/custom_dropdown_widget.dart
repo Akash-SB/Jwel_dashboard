@@ -78,7 +78,7 @@ class _CustomDropdownWidgetState<T> extends State<CustomDropdownWidget<T>> {
                     overflow: TextOverflow.ellipsis,
                     item.toString(),
                     style: TextStyle(
-                      fontSize: 5.sp,
+                      fontSize: 5,
                     ),
                   ),
                 ),
@@ -113,7 +113,7 @@ class _CustomDropdownWidgetState<T> extends State<CustomDropdownWidget<T>> {
                   maxLines: 1,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 5.sp,
+                    fontSize: 5,
                     color: Colors.black,
                   ),
                 ),

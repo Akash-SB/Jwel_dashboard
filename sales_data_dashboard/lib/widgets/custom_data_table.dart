@@ -3,8 +3,6 @@ import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 
-import 'custom_dropdown_widget.dart';
-
 class TableColumn {
   final String label;
   final String key;
@@ -144,24 +142,24 @@ class _CustomDataTableState extends State<CustomDataTable> {
         Row(
           children: [
             if (widget.filterOptions != null) ...[
-              CustomDropdownWidget(
+              DropdownButton<String>(
+                value: selectedFilter,
+                onChanged: (value) {
+                  setState(() {
+                    selectedFilter = value!;
+                  });
+                },
                 items: const [
                   'All',
                   'Company',
                   'Broker',
-                ],
-                iconPath: 'assets/icons/filter_icon.png',
-                initialValue: 'User Type',
-                tooltip: 'User Type',
-                onSelected: (value) {
-                  setState(() {
-                    rowsPerPage = int.parse(value);
-                    currentPage = 0;
-                  });
-                },
-                label: 'Rows per page:',
-                buttonSize: Size(150.dp, 40.dp),
-                dropdownWidth: 150.dp,
+                ]
+                    .map((status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(status),
+                        ))
+                    .toList(),
+                hint: const Text('Filter by Status'),
               ),
             ],
             SizedBox(
@@ -183,20 +181,21 @@ class _CustomDataTableState extends State<CustomDataTable> {
             const Spacer(),
             Row(
               children: [
-                CustomDropdownWidget(
-                  items: const ['5', '10', '15', '20'],
-                  iconPath: 'assets/icons/filter_icon.png',
-                  tooltip: 'Rows per page',
-                  initialValue: 'Row Count',
-                  onSelected: (value) {
+                DropdownButton<String>(
+                  value: rowsPerPage.toString(),
+                  onChanged: (value) {
                     setState(() {
                       rowsPerPage = int.parse(value!);
                       currentPage = 0;
                     });
                   },
-                  buttonSize: Size(100.dp, 40.dp),
-                  dropdownWidth: 100.dp,
-                  label: 'Rows per page:',
+                  items: ['5', '10', '15', '20']
+                      .map((status) => DropdownMenuItem(
+                            value: status,
+                            child: Text(status),
+                          ))
+                      .toList(),
+                  hint: const Text('Filter by Status'),
                 ),
                 SizedBox(
                   width: 12.dp,

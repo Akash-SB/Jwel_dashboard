@@ -158,7 +158,7 @@ class _TransactionsTableState extends State<TransactionsTable> {
           Text(
             "Invoices",
             style: TextStyle(
-              fontSize: 10.sp,
+              fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
           ),

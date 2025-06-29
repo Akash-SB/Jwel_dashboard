@@ -52,7 +52,7 @@ class StatCardGridWidget extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
-                          fontSize: 4.sp,
+                          fontSize: 14,
                         ),
                       ),
                       Icon(
@@ -70,7 +70,7 @@ class StatCardGridWidget extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 7.sp,
+                      fontSize: 20,
                     ),
                   ),
                   SizedBox(height: 8.dp),
@@ -82,7 +82,7 @@ class StatCardGridWidget extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
-                      fontSize: 4.sp,
+                      fontSize: 14,
                     ),
                   )
                 ],

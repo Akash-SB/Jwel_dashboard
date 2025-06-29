@@ -1,745 +1,217 @@
 import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import '../../models/app_enum.dart' as app_enum;
+import '../../models/invoice_model.dart';
+import '../../widgets/invoice_form_widget.dart';
+import '../../widgets/stat_card_grid_widget.dart';
+import 'invoice_data_table.dart';
 
-class InvoiceScreen extends StatelessWidget {
+final List<Map<String, dynamic>> invoiceList = [
+  {
+    'invoiceId': 'INV001',
+    'date': '2025-06-01',
+    'carat': '5',
+    'rate': '12000',
+    'amount': '60000',
+    'productIds': [1, 2],
+    'transactionType': app_enum.TransactionTypeEnum.sale,
+    'custType': app_enum.UsertypeEnum.company,
+    'custName': 'Royal Jewels',
+    'paymentStatus': app_enum.PaymentStatusEnum.paid,
+    'paymentType': app_enum.PaymentTypeEnum.cash,
+    'note': 'Delivered on time'
+  },
+  {
+    'invoiceId': 'INV002',
+    'date': '2025-06-03',
+    'carat': '3',
+    'rate': '8000',
+    'amount': '24000',
+    'productIds': [3],
+    'transactionType': app_enum.TransactionTypeEnum.purchase,
+    'custType': app_enum.UsertypeEnum.broker,
+    'custName': 'Gem Broker Co.',
+    'paymentStatus': app_enum.PaymentStatusEnum.unpaid,
+    'paymentType': app_enum.PaymentTypeEnum.cheque,
+    'note': 'Cheque clearance pending'
+  },
+  {
+    'invoiceId': 'INV003',
+    'date': '2025-06-05',
+    'carat': '7',
+    'rate': '15000',
+    'amount': '105000',
+    'productIds': [4, 5],
+    'transactionType': app_enum.TransactionTypeEnum.sale,
+    'custType': app_enum.UsertypeEnum.company,
+    'custName': 'Diamond World',
+    'paymentStatus': app_enum.PaymentStatusEnum.paid,
+    'paymentType': app_enum.PaymentTypeEnum.online,
+    'note': null
+  }
+];
+
+class InvoiceScreen extends StatefulWidget {
   const InvoiceScreen({super.key});
 
   @override
+  State<InvoiceScreen> createState() => _InvoiceScreenState();
+}
+
+class _InvoiceScreenState extends State<InvoiceScreen> {
+  @override
   Widget build(BuildContext context) {
     return Container(
-      child: Padding(
-        padding: EdgeInsets.all(20.dp),
-        child: const TransactionsTable(),
+      color: Colors.white,
+      padding: EdgeInsets.all(24.dp),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _header(),
+          SizedBox(height: 20.dp),
+          Row(
+            children: [
+              Expanded(
+                child: StatCardGridWidget(
+                  cards: [
+                    StatCardModel(
+                      title: "Total Items",
+                      value: "120",
+                      subtitle: "Total items in stock",
+                      iconData: Icons.home,
+                      gradientColors: [
+                        const Color(0xffC084FC),
+                        const Color(0xffA855F7),
+                      ],
+                    ),
+                    StatCardModel(
+                      title: "Low Stock Items",
+                      value: "8",
+                      subtitle: "Number of items that are running low",
+                      iconData: Icons.home,
+                      gradientColors: [
+                        const Color(0xff60A5FA),
+                        const Color(0xff3B82F6),
+                      ],
+                    ),
+                    StatCardModel(
+                      title: "In Stock Items",
+                      value: "40",
+                      subtitle: "Number of items past their expiration date",
+                      iconData: Icons.home,
+                      gradientColors: [
+                        const Color(0xff4ADE80),
+                        const Color(0xff22C55E),
+                      ],
+                    ),
+                    StatCardModel(
+                      title: "Out of Stock Items",
+                      value: "15",
+                      subtitle: "Count of items currently out of stock",
+                      iconData: Icons.home,
+                      gradientColors: [
+                        const Color(0xffF87171),
+                        const Color(0xffEF4444),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 24.dp),
+          Expanded(
+            child: InvoiceDataTable(
+              data: invoiceList, // from the mock list or Firestore
+              onDelete: (invoice) => _confirmDelete(context, invoice),
+              onEdit: (invoice) => _openInvoiceForm(context, invoice),
+              onExportPDF: () {
+                // TODO: Implement PDF export
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Exporting to PDF...')),
+                );
+              },
+              onExportExcel: () {
+                // TODO: Implement Excel export
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Exporting to Excel...')),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
-}
 
-class TransactionDataSource extends DataTableSource {
-  final List<Transaction> _allData;
-  List<Transaction> _filteredData;
-
-  TransactionDataSource(this._allData) : _filteredData = List.from(_allData);
-
-  void filter(String searchQuery, String? typeFilter) {
-    _filteredData = _allData.where((txn) {
-      final matchesSearch =
-          txn.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-              txn.invoiceId.toLowerCase().contains(searchQuery.toLowerCase());
-      final matchesType =
-          typeFilter == null || txn.type == typeFilter || typeFilter == 'All';
-      return matchesSearch && matchesType;
-    }).toList();
-    notifyListeners();
-  }
-
-  void sort<T>(
-      Comparable<T> Function(Transaction txn) getField, bool ascending) {
-    _filteredData.sort((a, b) {
-      final aValue = getField(a);
-      final bValue = getField(b);
-      return ascending
-          ? Comparable.compare(aValue, bValue)
-          : Comparable.compare(bValue, aValue);
-    });
-    notifyListeners();
-  }
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= _filteredData.length) return null;
-    final txn = _filteredData[index];
-    return DataRow(cells: [
-      DataCell(Text(txn.invoiceId)),
-      DataCell(Text(txn.date)),
-      DataCell(Text(txn.carat.toStringAsFixed(2))),
-      DataCell(Text(txn.rate.toStringAsFixed(2))),
-      DataCell(Text(txn.amount.toStringAsFixed(2))),
-      DataCell(Container(
-        padding: EdgeInsets.symmetric(horizontal: 10.dp, vertical: 6.dp),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: txn.type == 'Sells' ? Colors.green[100] : Colors.red[100],
+  Widget _header() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Invoice Management",
+          style: TextStyle(
+            color: const Color(0xff1F2937),
+            fontSize: 8,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        child: Text(
-          txn.type,
-          style:
-              TextStyle(color: txn.type == 'Sells' ? Colors.green : Colors.red),
-        ),
-      )),
-      DataCell(Text(txn.userType)),
-      DataCell(Text(txn.name)),
-    ]);
+        ElevatedButton(
+          onPressed: () => _openInvoiceForm(context),
+          child: const Text(
+            "Create an Invoice",
+          ),
+        )
+      ],
+    );
   }
 
-  @override
-  int get rowCount => _filteredData.length;
+  void _openInvoiceForm(BuildContext context,
+      [Map<String, dynamic>? existingInvoice]) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => InvoiceForm(
+        existingInvoice: existingInvoice, // null for Add, pass Map for Edit
+        onSubmit: (invoiceData) {
+          // Example: add to your list or push to Firestore
+          setState(() {
+            if (existingInvoice != null) {
+              final index = invoiceList.indexWhere(
+                  (i) => i['invoiceId'] == existingInvoice['invoiceId']);
+              invoiceList[index] = invoiceData;
+            } else {
+              invoiceList.add(invoiceData);
+            }
+          });
 
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get selectedRowCount => 0;
-}
-
-final List<Transaction> _sampleData = [
-  Transaction(
-    invoiceId: 'INV842002',
-    date: '27th Jul 2021',
-    carat: 68.89,
-    rate: 1600.00,
-    amount: 26500.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Kim Girocking',
-  ),
-  Transaction(
-    invoiceId: 'INV842004',
-    date: '25th Jul 2021',
-    carat: 70.5,
-    rate: 1550.00,
-    amount: 32800.50,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Jackson Balabala',
-  ),
-  Transaction(
-    invoiceId: 'INV842005',
-    date: '20th Jul 2021',
-    carat: 55.20,
-    rate: 1700.00,
-    amount: 18900.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Claudia Emmay',
-  ),
-  Transaction(
-    invoiceId: 'INV842006',
-    date: '20th Jul 2021',
-    carat: 80.10,
-    rate: 1620.00,
-    amount: 45300.25,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Park Jo Soo',
-  ),
-  Transaction(
-    invoiceId: 'INV842007',
-    date: '18th Jul 2021',
-    carat: 65.00,
-    rate: 1580.00,
-    amount: 22150.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Clarisa Hercules',
-  ),
-  Transaction(
-    invoiceId: 'INV842002',
-    date: '27th Jul 2021',
-    carat: 68.89,
-    rate: 1600.00,
-    amount: 26500.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Kim Girocking',
-  ),
-  Transaction(
-    invoiceId: 'INV842004',
-    date: '25th Jul 2021',
-    carat: 70.5,
-    rate: 1550.00,
-    amount: 32800.50,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Jackson Balabala',
-  ),
-  Transaction(
-    invoiceId: 'INV842005',
-    date: '20th Jul 2021',
-    carat: 55.20,
-    rate: 1700.00,
-    amount: 18900.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Claudia Emmay',
-  ),
-  Transaction(
-    invoiceId: 'INV842006',
-    date: '20th Jul 2021',
-    carat: 80.10,
-    rate: 1620.00,
-    amount: 45300.25,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Park Jo Soo',
-  ),
-  Transaction(
-    invoiceId: 'INV842007',
-    date: '18th Jul 2021',
-    carat: 65.00,
-    rate: 1580.00,
-    amount: 22150.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Clarisa Hercules',
-  ),
-  Transaction(
-    invoiceId: 'INV842002',
-    date: '27th Jul 2021',
-    carat: 68.89,
-    rate: 1600.00,
-    amount: 26500.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Kim Girocking',
-  ),
-  Transaction(
-    invoiceId: 'INV842004',
-    date: '25th Jul 2021',
-    carat: 70.5,
-    rate: 1550.00,
-    amount: 32800.50,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Jackson Balabala',
-  ),
-  Transaction(
-    invoiceId: 'INV842005',
-    date: '20th Jul 2021',
-    carat: 55.20,
-    rate: 1700.00,
-    amount: 18900.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Claudia Emmay',
-  ),
-  Transaction(
-    invoiceId: 'INV842006',
-    date: '20th Jul 2021',
-    carat: 80.10,
-    rate: 1620.00,
-    amount: 45300.25,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Park Jo Soo',
-  ),
-  Transaction(
-    invoiceId: 'INV842007',
-    date: '18th Jul 2021',
-    carat: 65.00,
-    rate: 1580.00,
-    amount: 22150.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Clarisa Hercules',
-  ),
-  Transaction(
-    invoiceId: 'INV842002',
-    date: '27th Jul 2021',
-    carat: 68.89,
-    rate: 1600.00,
-    amount: 26500.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Kim Girocking',
-  ),
-  Transaction(
-    invoiceId: 'INV842004',
-    date: '25th Jul 2021',
-    carat: 70.5,
-    rate: 1550.00,
-    amount: 32800.50,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Jackson Balabala',
-  ),
-  Transaction(
-    invoiceId: 'INV842005',
-    date: '20th Jul 2021',
-    carat: 55.20,
-    rate: 1700.00,
-    amount: 18900.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Claudia Emmay',
-  ),
-  Transaction(
-    invoiceId: 'INV842006',
-    date: '20th Jul 2021',
-    carat: 80.10,
-    rate: 1620.00,
-    amount: 45300.25,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Park Jo Soo',
-  ),
-  Transaction(
-    invoiceId: 'INV842007',
-    date: '18th Jul 2021',
-    carat: 65.00,
-    rate: 1580.00,
-    amount: 22150.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Clarisa Hercules',
-  ),
-  Transaction(
-    invoiceId: 'INV842002',
-    date: '27th Jul 2021',
-    carat: 68.89,
-    rate: 1600.00,
-    amount: 26500.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Kim Girocking',
-  ),
-  Transaction(
-    invoiceId: 'INV842004',
-    date: '25th Jul 2021',
-    carat: 70.5,
-    rate: 1550.00,
-    amount: 32800.50,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Jackson Balabala',
-  ),
-  Transaction(
-    invoiceId: 'INV842005',
-    date: '20th Jul 2021',
-    carat: 55.20,
-    rate: 1700.00,
-    amount: 18900.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Claudia Emmay',
-  ),
-  Transaction(
-    invoiceId: 'INV842006',
-    date: '20th Jul 2021',
-    carat: 80.10,
-    rate: 1620.00,
-    amount: 45300.25,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Park Jo Soo',
-  ),
-  Transaction(
-    invoiceId: 'INV842007',
-    date: '18th Jul 2021',
-    carat: 65.00,
-    rate: 1580.00,
-    amount: 22150.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Clarisa Hercules',
-  ),
-  Transaction(
-    invoiceId: 'INV842002',
-    date: '27th Jul 2021',
-    carat: 68.89,
-    rate: 1600.00,
-    amount: 26500.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Kim Girocking',
-  ),
-  Transaction(
-    invoiceId: 'INV842004',
-    date: '25th Jul 2021',
-    carat: 70.5,
-    rate: 1550.00,
-    amount: 32800.50,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Jackson Balabala',
-  ),
-  Transaction(
-    invoiceId: 'INV842005',
-    date: '20th Jul 2021',
-    carat: 55.20,
-    rate: 1700.00,
-    amount: 18900.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Claudia Emmay',
-  ),
-  Transaction(
-    invoiceId: 'INV842006',
-    date: '20th Jul 2021',
-    carat: 80.10,
-    rate: 1620.00,
-    amount: 45300.25,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Park Jo Soo',
-  ),
-  Transaction(
-    invoiceId: 'INV842007',
-    date: '18th Jul 2021',
-    carat: 65.00,
-    rate: 1580.00,
-    amount: 22150.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Clarisa Hercules',
-  ),
-  Transaction(
-    invoiceId: 'INV842002',
-    date: '27th Jul 2021',
-    carat: 68.89,
-    rate: 1600.00,
-    amount: 26500.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Kim Girocking',
-  ),
-  Transaction(
-    invoiceId: 'INV842004',
-    date: '25th Jul 2021',
-    carat: 70.5,
-    rate: 1550.00,
-    amount: 32800.50,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Jackson Balabala',
-  ),
-  Transaction(
-    invoiceId: 'INV842005',
-    date: '20th Jul 2021',
-    carat: 55.20,
-    rate: 1700.00,
-    amount: 18900.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Claudia Emmay',
-  ),
-  Transaction(
-    invoiceId: 'INV842006',
-    date: '20th Jul 2021',
-    carat: 80.10,
-    rate: 1620.00,
-    amount: 45300.25,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Park Jo Soo',
-  ),
-  Transaction(
-    invoiceId: 'INV842007',
-    date: '18th Jul 2021',
-    carat: 65.00,
-    rate: 1580.00,
-    amount: 22150.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Clarisa Hercules',
-  ),
-  Transaction(
-    invoiceId: 'INV842002',
-    date: '27th Jul 2021',
-    carat: 68.89,
-    rate: 1600.00,
-    amount: 26500.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Kim Girocking',
-  ),
-  Transaction(
-    invoiceId: 'INV842004',
-    date: '25th Jul 2021',
-    carat: 70.5,
-    rate: 1550.00,
-    amount: 32800.50,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Jackson Balabala',
-  ),
-  Transaction(
-    invoiceId: 'INV842005',
-    date: '20th Jul 2021',
-    carat: 55.20,
-    rate: 1700.00,
-    amount: 18900.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Claudia Emmay',
-  ),
-  Transaction(
-    invoiceId: 'INV842006',
-    date: '20th Jul 2021',
-    carat: 80.10,
-    rate: 1620.00,
-    amount: 45300.25,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Park Jo Soo',
-  ),
-  Transaction(
-    invoiceId: 'INV842007',
-    date: '18th Jul 2021',
-    carat: 65.00,
-    rate: 1580.00,
-    amount: 22150.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Clarisa Hercules',
-  ),
-  Transaction(
-    invoiceId: 'INV842002',
-    date: '27th Jul 2021',
-    carat: 68.89,
-    rate: 1600.00,
-    amount: 26500.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Kim Girocking',
-  ),
-  Transaction(
-    invoiceId: 'INV842004',
-    date: '25th Jul 2021',
-    carat: 70.5,
-    rate: 1550.00,
-    amount: 32800.50,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Jackson Balabala',
-  ),
-  Transaction(
-    invoiceId: 'INV842005',
-    date: '20th Jul 2021',
-    carat: 55.20,
-    rate: 1700.00,
-    amount: 18900.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Claudia Emmay',
-  ),
-  Transaction(
-    invoiceId: 'INV842006',
-    date: '20th Jul 2021',
-    carat: 80.10,
-    rate: 1620.00,
-    amount: 45300.25,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Park Jo Soo',
-  ),
-  Transaction(
-    invoiceId: 'INV842007',
-    date: '18th Jul 2021',
-    carat: 65.00,
-    rate: 1580.00,
-    amount: 22150.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Clarisa Hercules',
-  ),
-  Transaction(
-    invoiceId: 'INV842002',
-    date: '27th Jul 2021',
-    carat: 68.89,
-    rate: 1600.00,
-    amount: 26500.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Kim Girocking',
-  ),
-  Transaction(
-    invoiceId: 'INV842004',
-    date: '25th Jul 2021',
-    carat: 70.5,
-    rate: 1550.00,
-    amount: 32800.50,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Jackson Balabala',
-  ),
-  Transaction(
-    invoiceId: 'INV842005',
-    date: '20th Jul 2021',
-    carat: 55.20,
-    rate: 1700.00,
-    amount: 18900.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Claudia Emmay',
-  ),
-  Transaction(
-    invoiceId: 'INV842006',
-    date: '20th Jul 2021',
-    carat: 80.10,
-    rate: 1620.00,
-    amount: 45300.25,
-    type: 'Purchase',
-    userType: 'Company',
-    name: 'Park Jo Soo',
-  ),
-  Transaction(
-    invoiceId: 'INV842007',
-    date: '18th Jul 2021',
-    carat: 65.00,
-    rate: 1580.00,
-    amount: 22150.00,
-    type: 'Sells',
-    userType: 'Broker',
-    name: 'Clarisa Hercules',
-  ),
-];
-
-class Transaction {
-  final String invoiceId;
-  final String date;
-  final double carat;
-  final double rate;
-  final double amount;
-  final String type;
-  final String userType;
-  final String name;
-
-  Transaction({
-    required this.invoiceId,
-    required this.date,
-    required this.carat,
-    required this.rate,
-    required this.amount,
-    required this.type,
-    required this.userType,
-    required this.name,
-  });
-}
-
-class TransactionsTable extends StatefulWidget {
-  const TransactionsTable({super.key});
-
-  @override
-  State<TransactionsTable> createState() => _TransactionsTableState();
-}
-
-class _TransactionsTableState extends State<TransactionsTable> {
-  late TransactionDataSource _dataSource;
-  final TextEditingController _searchController = TextEditingController();
-  String? _selectedType;
-  int? _sortColumnIndex;
-  bool _sortAscending = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _dataSource = TransactionDataSource(_sampleData);
+          Navigator.pop(context); // Close bottom sheet
+        },
+      ),
+    );
   }
 
-  void _applyFilter() {
-    _dataSource.filter(_searchController.text, _selectedType);
-  }
-
-  void _sort<T>(
-      Comparable<T> Function(Transaction txn) getField, int columnIndex) {
-    setState(() {
-      _sortColumnIndex = columnIndex;
-      _sortAscending = !_sortAscending;
-    });
-    _dataSource.sort(getField, _sortAscending);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Widget header() {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "Invoices",
-            style: TextStyle(
-              fontSize: 10.sp,
-              fontWeight: FontWeight.bold,
-            ),
+  void _confirmDelete(BuildContext context, Map<String, dynamic> invoice) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete Invoice'),
+        content: Text(
+            'Are you sure you want to delete invoice ${invoice['invoiceId']}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {},
-            child: const Text(
-              "Create an Invoice",
-            ),
-          )
-        ],
-      );
-    }
-
-    return Scaffold(
-      body: Column(
-        children: [
-          // Filters and Search
-          header(),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                DropdownButton<String>(
-                  value: _selectedType,
-                  hint: const Text("All Types"),
-                  items: ['Sells', 'Purchase', 'All'].map((type) {
-                    return DropdownMenuItem(value: type, child: Text(type));
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedType = value;
-                      _applyFilter();
-                    });
-                  },
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      hintText: "Search by name or parameter...",
-                      prefixIcon: Icon(Icons.search),
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) => _applyFilter(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: double.maxFinite,
-            child: PaginatedDataTable(
-              header: const Text('Transaction Records'),
-              sortColumnIndex: _sortColumnIndex,
-              sortAscending: _sortAscending,
-              columns: [
-                DataColumn(
-                  label: const Text('Invoive Id'),
-                  onSort: (colIndex, _) =>
-                      _sort((txn) => txn.invoiceId, colIndex),
-                ),
-                DataColumn(
-                  label: const Text('Date'),
-                  onSort: (colIndex, _) => _sort((txn) => txn.date, colIndex),
-                ),
-                DataColumn(
-                  label: const Text('Carat'),
-                  numeric: true,
-                  onSort: (colIndex, _) => _sort((txn) => txn.carat, colIndex),
-                ),
-                DataColumn(
-                  label: const Text('Rate'),
-                  numeric: true,
-                  onSort: (colIndex, _) => _sort((txn) => txn.rate, colIndex),
-                ),
-                DataColumn(
-                  label: const Text('Amount'),
-                  numeric: true,
-                  onSort: (colIndex, _) => _sort((txn) => txn.amount, colIndex),
-                ),
-                const DataColumn(label: Text('Type')),
-                const DataColumn(label: Text('User')),
-                const DataColumn(label: Text('Name')),
-              ],
-              source: _dataSource,
-              rowsPerPage: 5,
-              showCheckboxColumn: false,
-              showEmptyRows: false,
-            ),
+            onPressed: () {
+              setState(() {
+                invoiceList
+                    .removeWhere((i) => i['invoiceId'] == invoice['invoiceId']);
+              });
+              Navigator.pop(ctx);
+            },
+            child: Text('Yes, Delete'),
           ),
         ],
       ),

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+
 import '../../widgets/custom_data_table.dart';
 import '../../widgets/stat_card_grid_widget.dart';
 
-class DashboardSccreen extends StatefulWidget {
-  const DashboardSccreen({super.key});
+class UsersScreen extends StatefulWidget {
+  const UsersScreen({super.key});
 
   @override
-  State<DashboardSccreen> createState() => _DashboardSccreenState();
+  State<UsersScreen> createState() => _UsersScreenState();
 }
 
-class _DashboardSccreenState extends State<DashboardSccreen> {
+class _UsersScreenState extends State<UsersScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> customerList = [
@@ -252,19 +253,19 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Dashboard",
+          "Users Management",
           style: TextStyle(
             color: const Color(0xff1F2937),
-            fontSize: 8,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
-        // ElevatedButton(
-        //   onPressed: () {},
-        //   child: const Text(
-        //     "Create an Invoice",
-        //   ),
-        // )
+        ElevatedButton(
+          onPressed: () {},
+          child: const Text(
+            "Add New User",
+          ),
+        )
       ],
     );
   }

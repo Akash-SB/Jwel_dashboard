@@ -3,14 +3,16 @@ import 'package:sales_data_dashboard/screens/dashboard/dashboard_sccreen.dart';
 import 'package:sales_data_dashboard/screens/home/index_screen.dart';
 import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
 import 'package:sales_data_dashboard/screens/settings/setting_screen.dart';
+import 'package:sales_data_dashboard/screens/user_management/users_screen.dart';
 
-import 'screens/user_management/user_management_screen.dart';
+import 'screens/products/view/products_screen.dart';
 
 class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String index = '/index';
   static const String invoices = '/invoices';
   static const String users = '/users';
+  static const String products = '/products';
   static const String setting = '/setting';
   // static const String invoiceDetails = '/invoice/details';
   // static const String reports = '/reports';
@@ -21,7 +23,8 @@ class AppRoutes {
       index => const IndexScreen(),
       dashboard => const DashboardSccreen(),
       invoices => const InvoiceScreen(),
-      users => const UserManagementScreen(),
+      users => const UsersScreen(),
+      products => const ProductsScreen(),
       setting => const SettingScreen(),
       _ => const DashboardSccreen()
     };
@@ -39,6 +42,7 @@ class AppRoutes {
     dashboard,
     invoices,
     users,
+    products,
     setting,
   ];
 }
