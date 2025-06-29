@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import '../../models/app_enum.dart' as app_enum;
-import '../../models/invoice_model.dart';
 import '../../widgets/invoice_form_widget.dart';
 import '../../widgets/stat_card_grid_widget.dart';
 import 'invoice_data_table.dart';
@@ -126,13 +125,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               onDelete: (invoice) => _confirmDelete(context, invoice),
               onEdit: (invoice) => _openInvoiceForm(context, invoice),
               onExportPDF: () {
-                // TODO: Implement PDF export
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Exporting to PDF...')),
                 );
               },
               onExportExcel: () {
-                // TODO: Implement Excel export
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Exporting to Excel...')),
                 );
@@ -152,7 +149,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           "Invoice Management",
           style: TextStyle(
             color: const Color(0xff1F2937),
-            fontSize: 8,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
