@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-enum TransactionTypeEnum { buy, sell }
-
-enum UsertypeEnum { broker, company }
-
-enum PaymentStatusEnum { paid, unpaid }
-
-enum PaymentTypeEnum { cash, cheque, online }
+import 'package:sales_data_dashboard/models/invoice_model.dart';
+import 'package:sales_data_dashboard/models/app_enum.dart';
 
 class InvoiceForm extends StatefulWidget {
-  final Map<String, dynamic>? existingInvoice;
-  final void Function(Map<String, dynamic>) onSubmit;
+  final InvoiceModel? existingInvoice;
+  final void Function(InvoiceModel) onSubmit;
 
   const InvoiceForm({
     super.key,
@@ -43,17 +37,17 @@ class _InvoiceFormState extends State<InvoiceForm> {
     super.initState();
     final invoice = widget.existingInvoice;
     if (invoice != null) {
-      _invoiceIdController.text = invoice['invoiceId'];
-      _dateController.text = invoice['date'];
-      _caratController.text = invoice['carat'];
-      _rateController.text = invoice['rate'];
-      _amountController.text = invoice['amount'];
-      _custNameController.text = invoice['custName'];
-      _noteController.text = invoice['note'] ?? '';
-      _transactionType = invoice['transactionType'];
-      _custType = invoice['custType'];
-      _paymentStatus = invoice['paymentStatus'];
-      _paymentType = invoice['paymentType'];
+      _invoiceIdController.text = invoice.invoiceId;
+      _dateController.text = invoice.date;
+      _caratController.text = invoice.carat;
+      _rateController.text = invoice.rate;
+      _amountController.text = invoice.amount;
+      _custNameController.text = invoice.custName;
+      _noteController.text = invoice.note ?? '';
+      _transactionType = invoice.transactionType;
+      _custType = invoice.custType;
+      _paymentStatus = invoice.paymentStatus;
+      _paymentType = invoice.paymentType;
     } else {
       _invoiceIdController.text =
           DateTime.now().millisecondsSinceEpoch.toString();
@@ -78,20 +72,20 @@ class _InvoiceFormState extends State<InvoiceForm> {
         _transactionType != null &&
         _custType != null &&
         _paymentStatus != null) {
-      final invoiceData = {
-        'invoiceId': _invoiceIdController.text,
-        'date': _dateController.text,
-        'carat': _caratController.text,
-        'rate': _rateController.text,
-        'amount': _amountController.text,
-        'custName': _custNameController.text,
-        'note': _noteController.text,
-        'transactionType': _transactionType!,
-        'custType': _custType!,
-        'paymentStatus': _paymentStatus!,
-        'paymentType': _paymentType,
-        'productIds': [],
-      };
+      final invoiceData = InvoiceModel(
+        invoiceId: _invoiceIdController.text,
+        date: _dateController.text,
+        carat: _caratController.text,
+        rate: _rateController.text,
+        amount: _amountController.text,
+        custName: _custNameController.text,
+        note: _noteController.text,
+        transactionType: _transactionType!,
+        custType: _custType!,
+        paymentStatus: _paymentStatus!,
+        paymentType: _paymentType,
+        productIds: [],
+      );
 
       widget.onSubmit(invoiceData);
     }
