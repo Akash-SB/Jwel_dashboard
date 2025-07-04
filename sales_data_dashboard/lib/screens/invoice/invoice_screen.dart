@@ -1,55 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
-import '../../models/app_enum.dart' as app_enum;
-import '../../models/invoice_model.dart';
+import 'package:sales_data_dashboard/models/invoice_model.dart';
+import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
 import '../../widgets/invoice_form_widget.dart';
 import '../../widgets/stat_card_grid_widget.dart';
 import 'invoice_data_table.dart';
 
-final List<Map<String, dynamic>> invoiceList = [
-  {
-    'invoiceId': 'INV001',
-    'date': '2025-06-01',
-    'carat': '5',
-    'rate': '12000',
-    'amount': '60000',
-    'productIds': [1, 2],
-    'transactionType': app_enum.TransactionTypeEnum.sale,
-    'custType': app_enum.UsertypeEnum.company,
-    'custName': 'Royal Jewels',
-    'paymentStatus': app_enum.PaymentStatusEnum.paid,
-    'paymentType': app_enum.PaymentTypeEnum.cash,
-    'note': 'Delivered on time'
-  },
-  {
-    'invoiceId': 'INV002',
-    'date': '2025-06-03',
-    'carat': '3',
-    'rate': '8000',
-    'amount': '24000',
-    'productIds': [3],
-    'transactionType': app_enum.TransactionTypeEnum.purchase,
-    'custType': app_enum.UsertypeEnum.broker,
-    'custName': 'Gem Broker Co.',
-    'paymentStatus': app_enum.PaymentStatusEnum.unpaid,
-    'paymentType': app_enum.PaymentTypeEnum.cheque,
-    'note': 'Cheque clearance pending'
-  },
-  {
-    'invoiceId': 'INV003',
-    'date': '2025-06-05',
-    'carat': '7',
-    'rate': '15000',
-    'amount': '105000',
-    'productIds': [4, 5],
-    'transactionType': app_enum.TransactionTypeEnum.sale,
-    'custType': app_enum.UsertypeEnum.company,
-    'custName': 'Diamond World',
-    'paymentStatus': app_enum.PaymentStatusEnum.paid,
-    'paymentType': app_enum.PaymentTypeEnum.online,
-    'note': null
-  }
-];
+final getIt = GetIt.instance;
 
 class InvoiceScreen extends StatefulWidget {
   const InvoiceScreen({super.key});
@@ -59,6 +17,20 @@ class InvoiceScreen extends StatefulWidget {
 }
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
+  late InvoiceStore invoiceStore;
+
+  @override
+  void initState() {
+    if (!getIt.isRegistered<InvoiceStore>()) {
+      getIt.registerFactory<InvoiceStore>(() => InvoiceStore());
+    }
+
+    invoiceStore = getIt<InvoiceStore>();
+    invoiceStore.fetchInvoices(); // Fetch invoices from Firestore
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -122,17 +94,15 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           SizedBox(height: 24.dp),
           Expanded(
             child: InvoiceDataTable(
-              data: invoiceList, // from the mock list or Firestore
+              data: invoiceStore.invoices, // from the store's invoices list
               onDelete: (invoice) => _confirmDelete(context, invoice),
               onEdit: (invoice) => _openInvoiceForm(context, invoice),
               onExportPDF: () {
-                // TODO: Implement PDF export
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Exporting to PDF...')),
                 );
               },
               onExportExcel: () {
-                // TODO: Implement Excel export
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Exporting to Excel...')),
                 );
@@ -152,7 +122,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           "Invoice Management",
           style: TextStyle(
             color: const Color(0xff1F2937),
-            fontSize: 8,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -166,38 +136,30 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-  void _openInvoiceForm(BuildContext context,
-      [Map<String, dynamic>? existingInvoice]) {
+  void _openInvoiceForm(BuildContext context, [InvoiceModel? existingInvoice]) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (_) => InvoiceForm(
-        existingInvoice: existingInvoice, // null for Add, pass Map for Edit
+        existingInvoice: existingInvoice,
         onSubmit: (invoiceData) {
-          // Example: add to your list or push to Firestore
-          setState(() {
-            if (existingInvoice != null) {
-              final index = invoiceList.indexWhere(
-                  (i) => i['invoiceId'] == existingInvoice['invoiceId']);
-              invoiceList[index] = invoiceData;
-            } else {
-              invoiceList.add(invoiceData);
-            }
-          });
-
+          invoiceStore.addInvoice(invoiceData);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Invoice ${invoiceData.invoiceId} added')),
+          );
           Navigator.pop(context); // Close bottom sheet
         },
       ),
     );
   }
 
-  void _confirmDelete(BuildContext context, Map<String, dynamic> invoice) {
+  void _confirmDelete(BuildContext context, InvoiceModel invoice) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('Delete Invoice'),
         content: Text(
-            'Are you sure you want to delete invoice ${invoice['invoiceId']}?'),
+            'Are you sure you want to delete invoice ${invoice.invoiceId}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -205,10 +167,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              setState(() {
-                invoiceList
-                    .removeWhere((i) => i['invoiceId'] == invoice['invoiceId']);
-              });
+              invoiceStore.deleteInvoice(invoice.invoiceId);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Invoice ${invoice.invoiceId} deleted')),
+              );
+              setState(() {});
               Navigator.pop(ctx);
             },
             child: Text('Yes, Delete'),

@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:excel/excel.dart' as excel;
+import 'package:sales_data_dashboard/models/invoice_model.dart';
 import '../../Utils/app_sizer.dart';
 import '../../widgets/custom_image_button.dart';
 
@@ -13,9 +14,9 @@ enum PaymentStatusEnum { paid, unpaid }
 enum PaymentTypeEnum { cash, cheque, online }
 
 class InvoiceDataTable extends StatefulWidget {
-  final List<Map<String, dynamic>> data;
-  final void Function(Map<String, dynamic>)? onEdit;
-  final void Function(Map<String, dynamic>)? onDelete;
+  final List<InvoiceModel> data;
+  final void Function(InvoiceModel)? onEdit;
+  final void Function(InvoiceModel)? onDelete;
 
   const InvoiceDataTable({
     super.key,
@@ -39,17 +40,16 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
   String? sortKey;
   bool sortAsc = true;
 
-  List<Map<String, dynamic>> get filteredData {
+  List<InvoiceModel> get filteredData {
     return widget.data.where((item) {
       final query = searchQuery.toLowerCase();
-      final matchesSearch =
-          item['invoiceId'].toString().toLowerCase().contains(query) ||
-              item['custName'].toString().toLowerCase().contains(query);
+      final matchesSearch = item.invoiceId.toLowerCase().contains(query) ||
+          item.custName.toLowerCase().contains(query);
 
       final paymentStatusStr =
-          item['paymentStatus'].toString().split('.').last.toLowerCase();
+          item.paymentStatus.toString().split('.').last.toLowerCase();
       final paymentTypeStr =
-          (item['paymentType']?.toString().split('.').last.toLowerCase()) ?? '';
+          (item.paymentType?.toString().split('.').last.toLowerCase()) ?? '';
 
       final matchesStatus = selectedPaymentStatus.toLowerCase() == 'all'
           ? true
@@ -70,17 +70,51 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
         sortKey != null;
   }
 
-  List<Map<String, dynamic>> get sortedData {
+  List<InvoiceModel> get sortedData {
     final sorted = [...filteredData];
     if (sortKey != null) {
-      sorted.sort((a, b) => sortAsc
-          ? a[sortKey].toString().compareTo(b[sortKey].toString())
-          : b[sortKey].toString().compareTo(a[sortKey].toString()));
+      sorted.sort((a, b) {
+        final aValue = _getFieldValue(a, sortKey!);
+        final bValue = _getFieldValue(b, sortKey!);
+        if (aValue is Comparable && bValue is Comparable) {
+          return sortAsc ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
+        }
+        return 0;
+      });
     }
     return sorted;
   }
 
-  List<Map<String, dynamic>> get paginatedData {
+  dynamic _getFieldValue(InvoiceModel item, String key) {
+    switch (key) {
+      case 'invoiceId':
+        return item.invoiceId;
+      case 'date':
+        return item.date;
+      case 'carat':
+        return item.carat;
+      case 'rate':
+        return item.rate;
+      case 'amount':
+        return item.amount;
+      case 'custName':
+        return item.custName;
+      case 'transactionType':
+        return item.transactionType;
+      case 'custType':
+        return item.custType;
+      case 'paymentStatus':
+        return item.paymentStatus;
+      case 'paymentType':
+        return item.paymentType;
+      case 'note':
+        return item.note;
+      default:
+        return '';
+    }
+  }
+
+  List<InvoiceModel> get paginatedData {
     final start = currentPage * rowsPerPage;
     final end = (start + rowsPerPage).clamp(0, sortedData.length);
     return sortedData.sublist(start, end);
@@ -130,17 +164,17 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
                 'Note',
               ],
               ...filteredData.map((item) => [
-                    item['invoiceId'] ?? '',
-                    item['date'] ?? '',
-                    item['carat'] ?? '',
-                    item['rate'] ?? '',
-                    item['amount'] ?? '',
-                    item['custName'] ?? '',
-                    item['transactionType'].toString().split('.').last,
-                    item['custType'].toString().split('.').last,
-                    item['paymentStatus'].toString().split('.').last,
-                    item['paymentType']?.toString().split('.').last ?? '',
-                    item['note'] ?? '',
+                    item.invoiceId,
+                    item.date,
+                    item.carat,
+                    item.rate,
+                    item.amount,
+                    item.custName,
+                    item.transactionType.toString().split('.').last,
+                    item.custType.toString().split('.').last,
+                    item.paymentStatus.toString().split('.').last,
+                    item.paymentType?.toString().split('.').last ?? '',
+                    item.note ?? '',
                   ]),
             ],
           );
@@ -173,17 +207,17 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
 
     for (var item in filteredData) {
       sheet.appendRow([
-        item['invoiceId'] ?? '',
-        item['date'] ?? '',
-        item['carat'] ?? '',
-        item['rate'] ?? '',
-        item['amount'] ?? '',
-        item['custName'] ?? '',
-        item['transactionType'].toString().split('.').last,
-        item['custType'].toString().split('.').last,
-        item['paymentStatus'].toString().split('.').last,
-        item['paymentType']?.toString().split('.').last ?? '',
-        item['note'] ?? '',
+        item.invoiceId,
+        item.date,
+        item.carat,
+        item.rate,
+        item.amount,
+        item.custName,
+        item.transactionType.toString().split('.').last,
+        item.custType.toString().split('.').last,
+        item.paymentStatus.toString().split('.').last,
+        item.paymentType?.toString().split('.').last ?? '',
+        item.note ?? '',
       ]);
     }
 
@@ -310,22 +344,20 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
             ],
             rows: paginatedData
                 .map((item) => DataRow(cells: [
-                      DataCell(Text(item['invoiceId'] ?? '')),
-                      DataCell(Text(item['date'] ?? '')),
-                      DataCell(Text(item['carat'] ?? '')),
-                      DataCell(Text(item['rate'] ?? '')),
-                      DataCell(Text(item['amount'] ?? '')),
-                      DataCell(Text(item['custName'] ?? '')),
+                      DataCell(Text(item.invoiceId)),
+                      DataCell(Text(item.date)),
+                      DataCell(Text(item.carat)),
+                      DataCell(Text(item.rate)),
+                      DataCell(Text(item.amount)),
+                      DataCell(Text(item.custName)),
                       DataCell(Text(
-                          item['transactionType'].toString().split('.').last)),
+                          item.transactionType.toString().split('.').last)),
+                      DataCell(Text(item.custType.toString().split('.').last)),
                       DataCell(
-                          Text(item['custType'].toString().split('.').last)),
+                          Text(item.paymentStatus.toString().split('.').last)),
                       DataCell(Text(
-                          item['paymentStatus'].toString().split('.').last)),
-                      DataCell(Text(
-                          item['paymentType']?.toString().split('.').last ??
-                              '')),
-                      DataCell(Text(item['note'] ?? '-')),
+                          item.paymentType?.toString().split('.').last ?? '')),
+                      DataCell(Text(item.note ?? '-')),
                     ]))
                 .toList(),
           ),
