@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 
 class CustomSearchBar extends StatelessWidget {
   final TextEditingController controller;
@@ -15,22 +16,39 @@ class CustomSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final border = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.grey.shade300),
+      borderRadius: BorderRadius.circular(
+        8.dp,
+      ),
+      borderSide: const BorderSide(
+        color: Color(0xFFE5E7EB),
+      ),
     );
 
     return TextField(
       controller: controller,
       onChanged: onChanged,
-      style: const TextStyle(fontSize: 16),
+      style: TextStyle(
+        fontSize: 12.dp,
+        color: const Color(
+          0xFF4B5563,
+        ),
+      ),
       decoration: InputDecoration(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        focusColor: Colors.white,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 12.dp,
+          vertical: 8.dp,
+        ),
         hintText: hintText,
-        hintStyle: TextStyle(color: Colors.grey.shade500),
-        prefixIcon: Icon(
+        hintStyle: TextStyle(
+          fontSize: 12.dp,
+          color: const Color(0xFF9CA3AF),
+        ),
+        prefixIcon: const Icon(
           Icons.search,
-          color: Colors.grey.shade500,
+          color: Color(
+            0xFF9CA3AF,
+          ),
         ),
         filled: true,
         fillColor: Colors.white,
