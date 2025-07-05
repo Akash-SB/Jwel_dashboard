@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
@@ -92,23 +93,25 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             ],
           ),
           SizedBox(height: 24.dp),
-          Expanded(
-            child: InvoiceDataTable(
-              data: invoiceStore.invoices, // from the store's invoices list
-              onDelete: (invoice) => _confirmDelete(context, invoice),
-              onEdit: (invoice) => _openInvoiceForm(context, invoice),
-              onExportPDF: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Exporting to PDF...')),
-                );
-              },
-              onExportExcel: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Exporting to Excel...')),
-                );
-              },
-            ),
-          ),
+          Observer(builder: (context) {
+            return Expanded(
+              child: InvoiceDataTable(
+                data: invoiceStore.invoices, // from the store's invoices list
+                onDelete: (invoice) => _confirmDelete(context, invoice),
+                onEdit: (invoice) => _openInvoiceForm(context, invoice),
+                onExportPDF: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Exporting to PDF...')),
+                  );
+                },
+                onExportExcel: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Exporting to Excel...')),
+                  );
+                },
+              ),
+            );
+          }),
         ],
       ),
     );
