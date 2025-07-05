@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'app_enum.dart';
 
 class CustomerModel {
-  final int? id;
+  final String? id;
   final String custName;
   final String mobileNumber;
   final String gstNumber;
@@ -62,7 +62,7 @@ class CustomerModel {
 
   /// Clone with optional field overrides
   CustomerModel copyWith({
-    int? id,
+    String? id,
     String? custName,
     String? mobileNumber,
     String? gstNumber,

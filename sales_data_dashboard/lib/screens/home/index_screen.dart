@@ -27,13 +27,13 @@ class _IndexScreenState extends State<IndexScreen> {
     userDataStore = GetIt.I<UserDataStore>();
   }
 
-  @override
-  void dispose() {
-    if (GetIt.I.isRegistered<UserDataStore>()) {
-      GetIt.I.unregister<UserDataStore>();
-    }
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   if (GetIt.I.isRegistered<UserDataStore>()) {
+  //     GetIt.I.unregister<UserDataStore>();
+  //   }
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,16 @@ class _IndexScreenState extends State<IndexScreen> {
         return Row(
           children: [
             Container(
-              width: 15.w,
+              width: 20.w,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  right: BorderSide(
+                    color: AppColors.grey.withOpacity(0.2),
+                    width: 1,
+                  ),
+                ),
+              ),
               padding: EdgeInsets.symmetric(horizontal: 16.dp),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,6 +130,9 @@ class _IndexScreenState extends State<IndexScreen> {
           ),
           title: Text(
             label,
+            softWrap: true,
+            overflow: TextOverflow.fade,
+            maxLines: 1,
             style: TextStyle(
               color: isSelected ? const Color(0xFF2563EB) : AppColors.grey,
             ),

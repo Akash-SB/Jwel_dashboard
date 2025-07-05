@@ -38,6 +38,9 @@ abstract class _CustomerStore with Store {
   @observable
   int currentTablePage = 0;
 
+  @observable
+  int totalPages = 0;
+
   @action
   void setSearchText(final String text) {
     searchedText = text;
@@ -69,6 +72,11 @@ abstract class _CustomerStore with Store {
   }
 
   @action
+  void initializeSearchController() {
+    searchController = TextEditingController();
+  }
+
+  @action
   Future<void> fetchCustomers() async {
     isLoading = true;
     errorMessage = null;
@@ -96,7 +104,7 @@ abstract class _CustomerStore with Store {
     try {
       final data = customer.toMap();
       final docRef = await customersRef.add(data);
-      customers.add(customer.copyWith(id: int.tryParse(docRef.id)));
+      customers.add(customer.copyWith(id: docRef.id));
     } catch (e) {
       errorMessage = e.toString();
     } finally {
@@ -113,7 +121,7 @@ abstract class _CustomerStore with Store {
       await customersRef.doc(id).update(data);
       final index = customers.indexWhere((existing) => existing.id == id);
       if (index != -1) {
-        customers[index] = customer.copyWith(id: int.tryParse(id));
+        customers[index] = customer.copyWith(id: id);
       }
     } catch (e) {
       errorMessage = e.toString();
@@ -133,6 +141,63 @@ abstract class _CustomerStore with Store {
       errorMessage = e.toString();
     } finally {
       isLoading = false;
+    }
+  }
+
+  @observable
+  String? sortKey;
+
+  @observable
+  bool sortAsc = true;
+
+  @computed
+  List<CustomerModel> get filteredData {
+    List<CustomerModel> filtered = customers.toList();
+    if (selectedUserType != 'All') {
+      filtered = filtered
+          .where((item) => item.usertype.name.toLowerCase() == selectedUserType)
+          .toList();
+    }
+    if (searchedText.isNotEmpty) {
+      filtered = filtered
+          .where((item) => item.toMap().values.any((v) =>
+              v.toString().toLowerCase().contains(searchedText.toLowerCase())))
+          .toList();
+    }
+    return filtered;
+  }
+
+  @computed
+  List<CustomerModel> get sortedData {
+    List<CustomerModel> sorted = [...filteredData];
+    if (sortKey != null) {
+      sorted.sort((a, b) {
+        final aValue = a.toMap()[sortKey];
+        final bValue = b.toMap()[sortKey];
+        if (aValue == null || bValue == null) return 0;
+        return sortAsc
+            ? aValue.toString().compareTo(bValue.toString())
+            : bValue.toString().compareTo(aValue.toString());
+      });
+    }
+    return sorted;
+  }
+
+  @computed
+  List<CustomerModel> get paginatedData {
+    final start = currentTablePage * int.parse(selectedRowCount);
+    final end =
+        (start + int.parse(selectedRowCount)).clamp(0, sortedData.length);
+    return sortedData.sublist(start, end);
+  }
+
+  @action
+  void setSortKey(String? key) {
+    if (sortKey == key) {
+      sortAsc = !sortAsc;
+    } else {
+      sortKey = key;
+      sortAsc = true;
     }
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
 import '../../widgets/invoice_form_widget.dart';
-import '../../widgets/stat_card_grid_widget.dart';
 import 'invoice_data_table.dart';
 
 final getIt = GetIt.instance;
@@ -40,74 +40,25 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _header(),
-          SizedBox(height: 20.dp),
-          Row(
-            children: [
-              Expanded(
-                child: StatCardGridWidget(
-                  cards: [
-                    StatCardModel(
-                      title: "Total Items",
-                      value: "120",
-                      subtitle: "Total items in stock",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xffC084FC),
-                        const Color(0xffA855F7),
-                      ],
-                    ),
-                    StatCardModel(
-                      title: "Low Stock Items",
-                      value: "8",
-                      subtitle: "Number of items that are running low",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xff60A5FA),
-                        const Color(0xff3B82F6),
-                      ],
-                    ),
-                    StatCardModel(
-                      title: "In Stock Items",
-                      value: "40",
-                      subtitle: "Number of items past their expiration date",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xff4ADE80),
-                        const Color(0xff22C55E),
-                      ],
-                    ),
-                    StatCardModel(
-                      title: "Out of Stock Items",
-                      value: "15",
-                      subtitle: "Count of items currently out of stock",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xffF87171),
-                        const Color(0xffEF4444),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
           SizedBox(height: 24.dp),
           Expanded(
-            child: InvoiceDataTable(
-              data: invoiceStore.invoices, // from the store's invoices list
-              onDelete: (invoice) => _confirmDelete(context, invoice),
-              onEdit: (invoice) => _openInvoiceForm(context, invoice),
-              onExportPDF: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Exporting to PDF...')),
-                );
-              },
-              onExportExcel: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Exporting to Excel...')),
-                );
-              },
-            ),
+            child: Observer(builder: (context) {
+              return InvoiceDataTable(
+                data: invoiceStore.invoices, // from the store's invoices list
+                onDelete: (invoice) => _confirmDelete(context, invoice),
+                onEdit: (invoice) => _openInvoiceForm(context, invoice),
+                onExportPDF: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Exporting to PDF...')),
+                  );
+                },
+                onExportExcel: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Exporting to Excel...')),
+                  );
+                },
+              );
+            }),
           ),
         ],
       ),

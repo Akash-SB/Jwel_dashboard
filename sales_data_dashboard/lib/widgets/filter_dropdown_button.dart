@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/screens/dashboard/dashboard_sccreen.dart';
 
 class FilterDropdownButton extends StatelessWidget {
   final String selectedValue;
@@ -17,7 +19,10 @@ class FilterDropdownButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: 12.dp,
+        vertical: 4.dp,
+      ),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
         borderRadius: BorderRadius.circular(8),

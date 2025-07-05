@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/models/customer_model.dart';
 import 'package:sales_data_dashboard/screens/user_management/store/customer_store.dart';
-
-import '../../widgets/custom_data_table.dart';
-import '../../widgets/stat_card_grid_widget.dart';
+import 'package:sales_data_dashboard/screens/user_management/user_data_table.dart';
+import 'package:sales_data_dashboard/screens/user_management/user_form.dart';
 
 final getIt = GetIt.instance;
 
@@ -22,212 +23,42 @@ class _UsersScreenState extends State<UsersScreen> {
   void initState() {
     super.initState();
     if (!getIt.isRegistered<CustomerStore>()) {
-      getIt.registerFactory<CustomerStore>(
-        () => CustomerStore(),
-      );
+      getIt.registerFactory<CustomerStore>(() => CustomerStore());
     }
     customerStore = getIt<CustomerStore>();
-  }
-
-  @override
-  void dispose() {
-    getIt.unregister<CustomerStore>();
-    super.dispose();
+    customerStore.initializeSearchController();
+    customerStore
+        .fetchCustomers(); // Fetch users from Firestore or your backend
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> customerList = [
-      {
-        'name': 'Sophia Clark',
-        'ssn': '555-1234',
-        'gst': 'GST1234567890',
-        'userType': 'Company',
-        'address': '123 Innovation Drive, New York City',
-        'days': 30,
-      },
-      {
-        'name': 'Liam Walker',
-        'ssn': '555-5678',
-        'gst': 'GST9876543210',
-        'userType': 'Broker',
-        'address': '456 Trade Avenue, Commerce Town',
-        'days': 60,
-      },
-      {
-        'name': 'Olivia Hayes',
-        'ssn': '555-9012',
-        'gst': 'GST1122334455',
-        'userType': 'Broker',
-        'address': '789 Design Lane, Arts Center',
-        'days': 45,
-      },
-      {
-        'name': 'Sophia Clark',
-        'ssn': '555-1234',
-        'gst': 'GST1234567890',
-        'userType': 'Company',
-        'address': '123 Innovation Drive, New York City',
-        'days': 30,
-      },
-      {
-        'name': 'Liam Walker',
-        'ssn': '555-5678',
-        'gst': 'GST9876543210',
-        'userType': 'Company',
-        'address': '456 Trade Avenue, Commerce Town',
-        'days': 60,
-      },
-      {
-        'name': 'Olivia Hayes',
-        'ssn': '555-9012',
-        'gst': 'GST1122334455',
-        'userType': 'Broker',
-        'address': '789 Design Lane, Arts Center',
-        'days': 45,
-      },
-      {
-        'name': 'Liam Walker',
-        'ssn': '555-5678',
-        'gst': 'GST9876543210',
-        'userType': 'Broker',
-        'address': '456 Trade Avenue, Commerce Town',
-        'days': 60,
-      },
-      {
-        'name': 'Olivia Hayes',
-        'ssn': '555-9012',
-        'gst': 'GST1122334455',
-        'userType': 'Broker',
-        'address': '789 Design Lane, Arts Center',
-        'days': 45,
-      },
-      {
-        'name': 'Sophia Clark',
-        'ssn': '555-1234',
-        'gst': 'GST1234567890',
-        'userType': 'Company',
-        'address': '123 Innovation Drive, New York City',
-        'days': 30,
-      },
-      {
-        'name': 'Liam Walker',
-        'ssn': '555-5678',
-        'gst': 'GST9876543210',
-        'userType': 'Company',
-        'address': '456 Trade Avenue, Commerce Town',
-        'days': 60,
-      },
-      {
-        'name': 'Olivia Hayes',
-        'ssn': '555-9012',
-        'gst': 'GST1122334455',
-        'userType': 'Broker',
-        'address': '789 Design Lane, Arts Center',
-        'days': 45,
-      },
-      {
-        'name': 'Liam Walker',
-        'ssn': '555-5678',
-        'gst': 'GST9876543210',
-        'userType': 'Broker',
-        'address': '456 Trade Avenue, Commerce Town',
-        'days': 60,
-      },
-      {
-        'name': 'Olivia Hayes',
-        'ssn': '555-9012',
-        'gst': 'GST1122334455',
-        'userType': 'Broker',
-        'address': '789 Design Lane, Arts Center',
-        'days': 45,
-      },
-      {
-        'name': 'Sophia Clark',
-        'ssn': '555-1234',
-        'gst': 'GST1234567890',
-        'userType': 'Company',
-        'address': '123 Innovation Drive, New York City',
-        'days': 30,
-      },
-      {
-        'name': 'Liam Walker',
-        'ssn': '555-5678',
-        'gst': 'GST9876543210',
-        'userType': 'Company',
-        'address': '456 Trade Avenue, Commerce Town',
-        'days': 60,
-      },
-      {
-        'name': 'Olivia Hayes',
-        'ssn': '555-9012',
-        'gst': 'GST1122334455',
-        'userType': 'Broker',
-        'address': '789 Design Lane, Arts Center',
-        'days': 45,
-      },
-      // Add more items as needed
-    ];
-
-    String searchKey = '';
-    String selectedFilter = 'All';
-
-    void clearFilters() {
-      setState(() {
-        searchKey = '';
-        selectedFilter = 'All';
-      });
-    }
-
-    final List<TableColumn> columns = [
-      TableColumn(label: 'Customer Name', key: 'name', isSortable: true),
-      TableColumn(label: 'SSN Number', key: 'ssn'),
-      TableColumn(label: 'GST Number', key: 'gst'),
-      TableColumn(label: 'User Type', key: 'userType'),
-      TableColumn(label: 'Address', key: 'address'),
-      TableColumn(label: 'Days of Interest', key: 'days', isSortable: true),
-      TableColumn(label: 'Actions', key: 'actions', isAction: true),
-    ];
-
     return Container(
       color: Colors.white,
       padding: EdgeInsets.all(24.dp),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: 16.dp,
-          ),
-          Row(
-            children: [
-              Text(
-                "Users Management",
-                style: TextStyle(
-                  color: const Color(0xff1F2937),
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
+          _header(),
           SizedBox(height: 24.dp),
           Expanded(
-            child: CustomDataTable(
-              columns: columns,
-              data: customerList,
-              clearSearchKey: searchKey,
-              clearSelectedFilter: selectedFilter,
-              resetPaginationAndSorting: true,
-              filterOptions: ['Broker', 'Company'],
-              onEdit: (row) => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Edit ${row['name']}')),
-              ),
-              onDelete: (row) => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Delete ${row['name']}')),
-              ),
-              onExportPDF: () {},
-              onExportExcel: () {},
-            ),
+            child: Observer(builder: (context) {
+              return UsersDataTable(
+                data: customerStore.customers, // List<CustomerModel>
+                onDelete: (customer) => _confirmDelete(context, customer),
+                onEdit: (customer) => _openUserForm(context, customer),
+                onExportPDF: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Exporting to PDF...')),
+                  );
+                },
+                onExportExcel: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Exporting to Excel...')),
+                  );
+                },
+              );
+            }),
           ),
         ],
       ),
@@ -239,20 +70,74 @@ class _UsersScreenState extends State<UsersScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Users Management",
+          "User Management",
           style: TextStyle(
             color: const Color(0xff1F2937),
-            fontSize: 24,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () => _openUserForm(context),
           child: const Text(
-            "Add New User",
+            "Create a User",
           ),
         )
       ],
+    );
+  }
+
+  void _openUserForm(BuildContext context, [CustomerModel? existingUser]) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => CustomerForm(
+        existingCustomer: existingUser,
+        onSubmit: (userData) {
+          if (existingUser == null) {
+            customerStore.addCustomer(userData);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Customer ${userData.custName} added')),
+            );
+          } else {
+            customerStore.updateCustomer(userData.id.toString(), userData);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Customer ${userData.custName} updated')),
+            );
+          }
+          Navigator.pop(context);
+          customerStore.fetchCustomers();
+        },
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, CustomerModel customer) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete Customer'),
+        content: Text(
+            'Are you sure you want to delete customer ${customer.custName}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              customerStore.deleteCustomer(customer.id.toString());
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text('Customer ${customer.custName} deleted')),
+              );
+              customerStore.fetchCustomers();
+              Navigator.pop(ctx);
+            },
+            child: Text('Yes, Delete'),
+          ),
+        ],
+      ),
     );
   }
 }

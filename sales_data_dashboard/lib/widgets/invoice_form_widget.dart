@@ -19,6 +19,7 @@ class InvoiceForm extends StatefulWidget {
 
 class _InvoiceFormState extends State<InvoiceForm> {
   final _formKey = GlobalKey<FormState>();
+
   final _invoiceIdController = TextEditingController();
   final _dateController = TextEditingController();
   final _caratController = TextEditingController();
@@ -36,6 +37,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
   void initState() {
     super.initState();
     final invoice = widget.existingInvoice;
+
     if (invoice != null) {
       _invoiceIdController.text = invoice.invoiceId;
       _dateController.text = invoice.date;
@@ -91,17 +93,42 @@ class _InvoiceFormState extends State<InvoiceForm> {
     }
   }
 
-  Widget _sectionTitle(String title) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[700],
-            ),
+  Future<void> _pickDate() async {
+    final initialDate =
+        DateTime.tryParse(_dateController.text) ?? DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+    }
+  }
+
+  InputDecoration _inputDecoration(String label, {IconData? icon}) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: icon != null ? Icon(icon) : null,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Colors.grey),
       ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Colors.grey),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Colors.grey),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
   }
 
@@ -112,7 +139,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
             child: Column(
@@ -122,42 +149,41 @@ class _InvoiceFormState extends State<InvoiceForm> {
                   widget.existingInvoice != null
                       ? 'Edit Invoice'
                       : 'Create Invoice',
-                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 20),
-                _sectionTitle("Invoice Info"),
+                const SizedBox(height: 24),
+
+                // Invoice ID
                 TextFormField(
                   controller: _invoiceIdController,
                   readOnly: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Invoice ID',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: _inputDecoration('Invoice ID'),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
+
+                // Date Picker
                 TextFormField(
                   controller: _dateController,
-                  decoration: const InputDecoration(
-                    labelText: 'Date (yyyy-MM-dd)',
-                    border: OutlineInputBorder(),
-                  ),
+                  readOnly: true,
+                  onTap: _pickDate,
+                  decoration:
+                      _inputDecoration('Date', icon: Icons.calendar_today),
                   validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
+                      value == null || value.isEmpty ? 'Date required' : null,
                 ),
-                const SizedBox(height: 20),
-                _sectionTitle("Product Details"),
+                const SizedBox(height: 24),
+
+                // Product Details
                 Row(
                   children: [
                     Expanded(
                       child: TextFormField(
                         controller: _caratController,
-                        decoration: const InputDecoration(
-                          labelText: 'Carat',
-                          border: OutlineInputBorder(),
-                        ),
                         keyboardType: TextInputType.number,
+                        decoration: _inputDecoration('Carat'),
                         validator: (value) =>
                             value == null || value.isEmpty ? 'Required' : null,
                       ),
@@ -166,11 +192,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
                     Expanded(
                       child: TextFormField(
                         controller: _rateController,
-                        decoration: const InputDecoration(
-                          labelText: 'Rate',
-                          border: OutlineInputBorder(),
-                        ),
                         keyboardType: TextInputType.number,
+                        decoration: _inputDecoration('Rate'),
                         validator: (value) =>
                             value == null || value.isEmpty ? 'Required' : null,
                       ),
@@ -179,46 +202,41 @@ class _InvoiceFormState extends State<InvoiceForm> {
                     Expanded(
                       child: TextFormField(
                         controller: _amountController,
-                        decoration: const InputDecoration(
-                          labelText: 'Amount',
-                          border: OutlineInputBorder(),
-                        ),
                         keyboardType: TextInputType.number,
+                        decoration: _inputDecoration('Amount'),
                         validator: (value) =>
                             value == null || value.isEmpty ? 'Required' : null,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                _sectionTitle("Customer Details"),
+                const SizedBox(height: 24),
+
+                // Customer Name
                 TextFormField(
                   controller: _custNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Customer Name',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
+                  decoration: _inputDecoration('Customer Name'),
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Customer name required'
+                      : null,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
+
+                // Transaction Type & Customer Type
                 Row(
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<TransactionTypeEnum>(
                         value: _transactionType,
-                        items: TransactionTypeEnum.values
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.name.toUpperCase()),
-                                ))
-                            .toList(),
+                        decoration: _inputDecoration('Transaction Type'),
+                        items: TransactionTypeEnum.values.map((e) {
+                          return DropdownMenuItem(
+                            value: e,
+                            child: Text(e.name.toUpperCase()),
+                          );
+                        }).toList(),
                         onChanged: (value) =>
                             setState(() => _transactionType = value),
-                        decoration: const InputDecoration(
-                          labelText: 'Transaction Type',
-                          border: OutlineInputBorder(),
-                        ),
                         validator: (value) => value == null ? 'Required' : null,
                       ),
                     ),
@@ -226,41 +244,36 @@ class _InvoiceFormState extends State<InvoiceForm> {
                     Expanded(
                       child: DropdownButtonFormField<UsertypeEnum>(
                         value: _custType,
-                        items: UsertypeEnum.values
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.name.toUpperCase()),
-                                ))
-                            .toList(),
+                        decoration: _inputDecoration('Customer Type'),
+                        items: UsertypeEnum.values.map((e) {
+                          return DropdownMenuItem(
+                            value: e,
+                            child: Text(e.name.toUpperCase()),
+                          );
+                        }).toList(),
                         onChanged: (value) => setState(() => _custType = value),
-                        decoration: const InputDecoration(
-                          labelText: 'Customer Type',
-                          border: OutlineInputBorder(),
-                        ),
                         validator: (value) => value == null ? 'Required' : null,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                _sectionTitle("Payment Info"),
+                const SizedBox(height: 24),
+
+                // Payment Info
                 Row(
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<PaymentStatusEnum>(
                         value: _paymentStatus,
-                        items: PaymentStatusEnum.values
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.name.toUpperCase()),
-                                ))
-                            .toList(),
+                        decoration: _inputDecoration('Payment Status'),
+                        items: PaymentStatusEnum.values.map((e) {
+                          return DropdownMenuItem(
+                            value: e,
+                            child: Text(e.name.toUpperCase()),
+                          );
+                        }).toList(),
                         onChanged: (value) =>
                             setState(() => _paymentStatus = value),
-                        decoration: const InputDecoration(
-                          labelText: 'Payment Status',
-                          border: OutlineInputBorder(),
-                        ),
                         validator: (value) => value == null ? 'Required' : null,
                       ),
                     ),
@@ -268,56 +281,51 @@ class _InvoiceFormState extends State<InvoiceForm> {
                     Expanded(
                       child: DropdownButtonFormField<PaymentTypeEnum>(
                         value: _paymentType,
-                        items: PaymentTypeEnum.values
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.name.toUpperCase()),
-                                ))
-                            .toList(),
+                        decoration: _inputDecoration('Payment Type'),
+                        items: PaymentTypeEnum.values.map((e) {
+                          return DropdownMenuItem(
+                            value: e,
+                            child: Text(e.name.toUpperCase()),
+                          );
+                        }).toList(),
                         onChanged: (value) =>
                             setState(() => _paymentType = value),
-                        decoration: const InputDecoration(
-                          labelText: 'Payment Type',
-                          border: OutlineInputBorder(),
-                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
+
+                // Note
                 TextFormField(
                   controller: _noteController,
-                  decoration: const InputDecoration(
-                    labelText: 'Note (Optional)',
-                    border: OutlineInputBorder(),
-                  ),
+                  decoration: _inputDecoration('Note (Optional)'),
                   maxLines: 3,
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: _submitForm,
-                    icon: Icon(widget.existingInvoice != null
-                        ? Icons.edit
-                        : Icons.add),
-                    label: Text(
-                      widget.existingInvoice != null
-                          ? 'Update Invoice'
-                          : 'Create Invoice',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.primaryContainer,
-                      foregroundColor:
-                          Theme.of(context).colorScheme.onPrimaryContainer,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+
+                // Submit Button
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel'),
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _submitForm,
+                        child: Text(
+                          widget.existingInvoice != null
+                              ? 'Update Invoice'
+                              : 'Create Invoice',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
