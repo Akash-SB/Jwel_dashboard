@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/screens/user_management/store/customer_store.dart';
 
 import '../../widgets/custom_data_table.dart';
 import '../../widgets/stat_card_grid_widget.dart';
+
+final getIt = GetIt.instance;
 
 class UsersScreen extends StatefulWidget {
   const UsersScreen({super.key});
@@ -12,6 +16,25 @@ class UsersScreen extends StatefulWidget {
 }
 
 class _UsersScreenState extends State<UsersScreen> {
+  late CustomerStore customerStore;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!getIt.isRegistered<CustomerStore>()) {
+      getIt.registerFactory<CustomerStore>(
+        () => CustomerStore(),
+      );
+    }
+    customerStore = getIt<CustomerStore>();
+  }
+
+  @override
+  void dispose() {
+    getIt.unregister<CustomerStore>();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> customerList = [
@@ -172,54 +195,17 @@ class _UsersScreenState extends State<UsersScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _header(),
-          SizedBox(height: 20.dp),
+          SizedBox(
+            height: 16.dp,
+          ),
           Row(
             children: [
-              Expanded(
-                child: StatCardGridWidget(
-                  cards: [
-                    StatCardModel(
-                      title: "Total Items",
-                      value: "120",
-                      subtitle: "Total items in stock",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xffC084FC),
-                        const Color(0xffA855F7),
-                      ],
-                    ),
-                    StatCardModel(
-                      title: "Low Stock Items",
-                      value: "8",
-                      subtitle: "Number of items that are running low",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xff60A5FA),
-                        const Color(0xff3B82F6),
-                      ],
-                    ),
-                    StatCardModel(
-                      title: "In Stock Items",
-                      value: "40",
-                      subtitle: "Number of items past their expiration date",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xff4ADE80),
-                        const Color(0xff22C55E),
-                      ],
-                    ),
-                    StatCardModel(
-                      title: "Out of Stock Items",
-                      value: "15",
-                      subtitle: "Count of items currently out of stock",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xffF87171),
-                        const Color(0xffEF4444),
-                      ],
-                    ),
-                  ],
+              Text(
+                "Users Management",
+                style: TextStyle(
+                  color: const Color(0xff1F2937),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],

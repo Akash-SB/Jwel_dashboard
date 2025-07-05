@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'app_enum.dart';
 
 class CustomerModel {
@@ -9,7 +8,6 @@ class CustomerModel {
   final String gstNumber;
   final UsertypeEnum usertype;
   final String? address;
-  final int daysOfInterest;
 
   CustomerModel({
     this.id,
@@ -18,9 +16,9 @@ class CustomerModel {
     required this.gstNumber,
     required this.usertype,
     this.address,
-    required this.daysOfInterest,
   });
 
+  /// Convert to Firestore map
   Map<String, dynamic> toMap() => {
         'id': id,
         'custName': custName,
@@ -28,10 +26,56 @@ class CustomerModel {
         'gstNumber': gstNumber,
         'usertype': usertype.name,
         'address': address,
-        'daysOfInterest': daysOfInterest,
+        'createdAt': FieldValue.serverTimestamp(),
       };
 
-  static fromDocument(QueryDocumentSnapshot<Map<String, dynamic>> doc) {}
+  /// Convert to plain JSON
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'custName': custName,
+        'mobileNumber': mobileNumber,
+        'gstNumber': gstNumber,
+        'usertype': usertype.name,
+        'address': address,
+      };
 
-  copyWith({required String id}) {}
+  /// Construct from Firestore map
+  factory CustomerModel.fromMap(Map<String, dynamic> map) {
+    return CustomerModel(
+      id: map['id'],
+      custName: map['custName'] ?? '',
+      mobileNumber: map['mobileNumber'] ?? '',
+      gstNumber: map['gstNumber'] ?? '',
+      usertype: UsertypeEnum.values.firstWhere(
+        (e) => e.name == map['usertype'],
+        orElse: () => UsertypeEnum.Broker,
+      ),
+      address: map['address'],
+    );
+  }
+
+  /// Construct from Firestore document snapshot
+  factory CustomerModel.fromDocument(
+      QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    return CustomerModel.fromMap(doc.data());
+  }
+
+  /// Clone with optional field overrides
+  CustomerModel copyWith({
+    int? id,
+    String? custName,
+    String? mobileNumber,
+    String? gstNumber,
+    UsertypeEnum? usertype,
+    String? address,
+  }) {
+    return CustomerModel(
+      id: id ?? this.id,
+      custName: custName ?? this.custName,
+      mobileNumber: mobileNumber ?? this.mobileNumber,
+      gstNumber: gstNumber ?? this.gstNumber,
+      usertype: usertype ?? this.usertype,
+      address: address ?? this.address,
+    );
+  }
 }
