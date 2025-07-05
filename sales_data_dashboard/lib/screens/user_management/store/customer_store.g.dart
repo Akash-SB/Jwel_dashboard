@@ -25,6 +25,38 @@ mixin _$CustomerStore on _CustomerStore, Store {
     });
   }
 
+  late final _$isLoadingAtom =
+      Atom(name: '_CustomerStore.isLoading', context: context);
+
+  @override
+  bool get isLoading {
+    _$isLoadingAtom.reportRead();
+    return super.isLoading;
+  }
+
+  @override
+  set isLoading(bool value) {
+    _$isLoadingAtom.reportWrite(value, super.isLoading, () {
+      super.isLoading = value;
+    });
+  }
+
+  late final _$errorMessageAtom =
+      Atom(name: '_CustomerStore.errorMessage', context: context);
+
+  @override
+  String? get errorMessage {
+    _$errorMessageAtom.reportRead();
+    return super.errorMessage;
+  }
+
+  @override
+  set errorMessage(String? value) {
+    _$errorMessageAtom.reportWrite(value, super.errorMessage, () {
+      super.errorMessage = value;
+    });
+  }
+
   late final _$fetchCustomersAsyncAction =
       AsyncAction('_CustomerStore.fetchCustomers', context: context);
 
@@ -41,10 +73,29 @@ mixin _$CustomerStore on _CustomerStore, Store {
     return _$addCustomerAsyncAction.run(() => super.addCustomer(customer));
   }
 
+  late final _$updateCustomerAsyncAction =
+      AsyncAction('_CustomerStore.updateCustomer', context: context);
+
+  @override
+  Future<void> updateCustomer(String id, CustomerModel customer) {
+    return _$updateCustomerAsyncAction
+        .run(() => super.updateCustomer(id, customer));
+  }
+
+  late final _$deleteCustomerAsyncAction =
+      AsyncAction('_CustomerStore.deleteCustomer', context: context);
+
+  @override
+  Future<void> deleteCustomer(String id) {
+    return _$deleteCustomerAsyncAction.run(() => super.deleteCustomer(id));
+  }
+
   @override
   String toString() {
     return '''
-customers: ${customers}
+customers: ${customers},
+isLoading: ${isLoading},
+errorMessage: ${errorMessage}
     ''';
   }
 }
