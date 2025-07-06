@@ -76,23 +76,20 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
       sorted.sort((a, b) {
         final aValue = _getFieldValue(a, sortKey!);
         final bValue = _getFieldValue(b, sortKey!);
-        if (aValue is Comparable && bValue is Comparable) {
-          return sortAsc ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
-        }
-        return 0;
+        return sortAsc ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
       });
     }
     return sorted;
   }
 
-  dynamic _getFieldValue(InvoiceModel item, String key) {
+  String _getFieldValue(InvoiceModel item, String key) {
     switch (key) {
       case 'invoiceId':
         return item.invoiceId;
       case 'date':
         return item.date;
       case 'carat':
-        return item.carat;
+        return item.size;
       case 'rate':
         return item.rate;
       case 'amount':
@@ -100,15 +97,15 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
       case 'custName':
         return item.custName;
       case 'transactionType':
-        return item.transactionType;
+        return item.transactionType.name;
       case 'custType':
-        return item.custType;
+        return item.custType.name;
       case 'paymentStatus':
-        return item.paymentStatus;
+        return item.paymentStatus.name;
       case 'paymentType':
-        return item.paymentType;
+        return item.paymentType?.name ?? '';
       case 'note':
-        return item.note;
+        return item.note ?? 'NA';
       default:
         return '';
     }
@@ -166,7 +163,7 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
               ...filteredData.map((item) => [
                     item.invoiceId,
                     item.date,
-                    item.carat,
+                    item.size,
                     item.rate,
                     item.amount,
                     item.custName,
@@ -209,7 +206,7 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
       sheet.appendRow([
         item.invoiceId,
         item.date,
-        item.carat,
+        item.size,
         item.rate,
         item.amount,
         item.custName,
@@ -346,7 +343,7 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
                 .map((item) => DataRow(cells: [
                       DataCell(Text(item.invoiceId)),
                       DataCell(Text(item.date)),
-                      DataCell(Text(item.carat)),
+                      DataCell(Text(item.size)),
                       DataCell(Text(item.rate)),
                       DataCell(Text(item.amount)),
                       DataCell(Text(item.custName)),

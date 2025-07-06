@@ -4,7 +4,7 @@ import 'app_enum.dart';
 class InvoiceModel {
   final String invoiceId;
   final String date;
-  final String carat;
+  final String size;
   final String rate;
   final String amount;
   final List<int> productIds;
@@ -18,7 +18,7 @@ class InvoiceModel {
   InvoiceModel({
     required this.invoiceId,
     required this.date,
-    required this.carat,
+    required this.size,
     required this.rate,
     required this.amount,
     required this.productIds,
@@ -34,7 +34,7 @@ class InvoiceModel {
   Map<String, dynamic> toMap() => {
         'invoiceId': invoiceId,
         'date': date,
-        'carat': carat,
+        'carat': size,
         'rate': rate,
         'amount': amount,
         'productIds': productIds,
@@ -52,17 +52,17 @@ class InvoiceModel {
     return InvoiceModel(
       invoiceId: map['invoiceId'] ?? '',
       date: map['date'] ?? '',
-      carat: map['carat'] ?? '',
+      size: map['carat'] ?? '',
       rate: map['rate'] ?? '',
       amount: map['amount'] ?? '',
       productIds: List<int>.from(map['productIds'] ?? []),
       transactionType: TransactionTypeEnum.values.firstWhere(
         (e) => e.name == map['transactionType'],
-        orElse: () => TransactionTypeEnum.Sells,
+        orElse: () => TransactionTypeEnum.sell,
       ),
       custType: UsertypeEnum.values.firstWhere(
         (e) => e.name == map['custType'],
-        orElse: () => UsertypeEnum.Broker,
+        orElse: () => UsertypeEnum.broker,
       ),
       custName: map['custName'] ?? '',
       paymentStatus: PaymentStatusEnum.values.firstWhere(
@@ -89,7 +89,7 @@ class InvoiceModel {
     return InvoiceModel(
       invoiceId: invoiceId,
       date: date,
-      carat: carat,
+      size: size,
       rate: rate,
       amount: amount,
       productIds: List<int>.from(productIds),

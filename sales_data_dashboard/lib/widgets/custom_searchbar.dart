@@ -34,6 +34,7 @@ class CustomSearchBar extends StatelessWidget {
         ),
       ),
       decoration: InputDecoration(
+        hoverColor: Colors.white,
         focusColor: Colors.white,
         contentPadding: EdgeInsets.symmetric(
           horizontal: 12.dp,

@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
 import '../../widgets/invoice_form_widget.dart';
 import 'invoice_data_table.dart';
@@ -18,15 +19,27 @@ class InvoiceScreen extends StatefulWidget {
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
   late InvoiceStore invoiceStore;
+  late UserDataStore userDataStore;
 
   @override
   void initState() {
     if (!getIt.isRegistered<InvoiceStore>()) {
-      getIt.registerFactory<InvoiceStore>(() => InvoiceStore());
+      getIt.registerSingleton<InvoiceStore>(InvoiceStore());
     }
 
+    if (!GetIt.I.isRegistered<UserDataStore>()) {
+      GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
+    }
+    userDataStore = GetIt.I<UserDataStore>();
+
     invoiceStore = getIt<InvoiceStore>();
-    invoiceStore.fetchInvoices(); // Fetch invoices from Firestore
+
+    if (userDataStore.invoices.isEmpty) {
+      invoiceStore.fetchInvoices();
+      userDataStore.setInvoices(invoiceStore.invoices);
+    } else {
+      invoiceStore.setInvoices(userDataStore.invoices);
+    }
 
     super.initState();
   }
@@ -88,18 +101,23 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   }
 
   void _openInvoiceForm(BuildContext context, [InvoiceModel? existingInvoice]) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      builder: (_) => InvoiceForm(
-        existingInvoice: existingInvoice,
-        onSubmit: (invoiceData) {
-          invoiceStore.addInvoice(invoiceData);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Invoice ${invoiceData.invoiceId} added')),
-          );
-          Navigator.pop(context); // Close bottom sheet
-        },
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        scrollable: true,
+        content: InvoiceForm(
+          existingInvoice: existingInvoice,
+          onSubmit: (invoiceData) {
+            invoiceStore.addInvoice(invoiceData);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Invoice ${invoiceData.invoiceId} added')),
+            );
+            Navigator.pop(context); // Close bottom sheet
+          },
+          customers: userDataStore.customers,
+          products: userDataStore.products,
+        ),
       ),
     );
   }

@@ -1,50 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:sales_data_dashboard/models/customer_model.dart';
-import 'package:sales_data_dashboard/models/app_enum.dart';
+import 'package:sales_data_dashboard/models/product_model.dart';
 
-class CustomerForm extends StatefulWidget {
-  final CustomerModel? existingCustomer;
-  final void Function(CustomerModel) onSubmit;
+class ProductForm extends StatefulWidget {
+  final ProductModel? existingProduct;
+  final void Function(ProductModel) onSubmit;
 
-  const CustomerForm({
+  const ProductForm({
     super.key,
-    this.existingCustomer,
+    this.existingProduct,
     required this.onSubmit,
   });
 
   @override
-  State<CustomerForm> createState() => _CustomerFormState();
+  State<ProductForm> createState() => _ProductFormState();
 }
 
-class _CustomerFormState extends State<CustomerForm> {
+class _ProductFormState extends State<ProductForm> {
   final _formKey = GlobalKey<FormState>();
 
-  final _custNameController = TextEditingController();
-  final _mobileController = TextEditingController();
-  final _gstController = TextEditingController();
-  final _addressController = TextEditingController();
-
-  UsertypeEnum? _userType;
+  final _hsnController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _sizeController = TextEditingController();
+  final _rateController = TextEditingController();
+  final _amountController = TextEditingController();
+  final _descController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    final customer = widget.existingCustomer;
-    if (customer != null) {
-      _custNameController.text = customer.custName;
-      _mobileController.text = customer.mobileNumber;
-      _gstController.text = customer.gstNumber;
-      _addressController.text = customer.address ?? '';
-      _userType = customer.usertype;
+    final product = widget.existingProduct;
+    if (product != null) {
+      _hsnController.text = product.hsnCode;
+      _nameController.text = product.prodName;
+      _sizeController.text = product.size;
+      _rateController.text = product.rate;
+      _amountController.text = product.amount;
+      _descController.text = product.description ?? '';
     }
   }
 
   @override
   void dispose() {
-    _custNameController.dispose();
-    _mobileController.dispose();
-    _gstController.dispose();
-    _addressController.dispose();
+    _hsnController.dispose();
+    _nameController.dispose();
+    _sizeController.dispose();
+    _rateController.dispose();
+    _amountController.dispose();
+    _descController.dispose();
     super.dispose();
   }
 
@@ -73,16 +75,17 @@ class _CustomerFormState extends State<CustomerForm> {
   }
 
   void _submitForm() {
-    if (_formKey.currentState!.validate() && _userType != null) {
-      final customerData = CustomerModel(
-        id: widget.existingCustomer?.id,
-        custName: _custNameController.text,
-        mobileNumber: _mobileController.text,
-        gstNumber: _gstController.text,
-        usertype: _userType!,
-        address: _addressController.text,
+    if (_formKey.currentState!.validate()) {
+      final product = ProductModel(
+        id: widget.existingProduct?.id ?? UniqueKey().toString(),
+        hsnCode: _hsnController.text,
+        prodName: _nameController.text,
+        size: _sizeController.text,
+        rate: _rateController.text,
+        amount: _amountController.text,
+        description: _descController.text,
       );
-      widget.onSubmit(customerData);
+      widget.onSubmit(product);
     }
   }
 
@@ -101,51 +104,46 @@ class _CustomerFormState extends State<CustomerForm> {
               children: [
                 const SizedBox(height: 24),
                 TextFormField(
-                  controller: _custNameController,
-                  decoration: _inputDecoration('Customer Name'),
+                  controller: _hsnController,
+                  decoration: _inputDecoration('HSN Code'),
                   validator: (value) =>
                       value == null || value.trim().isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
-                  controller: _mobileController,
-                  keyboardType: TextInputType.phone,
-                  decoration: _inputDecoration('Mobile Number'),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Required';
-                    }
-                    final isValid = RegExp(r'^[0-9]{10}$').hasMatch(value);
-                    return isValid ? null : 'Enter valid 10-digit number';
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _gstController,
-                  decoration: _inputDecoration('GST Number'),
+                  controller: _nameController,
+                  decoration: _inputDecoration('Product Name'),
                   validator: (value) =>
                       value == null || value.trim().isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<UsertypeEnum>(
-                  value: _userType,
-                  iconEnabledColor: Colors.grey,
-                  iconDisabledColor: Colors.grey,
-                  decoration: _inputDecoration('Customer Type'),
-                  items: UsertypeEnum.values.map((e) {
-                    return DropdownMenuItem(
-                      value: e,
-                      child: Text(e.name.toUpperCase()),
-                    );
-                  }).toList(),
-                  onChanged: (value) => setState(() => _userType = value),
-                  validator: (value) => value == null ? 'Required' : null,
+                TextFormField(
+                  controller: _sizeController,
+                  decoration: _inputDecoration('Size'),
+                  validator: (value) =>
+                      value == null || value.trim().isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
-                  controller: _addressController,
+                  controller: _rateController,
+                  keyboardType: TextInputType.number,
+                  decoration: _inputDecoration('Rate'),
+                  validator: (value) =>
+                      value == null || value.trim().isEmpty ? 'Required' : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: _inputDecoration('Amount'),
+                  validator: (value) =>
+                      value == null || value.trim().isEmpty ? 'Required' : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _descController,
                   maxLines: 3,
-                  decoration: _inputDecoration('Address (Optional)'),
+                  decoration: _inputDecoration('Description (Optional)'),
                 ),
                 const SizedBox(height: 24),
                 Row(
@@ -176,9 +174,9 @@ class _CustomerFormState extends State<CustomerForm> {
                           elevation: 0,
                         ),
                         child: Text(
-                          widget.existingCustomer != null
-                              ? 'Update Customer'
-                              : 'Create Customer',
+                          widget.existingProduct != null
+                              ? 'Update Product'
+                              : 'Create Product',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),

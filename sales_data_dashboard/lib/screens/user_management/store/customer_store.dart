@@ -15,6 +15,11 @@ abstract class _CustomerStore with Store {
   @observable
   ObservableList<CustomerModel> customers = ObservableList.of([]);
 
+  @action
+  void setCustomers(List<CustomerModel> newCustomers) {
+    customers = ObservableList.of(newCustomers);
+  }
+
   @observable
   bool isLoading = false;
 
@@ -41,6 +46,22 @@ abstract class _CustomerStore with Store {
   @observable
   int totalPages = 0;
 
+  @observable
+  bool isToggle = false;
+
+  @observable
+  CustomerModel? selectedCustomer;
+
+  @action
+  void setSelectedCustomer(CustomerModel? customer) {
+    selectedCustomer = customer;
+  }
+
+  @action
+  void toggleFilter() {
+    isToggle = !isToggle;
+  }
+
   @action
   void setSearchText(final String text) {
     searchedText = text;
@@ -59,6 +80,15 @@ abstract class _CustomerStore with Store {
   @action
   void setCurrentPageIndex(final int index) {
     currentTablePage = index;
+  }
+
+  @action
+  void calculateTotalPages() {
+    if (filteredData.isEmpty) {
+      totalPages = 0;
+    } else {
+      totalPages = (filteredData.length / int.parse(selectedRowCount)).ceil();
+    }
   }
 
   @action
@@ -155,7 +185,9 @@ abstract class _CustomerStore with Store {
     List<CustomerModel> filtered = customers.toList();
     if (selectedUserType != 'All') {
       filtered = filtered
-          .where((item) => item.usertype.name.toLowerCase() == selectedUserType)
+          .where((item) =>
+              item.usertype.name.toLowerCase() ==
+              selectedUserType.toLowerCase())
           .toList();
     }
     if (searchedText.isNotEmpty) {

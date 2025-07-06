@@ -22,24 +22,25 @@ class _IndexScreenState extends State<IndexScreen> {
   void initState() {
     super.initState();
     if (!GetIt.I.isRegistered<UserDataStore>()) {
-      GetIt.I.registerLazySingleton<UserDataStore>(() => UserDataStore());
+      GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
     }
     userDataStore = GetIt.I<UserDataStore>();
+
+    _fetchData();
   }
 
-  // @override
-  // void dispose() {
-  //   if (GetIt.I.isRegistered<UserDataStore>()) {
-  //     GetIt.I.unregister<UserDataStore>();
-  //   }
-  //   super.dispose();
-  // }
+  Future<void> _fetchData() async {
+    await userDataStore.fetchCustomers();
+    await userDataStore.fetchInvoices();
+    await userDataStore.fetchProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Observer(builder: (context) {
         return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: 20.w,

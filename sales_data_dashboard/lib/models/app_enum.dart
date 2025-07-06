@@ -1,6 +1,6 @@
-enum UsertypeEnum { broker, company, Broker }
+enum UsertypeEnum { broker, company }
 
-enum TransactionTypeEnum { sale, purchase, Sells }
+enum TransactionTypeEnum { purchase, sell }
 
 enum PaymentStatusEnum { paid, unpaid, all }
 

@@ -48,7 +48,7 @@ class CustomerModel {
       gstNumber: map['gstNumber'] ?? '',
       usertype: UsertypeEnum.values.firstWhere(
         (e) => e.name == map['usertype'],
-        orElse: () => UsertypeEnum.Broker,
+        orElse: () => UsertypeEnum.broker,
       ),
       address: map['address'],
     );

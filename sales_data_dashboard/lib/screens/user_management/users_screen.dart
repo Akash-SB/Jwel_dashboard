@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
-import 'package:sales_data_dashboard/models/customer_model.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
+import 'package:sales_data_dashboard/screens/user_management/show_user_info.dart';
 import 'package:sales_data_dashboard/screens/user_management/store/customer_store.dart';
-import 'package:sales_data_dashboard/screens/user_management/user_data_table.dart';
 import 'package:sales_data_dashboard/screens/user_management/user_form.dart';
+import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
+
+import '../../models/customer_model.dart';
+import '../../widgets/custom_image_button.dart';
+import '../../widgets/filter_dropdown_button.dart';
+import '../../widgets/normal_button.dart';
 
 final getIt = GetIt.instance;
 
@@ -18,6 +24,7 @@ class UsersScreen extends StatefulWidget {
 
 class _UsersScreenState extends State<UsersScreen> {
   late CustomerStore customerStore;
+  late UserDataStore userDataStore;
 
   @override
   void initState() {
@@ -25,119 +32,370 @@ class _UsersScreenState extends State<UsersScreen> {
     if (!getIt.isRegistered<CustomerStore>()) {
       getIt.registerFactory<CustomerStore>(() => CustomerStore());
     }
+
+    if (!GetIt.I.isRegistered<UserDataStore>()) {
+      GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
+    }
+    userDataStore = GetIt.I<UserDataStore>();
     customerStore = getIt<CustomerStore>();
     customerStore.initializeSearchController();
-    customerStore
-        .fetchCustomers(); // Fetch users from Firestore or your backend
+    if (userDataStore.customers.isEmpty) {
+      customerStore.fetchCustomers();
+      userDataStore.setCustomers(customerStore.customers);
+    } else {
+      customerStore.setCustomers(userDataStore.customers);
+    }
+    customerStore.calculateTotalPages();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.all(24.dp),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _header(),
-          SizedBox(height: 24.dp),
-          Expanded(
-            child: Observer(builder: (context) {
-              return UsersDataTable(
-                data: customerStore.customers, // List<CustomerModel>
-                onDelete: (customer) => _confirmDelete(context, customer),
-                onEdit: (customer) => _openUserForm(context, customer),
-                onExportPDF: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Exporting to PDF...')),
-                  );
-                },
-                onExportExcel: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Exporting to Excel...')),
-                  );
-                },
-              );
-            }),
-          ),
-        ],
-      ),
-    );
+    final List<TableColumn> columns = [
+      TableColumn(label: 'Customer Id', key: 'id', isSortable: true),
+      TableColumn(label: 'Customer Name', key: 'name', isSortable: true),
+      TableColumn(label: 'User Type', key: 'userType'),
+      TableColumn(label: 'GST Number', key: 'gst'),
+      TableColumn(label: 'Mobile Number', key: 'mobile', isSortable: true),
+      TableColumn(label: 'Address', key: 'address'),
+      TableColumn(label: 'Actions', key: 'actions', isAction: true),
+    ];
+    return Observer(builder: (context) {
+      return !customerStore.isToggle
+          ? Container(
+              color: const Color.fromARGB(143, 255, 255, 255),
+              padding: EdgeInsets.all(24.dp),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 16.dp,
+                  ),
+                  Observer(builder: (context) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'User Management',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(
+                              0xFF1F2937,
+                            ),
+                          ),
+                        ),
+                        IntrinsicWidth(
+                          child: NormalButton(
+                            text: 'Add New User',
+                            onPressed: () => _openForm(context),
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                  SizedBox(height: 24.dp),
+                  Observer(builder: (context) {
+                    return SizedBox(
+                      height: 40.dp,
+                      child: Row(
+                        children: [
+                          FilterDropdownButton(
+                            selectedValue: customerStore.selectedUserType,
+                            onChanged: (final value) {
+                              customerStore.setSelectedUserType(value ?? 'All');
+                            },
+                            items: const [
+                              'All',
+                              'Company',
+                              'Broker',
+                            ],
+                          ),
+                          SizedBox(
+                            width: 8.dp,
+                          ),
+                          SizedBox(
+                            width: 300.dp,
+                            child: CustomSearchBar(
+                              controller: TextEditingController(),
+                              onChanged: (final value) {
+                                customerStore.setSearchText(value);
+                              },
+                              hintText:
+                                  'Search By Name, SSN Number, GST Number',
+                            ),
+                          ),
+                          const Spacer(),
+                          FilterDropdownButton(
+                            selectedValue: customerStore.selectedRowCount,
+                            onChanged: (final value) {
+                              customerStore.setSelectedRowCount(value ?? '5');
+                            },
+                            items: const [
+                              '5',
+                              '10',
+                              '15',
+                              '20',
+                            ],
+                          ),
+                          SizedBox(
+                            width: 12.dp,
+                          ),
+                          CustomImageButton(
+                            imagePath: 'assets/icons/pdf_icon.png',
+                            text: 'PDF',
+                            borderColor: const Color(0xffE5E7EB),
+                            buttonColor: Colors.white,
+                            onClicked: () {},
+                            // onClicked: widget.onExportPDF,
+                          ),
+                          SizedBox(
+                            width: 12.dp,
+                          ),
+                          CustomImageButton(
+                            imagePath: 'assets/icons/excel_icon.png',
+                            text: 'Excel',
+                            borderColor: const Color(0xffE5E7EB),
+                            buttonColor: Colors.white,
+                            onClicked: () {},
+                            // onClicked: widget.onExportPDF,
+                          ),
+                          SizedBox(
+                            width: 12.dp,
+                          ),
+                          Container(
+                            height: 30.dp,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.grey,
+                                )),
+                            child: IconButton(
+                              splashColor: Colors.transparent,
+                              padding: EdgeInsets.zero,
+                              icon: Image.asset(
+                                'assets/icons/cross_icon.png',
+                                color: Colors.grey,
+                                width: 30.dp,
+                                height: 30.dp,
+                              ),
+                              tooltip: 'Clear All Filters',
+                              onPressed: () {},
+                              // onPressed: _clearAllFilters,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  SizedBox(
+                    height: 24.dp,
+                  ),
+                  Observer(builder: (context) {
+                    return Expanded(
+                      child: SingleChildScrollView(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8.dp),
+                              border: Border.all(
+                                color: Colors.grey.shade400,
+                                width: 0.5,
+                              ),
+                            ),
+                            child: DataTable(
+                              headingRowHeight: 48,
+                              dataRowMinHeight: 48,
+                              headingRowColor:
+                                  WidgetStateProperty.all(Colors.grey.shade100),
+                              dataRowColor: WidgetStateProperty.resolveWith(
+                                  (states) => Colors.white),
+                              showBottomBorder: false,
+                              columns: columns.map((col) {
+                                return DataColumn(
+                                  label: InkWell(
+                                    onTap: col.isSortable
+                                        ? () =>
+                                            customerStore.setSortKey(col.key)
+                                        : null,
+                                    child: Row(
+                                      children: [
+                                        Text(col.label),
+                                        if (col.isSortable &&
+                                            customerStore.sortKey == col.key)
+                                          Icon(
+                                            customerStore.sortAsc
+                                                ? Icons.arrow_upward
+                                                : Icons.arrow_downward,
+                                            size: 14.dp,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              rows: customerStore.paginatedData.map((row) {
+                                return DataRow(
+                                  cells: columns.map((col) {
+                                    if (col.isAction) {
+                                      return DataCell(Row(
+                                        children: [
+                                          IconButton(
+                                            icon: Image.asset(
+                                              'assets/icons/edit_icon.png',
+                                            ),
+                                            onPressed: () =>
+                                                _openForm(context, row),
+                                          ),
+                                          IconButton(
+                                            icon: Image.asset(
+                                              'assets/icons/delete_icon.png',
+                                            ),
+                                            onPressed: () =>
+                                                _onDelete(context, row),
+                                          ),
+                                        ],
+                                      ));
+                                    }
+                                    return DataCell(
+                                      InkWell(
+                                        onTap: () {
+                                          customerStore
+                                              .setSelectedCustomer(row);
+                                          customerStore.toggleFilter();
+                                        },
+                                        child: Text(
+                                          _getCellValue(row, col.key),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 10),
+                  Observer(builder: (context) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: customerStore.currentTablePage > 0
+                              ? () => customerStore.setCurrentPageIndex(
+                                  customerStore.currentTablePage - 1)
+                              : null,
+                          icon: const Icon(Icons.chevron_left),
+                        ),
+                        Text(
+                            'Page ${customerStore.currentTablePage + 1} of ${customerStore.totalPages}'),
+                        IconButton(
+                          onPressed: customerStore.currentTablePage <
+                                  customerStore.totalPages - 1
+                              ? () => customerStore.setCurrentPageIndex(
+                                  customerStore.currentTablePage + 1)
+                              : null,
+                          icon: const Icon(Icons.chevron_right),
+                        ),
+                      ],
+                    );
+                  }),
+                ],
+              ),
+            )
+          : ShowUserInfoScreen(customer: customerStore.selectedCustomer!);
+    });
   }
 
-  Widget _header() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "User Management",
-          style: TextStyle(
-            color: const Color(0xff1F2937),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () => _openUserForm(context),
-          child: const Text(
-            "Create a User",
-          ),
-        )
-      ],
-    );
+  String _getCellValue(CustomerModel row, String key) {
+    switch (key) {
+      case 'id':
+        return row.id?.toString() ?? '';
+      case 'name':
+        return row.custName;
+      case 'userType':
+        return row.usertype.name;
+      case 'gst':
+        return row.gstNumber;
+      case 'mobile':
+        return row.mobileNumber;
+      case 'address':
+        return row.address ?? '-';
+      default:
+        return '';
+    }
   }
 
-  void _openUserForm(BuildContext context, [CustomerModel? existingUser]) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => CustomerForm(
-        existingCustomer: existingUser,
-        onSubmit: (userData) {
-          if (existingUser == null) {
-            customerStore.addCustomer(userData);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Customer ${userData.custName} added')),
-            );
-          } else {
-            customerStore.updateCustomer(userData.id.toString(), userData);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Customer ${userData.custName} updated')),
-            );
-          }
-          Navigator.pop(context);
-          customerStore.fetchCustomers();
-        },
-      ),
-    );
-  }
-
-  void _confirmDelete(BuildContext context, CustomerModel customer) {
+  void _openForm(BuildContext context, [CustomerModel? customer]) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Delete Customer'),
-        content: Text(
-            'Are you sure you want to delete customer ${customer.custName}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel'),
+      builder: (context) {
+        return AlertDialog(
+          title: Text(customer == null ? 'Add User' : 'Edit User'),
+          content: SizedBox(
+            width: 400, // Adjust as needed
+            child: CustomerForm(
+              existingCustomer: customer,
+              onSubmit: (customerData) {
+                if (customer?.id != null) {
+                  customerStore.updateCustomer(customer!.id!, customerData);
+                } else {
+                  customerStore.addCustomer(customerData);
+                }
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text(
+                          'User ${customerData.custName} ${customer?.id != null ? 'updated' : 'added'}')),
+                );
+                Navigator.pop(context); // Close dialog
+              },
+            ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              customerStore.deleteCustomer(customer.id.toString());
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text('Customer ${customer.custName} deleted')),
-              );
-              customerStore.fetchCustomers();
-              Navigator.pop(ctx);
-            },
-            child: Text('Yes, Delete'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
+
+  void _onDelete(BuildContext context, CustomerModel customer) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete User'),
+          content: const Text('Are you sure you want to delete this user?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                customerStore.deleteCustomer(customer.id!);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class TableColumn {
+  final String label;
+  final String key;
+  final bool isSortable;
+  final bool isAction;
+
+  TableColumn({
+    required this.label,
+    required this.key,
+    this.isSortable = false,
+    this.isAction = false,
+  });
 }

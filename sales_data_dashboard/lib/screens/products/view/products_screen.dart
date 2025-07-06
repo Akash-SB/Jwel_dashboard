@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
+import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
+import '../../../models/product_model.dart';
+import '../../../widgets/custom_image_button.dart';
+import '../../../widgets/filter_dropdown_button.dart';
+import '../../../widgets/normal_button.dart';
+import '../store/product_store.dart';
+import 'product_form_widget.dart';
 
-import '../../../widgets/product_data_table.dart';
-import '../../../widgets/stat_card_grid_widget.dart';
+final getIt = GetIt.instance;
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -12,209 +21,360 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
-  final List<Map<String, dynamic>> gemProductList = [
-    {
-      'id': '1',
-      'hsnCode': '7103',
-      'prodName': 'Ruby',
-      'size': 'Medium',
-      'carat': '5',
-      'rate': '12000',
-      'amount': '60000',
-      'availableQty': 3,
-      'minimumStock': 5,
-      'description': 'Deep red natural ruby',
-    },
-    {
-      'id': '2',
-      'hsnCode': '7104',
-      'prodName': 'Sapphire',
-      'size': 'Large',
-      'carat': '7',
-      'rate': '15000',
-      'amount': '105000',
-      'availableQty': 7,
-      'minimumStock': 4,
-      'description': 'Blue star sapphire, polished',
-    },
-    {
-      'id': '3',
-      'hsnCode': '7105',
-      'prodName': 'Emerald',
-      'size': 'Small',
-      'carat': '3',
-      'rate': '18000',
-      'amount': '54000',
-      'availableQty': 0,
-      'minimumStock': 2,
-      'description': 'Natural Colombian emerald',
-    },
-    {
-      'id': '4',
-      'hsnCode': '7106',
-      'prodName': 'Topaz',
-      'size': 'Medium',
-      'carat': '6',
-      'rate': '5000',
-      'amount': '30000',
-      'availableQty': 6,
-      'minimumStock': 5,
-      'description': 'Golden yellow topaz',
-    },
-    {
-      'id': '5',
-      'hsnCode': '7107',
-      'prodName': 'Amethyst',
-      'size': 'Free',
-      'carat': '4',
-      'rate': '3000',
-      'amount': '12000',
-      'availableQty': 1,
-      'minimumStock': 3,
-      'description': 'Violet-purple quartz gem',
-    },
-    {
-      'id': '6',
-      'hsnCode': '7108',
-      'prodName': 'Aquamarine',
-      'size': 'Large',
-      'carat': '8',
-      'rate': '8000',
-      'amount': '64000',
-      'availableQty': 8,
-      'minimumStock': 5,
-      'description': 'Ocean blue aquamarine crystal',
-    },
-    {
-      'id': '7',
-      'hsnCode': '7109',
-      'prodName': 'Garnet',
-      'size': 'Small',
-      'carat': '2',
-      'rate': '2500',
-      'amount': '5000',
-      'availableQty': 0,
-      'minimumStock': 2,
-      'description': 'Dark red garnet for healing',
-    },
-    {
-      'id': '8',
-      'hsnCode': '7110',
-      'prodName': 'Opal',
-      'size': 'Medium',
-      'carat': '3',
-      'rate': '7000',
-      'amount': '21000',
-      'availableQty': 4,
-      'minimumStock': 4,
-      'description': 'Milky opal with play of color',
-    },
-  ];
+  late ProductStore productStore;
+  late UserDataStore userDataStore;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!getIt.isRegistered<ProductStore>()) {
+      getIt.registerFactory<ProductStore>(() => ProductStore());
+    }
+
+    if (!GetIt.I.isRegistered<UserDataStore>()) {
+      GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
+    }
+    userDataStore = GetIt.I<UserDataStore>();
+    productStore = getIt<ProductStore>();
+    productStore.initializeSearchController();
+    if (userDataStore.products.isEmpty) {
+      productStore.fetchProducts();
+      userDataStore.setProducts(productStore.products);
+    } else {
+      productStore.setProducts(userDataStore.products);
+    }
+    productStore.calculateTotalPages();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.all(24.dp),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _header(),
-          SizedBox(height: 20.dp),
-          Row(
-            children: [
-              Expanded(
-                child: StatCardGridWidget(
-                  cards: [
-                    StatCardModel(
-                      title: "Total Items",
-                      value: "120",
-                      subtitle: "Total items in stock",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xffC084FC),
-                        const Color(0xffA855F7),
+    final List<TableColumn> columns = [
+      TableColumn(label: 'Product Id', key: 'id', isSortable: true),
+      TableColumn(label: 'HSN Code', key: 'hsnCode'),
+      TableColumn(label: 'Size', key: 'size', isSortable: true),
+      TableColumn(label: 'Rate', key: 'rate', isSortable: true),
+      TableColumn(label: 'Amount', key: 'amount', isSortable: true),
+      TableColumn(label: 'Description', key: 'description'),
+      TableColumn(label: 'Actions', key: 'actions', isAction: true),
+    ];
+    return Observer(builder: (context) {
+      return Container(
+        color: const Color.fromARGB(143, 255, 255, 255),
+        padding: EdgeInsets.all(24.dp),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 16.dp,
+            ),
+            Observer(builder: (context) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'User Management',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(
+                        0xFF1F2937,
+                      ),
+                    ),
+                  ),
+                  IntrinsicWidth(
+                    child: NormalButton(
+                      text: 'Add New User',
+                      onPressed: () => _openForm(context),
+                    ),
+                  ),
+                ],
+              );
+            }),
+            SizedBox(height: 24.dp),
+            Observer(builder: (context) {
+              return SizedBox(
+                height: 40.dp,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 300.dp,
+                      child: CustomSearchBar(
+                        controller: TextEditingController(),
+                        onChanged: (final value) {
+                          productStore.setSearchText(value);
+                        },
+                        hintText: 'Search By Name, SSN Number, GST Number',
+                      ),
+                    ),
+                    const Spacer(),
+                    FilterDropdownButton(
+                      selectedValue: productStore.selectedRowCount,
+                      onChanged: (final value) {
+                        productStore.setSelectedRowCount(value ?? '5');
+                      },
+                      items: const [
+                        '5',
+                        '10',
+                        '15',
+                        '20',
                       ],
                     ),
-                    StatCardModel(
-                      title: "Low Stock Items",
-                      value: "8",
-                      subtitle: "Number of items that are running low",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xff60A5FA),
-                        const Color(0xff3B82F6),
-                      ],
+                    SizedBox(
+                      width: 12.dp,
                     ),
-                    StatCardModel(
-                      title: "In Stock Items",
-                      value: "40",
-                      subtitle: "Number of items past their expiration date",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xff4ADE80),
-                        const Color(0xff22C55E),
-                      ],
+                    CustomImageButton(
+                      imagePath: 'assets/icons/pdf_icon.png',
+                      text: 'PDF',
+                      borderColor: const Color(0xffE5E7EB),
+                      buttonColor: Colors.white,
+                      onClicked: () {},
+                      // onClicked: widget.onExportPDF,
                     ),
-                    StatCardModel(
-                      title: "Out of Stock Items",
-                      value: "15",
-                      subtitle: "Count of items currently out of stock",
-                      iconData: Icons.home,
-                      gradientColors: [
-                        const Color(0xffF87171),
-                        const Color(0xffEF4444),
-                      ],
+                    SizedBox(
+                      width: 12.dp,
+                    ),
+                    CustomImageButton(
+                      imagePath: 'assets/icons/excel_icon.png',
+                      text: 'Excel',
+                      borderColor: const Color(0xffE5E7EB),
+                      buttonColor: Colors.white,
+                      onClicked: () {},
+                      // onClicked: widget.onExportPDF,
+                    ),
+                    SizedBox(
+                      width: 12.dp,
+                    ),
+                    Container(
+                      height: 30.dp,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.grey,
+                          )),
+                      child: IconButton(
+                        splashColor: Colors.transparent,
+                        padding: EdgeInsets.zero,
+                        icon: Image.asset(
+                          'assets/icons/cross_icon.png',
+                          color: Colors.grey,
+                          width: 30.dp,
+                          height: 30.dp,
+                        ),
+                        tooltip: 'Clear All Filters',
+                        onPressed: () {},
+                        // onPressed: _clearAllFilters,
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
+              );
+            }),
+            SizedBox(
+              height: 24.dp,
+            ),
+            Observer(builder: (context) {
+              return Expanded(
+                child: SingleChildScrollView(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8.dp),
+                        border: Border.all(
+                          color: Colors.grey.shade400,
+                          width: 0.5,
+                        ),
+                      ),
+                      child: DataTable(
+                        headingRowHeight: 48,
+                        dataRowMinHeight: 48,
+                        headingRowColor:
+                            WidgetStateProperty.all(Colors.grey.shade100),
+                        dataRowColor: WidgetStateProperty.resolveWith(
+                            (states) => Colors.white),
+                        showBottomBorder: false,
+                        columns: columns.map((col) {
+                          return DataColumn(
+                            label: InkWell(
+                              onTap: col.isSortable
+                                  ? () => productStore.setSortKey(col.key)
+                                  : null,
+                              child: Row(
+                                children: [
+                                  Text(col.label),
+                                  if (col.isSortable &&
+                                      productStore.sortKey == col.key)
+                                    Icon(
+                                      productStore.sortAsc
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward,
+                                      size: 14.dp,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        rows: productStore.paginatedData.map((row) {
+                          return DataRow(
+                            cells: columns.map((col) {
+                              if (col.isAction) {
+                                return DataCell(Row(
+                                  children: [
+                                    IconButton(
+                                      icon: Image.asset(
+                                        'assets/icons/edit_icon.png',
+                                      ),
+                                      onPressed: () => _openForm(context, row),
+                                    ),
+                                    IconButton(
+                                      icon: Image.asset(
+                                        'assets/icons/delete_icon.png',
+                                      ),
+                                      onPressed: () => _onDelete(context, row),
+                                    ),
+                                  ],
+                                ));
+                              }
+                              return DataCell(
+                                InkWell(
+                                  onTap: () {
+                                    productStore.setSelectedProduct(row);
+                                  },
+                                  child: Text(
+                                    _getCellValue(row, col.key),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+            const SizedBox(height: 10),
+            Observer(builder: (context) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: productStore.currentTablePage > 0
+                        ? () => productStore.setCurrentPageIndex(
+                            productStore.currentTablePage - 1)
+                        : null,
+                    icon: const Icon(Icons.chevron_left),
+                  ),
+                  Text(
+                      'Page ${productStore.currentTablePage + 1} of ${productStore.totalPages}'),
+                  IconButton(
+                    onPressed: productStore.currentTablePage <
+                            productStore.totalPages - 1
+                        ? () => productStore.setCurrentPageIndex(
+                            productStore.currentTablePage + 1)
+                        : null,
+                    icon: const Icon(Icons.chevron_right),
+                  ),
+                ],
+              );
+            }),
+          ],
+        ),
+      );
+    });
+  }
+
+  String _getCellValue(ProductModel row, String key) {
+    switch (key) {
+      case 'id':
+        return row.id;
+      case 'hsnCode':
+        return row.hsnCode;
+      case 'size':
+        return row.size;
+      case 'rate':
+        return row.rate;
+      case 'amount':
+        return row.amount;
+      case 'description':
+        return row.description ?? '';
+
+      default:
+        return '';
+    }
+  }
+
+  void _openForm(BuildContext context, [ProductModel? product]) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(product == null ? 'Add Product' : 'Edit Product'),
+          content: SizedBox(
+            width: 400, // Adjust as needed
+            child: ProductForm(
+              existingProduct: product,
+              onSubmit: (productData) {
+                if (product?.id != null) {
+                  productStore.updateProduct(product!.id!, productData);
+                } else {
+                  productStore.addProduct(productData);
+                }
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text(
+                          'Product ${productData.prodName} ${product?.id != null ? 'updated' : 'added'}')),
+                );
+                Navigator.pop(context); // Close dialog
+              },
+            ),
           ),
-          SizedBox(height: 24.dp),
-          Expanded(
-              child: ProductDataTable(
-            data: gemProductList,
-            onEdit: (product) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Edit ${product['prodName']}')),
-              );
-            },
-            onDelete: (product) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Delete ${product['prodName']}')),
-              );
-            },
-            onAddProduct: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Add new product tapped')),
-              );
-            },
-          )),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _header() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "Product Management",
-          style: TextStyle(
-            color: const Color(0xff1F2937),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        // ElevatedButton(
-        //   onPressed: () {},
-        //   child: const Text(
-        //     "Create an Invoice",
-        //   ),
-        // )
-      ],
+  void _onDelete(BuildContext context, ProductModel product) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Product'),
+          content: const Text('Are you sure you want to delete this product?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                productStore.deleteProduct(
+                  product.id,
+                );
+                Navigator.of(context).pop();
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
     );
   }
+}
+
+class TableColumn {
+  final String label;
+  final String key;
+  final bool isSortable;
+  final bool isAction;
+
+  TableColumn({
+    required this.label,
+    required this.key,
+    this.isSortable = false,
+    this.isAction = false,
+  });
 }

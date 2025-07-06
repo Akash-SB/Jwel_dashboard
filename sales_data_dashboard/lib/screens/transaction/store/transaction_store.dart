@@ -56,7 +56,7 @@ abstract class _TransactionStore with Store {
     return InvoiceModel(
       invoiceId: tx.invoiceId,
       date: tx.date,
-      carat: tx.carat.toString(),
+      size: tx.size.toString(),
       rate: tx.rate.toString(),
       amount: tx.amount.toString(),
       transactionType: tx.transactionType,

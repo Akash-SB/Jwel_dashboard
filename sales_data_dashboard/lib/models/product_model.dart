@@ -5,24 +5,18 @@ class ProductModel {
   final String hsnCode;
   final String prodName;
   final String size;
-  final String carat;
   final String rate;
   final String amount;
   final String? description;
-  final int availableQty;
-  final int minimumStock;
 
   ProductModel({
     required this.id,
     required this.hsnCode,
     required this.prodName,
     required this.size,
-    required this.carat,
     required this.rate,
     required this.amount,
     this.description,
-    required this.availableQty,
-    required this.minimumStock,
   });
 
   /// Convert to Firestore map
@@ -31,12 +25,9 @@ class ProductModel {
       'hsnCode': hsnCode,
       'prodName': prodName,
       'size': size,
-      'carat': carat,
       'rate': rate,
       'amount': amount,
       'description': description,
-      'availableQty': availableQty,
-      'minimumStock': minimumStock,
     };
   }
 
@@ -50,12 +41,9 @@ class ProductModel {
       hsnCode: map['hsnCode'] ?? '',
       prodName: map['prodName'] ?? '',
       size: map['size'] ?? '',
-      carat: map['carat'] ?? '',
       rate: map['rate'] ?? '',
       amount: map['amount'] ?? '',
       description: map['description'],
-      availableQty: map['availableQty'] ?? 0,
-      minimumStock: map['minimumStock'] ?? 0,
     );
   }
 
@@ -71,7 +59,6 @@ class ProductModel {
     String? hsnCode,
     String? prodName,
     String? size,
-    String? carat,
     String? rate,
     String? amount,
     String? description,
@@ -81,12 +68,9 @@ class ProductModel {
       hsnCode: hsnCode ?? this.hsnCode,
       prodName: prodName ?? this.prodName,
       size: size ?? this.size,
-      carat: carat ?? this.carat,
       rate: rate ?? this.rate,
       amount: amount ?? this.amount,
       description: description ?? this.description,
-      availableQty: this.availableQty,
-      minimumStock: this.minimumStock,
     );
   }
 }

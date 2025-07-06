@@ -4,7 +4,6 @@ import 'package:sales_data_dashboard/screens/home/index_screen.dart';
 import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
 import 'package:sales_data_dashboard/screens/settings/setting_screen.dart';
 import 'package:sales_data_dashboard/screens/user_management/users_screen.dart';
-
 import 'screens/products/view/products_screen.dart';
 
 class AppRoutes {
@@ -14,9 +13,6 @@ class AppRoutes {
   static const String users = '/users';
   static const String products = '/products';
   static const String setting = '/setting';
-  // static const String invoiceDetails = '/invoice/details';
-  // static const String reports = '/reports';
-  // static const String accounting = '/accounting';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final selectedRoute = switch (settings.name) {
