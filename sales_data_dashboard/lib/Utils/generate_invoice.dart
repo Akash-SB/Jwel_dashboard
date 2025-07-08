@@ -10,13 +10,10 @@ import '../models/invoice_model.dart';
 Future<void> generateTransactionInvoicePdf(
     InvoiceModel tx, List<ProductModel> products) async {
   final pdf = pw.Document();
-
-  // Optional logo (place your logo in assets/images/logo.png)
   final ByteData bytes = await rootBundle.load('assets/images/logo.png');
   final Uint8List logoBytes = bytes.buffer.asUint8List();
 
   double totalAmount = 0;
-  double totalCarat = 0;
 
   for (var p in products) {
     totalAmount += double.tryParse(p.amount) ?? 0;
@@ -97,7 +94,6 @@ Future<void> generateTransactionInvoicePdf(
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text("Total Carat: ${totalCarat.toStringAsFixed(2)}"),
                 pw.Text("Total Amount: ₹${totalAmount.toStringAsFixed(2)}",
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
               ],
