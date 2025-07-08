@@ -62,14 +62,11 @@ class _UsersScreenState extends State<UsersScreen> {
     return Observer(builder: (context) {
       return !customerStore.isToggle
           ? Container(
-              color: const Color.fromARGB(143, 255, 255, 255),
+              color: Colors.white,
               padding: EdgeInsets.all(24.dp),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 16.dp,
-                  ),
                   Observer(builder: (context) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,7 +77,7 @@ class _UsersScreenState extends State<UsersScreen> {
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Color(
-                              0xFF1F2937,
+                              0xFF111827,
                             ),
                           ),
                         ),
@@ -93,6 +90,14 @@ class _UsersScreenState extends State<UsersScreen> {
                       ],
                     );
                   }),
+                  SizedBox(height: 12.dp),
+                  Container(
+                    width: double.infinity,
+                    child: Divider(
+                      thickness: 1.dp,
+                      color: const Color(0xFFE5E7EB),
+                    ),
+                  ),
                   SizedBox(height: 24.dp),
                   Observer(builder: (context) {
                     return SizedBox(
@@ -125,21 +130,6 @@ class _UsersScreenState extends State<UsersScreen> {
                             ),
                           ),
                           const Spacer(),
-                          FilterDropdownButton(
-                            selectedValue: customerStore.selectedRowCount,
-                            onChanged: (final value) {
-                              customerStore.setSelectedRowCount(value ?? '5');
-                            },
-                            items: const [
-                              '5',
-                              '10',
-                              '15',
-                              '20',
-                            ],
-                          ),
-                          SizedBox(
-                            width: 12.dp,
-                          ),
                           CustomImageButton(
                             imagePath: 'assets/icons/pdf_icon.png',
                             text: 'PDF',
@@ -171,6 +161,9 @@ class _UsersScreenState extends State<UsersScreen> {
                                 )),
                             child: IconButton(
                               splashColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              focusColor: Colors.transparent,
                               padding: EdgeInsets.zero,
                               icon: Image.asset(
                                 'assets/icons/cross_icon.png',
@@ -200,15 +193,17 @@ class _UsersScreenState extends State<UsersScreen> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8.dp),
                               border: Border.all(
-                                color: Colors.grey.shade400,
-                                width: 0.5,
+                                color: const Color(0xFFE5E7EB),
+                                width: 1.5.dp,
                               ),
                             ),
                             child: DataTable(
+                              showCheckboxColumn: true,
+                              dividerThickness: 0.1.dp,
                               headingRowHeight: 48,
                               dataRowMinHeight: 48,
-                              headingRowColor:
-                                  WidgetStateProperty.all(Colors.grey.shade100),
+                              headingRowColor: WidgetStateProperty.all(
+                                  const Color(0xFFF9FAFB)),
                               dataRowColor: WidgetStateProperty.resolveWith(
                                   (states) => Colors.white),
                               showBottomBorder: false,
@@ -221,7 +216,15 @@ class _UsersScreenState extends State<UsersScreen> {
                                         : null,
                                     child: Row(
                                       children: [
-                                        Text(col.label),
+                                        Text(
+                                          col.label,
+                                          style: TextStyle(
+                                            fontSize: 16.dp,
+                                            color: const Color(
+                                              0xFF4B5563,
+                                            ),
+                                          ),
+                                        ),
                                         if (col.isSortable &&
                                             customerStore.sortKey == col.key)
                                           Icon(
@@ -267,6 +270,10 @@ class _UsersScreenState extends State<UsersScreen> {
                                         },
                                         child: Text(
                                           _getCellValue(row, col.key),
+                                          style: TextStyle(
+                                            fontSize: 14.dp,
+                                            color: const Color(0xFF111827),
+                                          ),
                                         ),
                                       ),
                                     );

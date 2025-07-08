@@ -20,7 +20,6 @@ Future<void> generateTransactionInvoicePdf(
 
   for (var p in products) {
     totalAmount += double.tryParse(p.amount) ?? 0;
-    totalCarat += double.tryParse(p.carat) ?? 0;
   }
 
   pdf.addPage(
@@ -83,7 +82,6 @@ Future<void> generateTransactionInvoicePdf(
                     p.prodName,
                     p.hsnCode,
                     p.size,
-                    p.carat,
                     p.rate,
                     p.amount,
                   ])

@@ -146,7 +146,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 500.dp,
       child: Form(
         key: _formKey,
@@ -173,7 +173,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
               ],
             ),
             SizedBox(height: 8.dp),
-            Container(
+            SizedBox(
               width: double.infinity,
               child: Divider(
                 color: Colors.grey.shade300,

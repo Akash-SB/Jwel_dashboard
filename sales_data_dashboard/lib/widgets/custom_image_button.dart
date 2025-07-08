@@ -37,11 +37,13 @@ class CustomImageButton extends StatelessWidget {
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
               imagePath,
-              height: 24.dp,
-              width: 24.dp,
+              height: 20.dp,
+              width: 20.dp,
             ),
             SizedBox(
               width: 8.dp,
@@ -49,7 +51,8 @@ class CustomImageButton extends StatelessWidget {
             Text(
               text,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.dp,
+                color: const Color(0xFF111827),
                 fontWeight: FontWeight.w600,
               ),
             ),

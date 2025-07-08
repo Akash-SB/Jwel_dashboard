@@ -82,7 +82,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
+        const Text(
           "Invoice Management",
           style: TextStyle(
             color: const Color(0xff1F2937),
