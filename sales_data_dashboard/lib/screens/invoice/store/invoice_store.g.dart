@@ -96,6 +96,22 @@ mixin _$InvoiceStore on _InvoiceStore, Store {
     });
   }
 
+  late final _$selectedPaymentTypeAtom =
+      Atom(name: '_InvoiceStore.selectedPaymentType', context: context);
+
+  @override
+  String get selectedPaymentType {
+    _$selectedPaymentTypeAtom.reportRead();
+    return super.selectedPaymentType;
+  }
+
+  @override
+  set selectedPaymentType(String value) {
+    _$selectedPaymentTypeAtom.reportWrite(value, super.selectedPaymentType, () {
+      super.selectedPaymentType = value;
+    });
+  }
+
   late final _$searchQueryAtom =
       Atom(name: '_InvoiceStore.searchQuery', context: context);
 
@@ -146,6 +162,22 @@ mixin _$InvoiceStore on _InvoiceStore, Store {
   set currentTablePage(int value) {
     _$currentTablePageAtom.reportWrite(value, super.currentTablePage, () {
       super.currentTablePage = value;
+    });
+  }
+
+  late final _$isFilterAppliedAtom =
+      Atom(name: '_InvoiceStore.isFilterApplied', context: context);
+
+  @override
+  bool get isFilterApplied {
+    _$isFilterAppliedAtom.reportRead();
+    return super.isFilterApplied;
+  }
+
+  @override
+  set isFilterApplied(bool value) {
+    _$isFilterAppliedAtom.reportWrite(value, super.isFilterApplied, () {
+      super.isFilterApplied = value;
     });
   }
 
@@ -267,11 +299,44 @@ mixin _$InvoiceStore on _InvoiceStore, Store {
   }
 
   @override
+  void setselectedPaymentTYpe(String status) {
+    final _$actionInfo = _$_InvoiceStoreActionController.startAction(
+        name: '_InvoiceStore.setselectedPaymentTYpe');
+    try {
+      return super.setselectedPaymentTYpe(status);
+    } finally {
+      _$_InvoiceStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void initSearchController() {
     final _$actionInfo = _$_InvoiceStoreActionController.startAction(
         name: '_InvoiceStore.initSearchController');
     try {
       return super.initSearchController();
+    } finally {
+      _$_InvoiceStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setInvoices(List<InvoiceModel> invoices) {
+    final _$actionInfo = _$_InvoiceStoreActionController.startAction(
+        name: '_InvoiceStore.setInvoices');
+    try {
+      return super.setInvoices(invoices);
+    } finally {
+      _$_InvoiceStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void isFiltersApplied() {
+    final _$actionInfo = _$_InvoiceStoreActionController.startAction(
+        name: '_InvoiceStore.isFiltersApplied');
+    try {
+      return super.isFiltersApplied();
     } finally {
       _$_InvoiceStoreActionController.endAction(_$actionInfo);
     }
@@ -289,15 +354,28 @@ mixin _$InvoiceStore on _InvoiceStore, Store {
   }
 
   @override
+  void clearFilters() {
+    final _$actionInfo = _$_InvoiceStoreActionController.startAction(
+        name: '_InvoiceStore.clearFilters');
+    try {
+      return super.clearFilters();
+    } finally {
+      _$_InvoiceStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 invoices: ${invoices},
 isLoading: ${isLoading},
 errorMessage: ${errorMessage},
 selectedPaymentStatus: ${selectedPaymentStatus},
+selectedPaymentType: ${selectedPaymentType},
 searchQuery: ${searchQuery},
 ledgerController: ${ledgerController},
 currentTablePage: ${currentTablePage},
+isFilterApplied: ${isFilterApplied},
 totalPages: ${totalPages},
 sortKey: ${sortKey},
 sortAsc: ${sortAsc},

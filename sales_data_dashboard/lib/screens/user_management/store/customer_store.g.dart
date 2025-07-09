@@ -111,22 +111,6 @@ mixin _$CustomerStore on _CustomerStore, Store {
     });
   }
 
-  late final _$selectedRowCountAtom =
-      Atom(name: '_CustomerStore.selectedRowCount', context: context);
-
-  @override
-  String get selectedRowCount {
-    _$selectedRowCountAtom.reportRead();
-    return super.selectedRowCount;
-  }
-
-  @override
-  set selectedRowCount(String value) {
-    _$selectedRowCountAtom.reportWrite(value, super.selectedRowCount, () {
-      super.selectedRowCount = value;
-    });
-  }
-
   late final _$isFilterAppliedAtom =
       Atom(name: '_CustomerStore.isFilterApplied', context: context);
 
@@ -276,6 +260,17 @@ mixin _$CustomerStore on _CustomerStore, Store {
       ActionController(name: '_CustomerStore', context: context);
 
   @override
+  void setCustomers(List<CustomerModel> newCustomers) {
+    final _$actionInfo = _$_CustomerStoreActionController.startAction(
+        name: '_CustomerStore.setCustomers');
+    try {
+      return super.setCustomers(newCustomers);
+    } finally {
+      _$_CustomerStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedCustomer(CustomerModel? customer) {
     final _$actionInfo = _$_CustomerStoreActionController.startAction(
         name: '_CustomerStore.setSelectedCustomer');
@@ -320,17 +315,6 @@ mixin _$CustomerStore on _CustomerStore, Store {
   }
 
   @override
-  void setSelectedRowCount(String text) {
-    final _$actionInfo = _$_CustomerStoreActionController.startAction(
-        name: '_CustomerStore.setSelectedRowCount');
-    try {
-      return super.setSelectedRowCount(text);
-    } finally {
-      _$_CustomerStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void setCurrentPageIndex(int index) {
     final _$actionInfo = _$_CustomerStoreActionController.startAction(
         name: '_CustomerStore.setCurrentPageIndex');
@@ -342,11 +326,33 @@ mixin _$CustomerStore on _CustomerStore, Store {
   }
 
   @override
+  void calculateTotalPages() {
+    final _$actionInfo = _$_CustomerStoreActionController.startAction(
+        name: '_CustomerStore.calculateTotalPages');
+    try {
+      return super.calculateTotalPages();
+    } finally {
+      _$_CustomerStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void clearAllFilters() {
     final _$actionInfo = _$_CustomerStoreActionController.startAction(
         name: '_CustomerStore.clearAllFilters');
     try {
       return super.clearAllFilters();
+    } finally {
+      _$_CustomerStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setIsFilterApplied(bool value) {
+    final _$actionInfo = _$_CustomerStoreActionController.startAction(
+        name: '_CustomerStore.setIsFilterApplied');
+    try {
+      return super.setIsFilterApplied(value);
     } finally {
       _$_CustomerStoreActionController.endAction(_$actionInfo);
     }
@@ -382,7 +388,6 @@ isLoading: ${isLoading},
 errorMessage: ${errorMessage},
 searchedText: ${searchedText},
 selectedUserType: ${selectedUserType},
-selectedRowCount: ${selectedRowCount},
 isFilterApplied: ${isFilterApplied},
 currentTablePage: ${currentTablePage},
 totalPages: ${totalPages},

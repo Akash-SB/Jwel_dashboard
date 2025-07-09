@@ -88,7 +88,7 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
         return item.invoiceId;
       case 'date':
         return item.date;
-      case 'carat':
+      case 'size':
         return item.size;
       case 'rate':
         return item.rate;

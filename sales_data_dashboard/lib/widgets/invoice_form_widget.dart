@@ -147,11 +147,12 @@ class _InvoiceFormState extends State<InvoiceForm> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 500.dp,
+      width: 800.dp,
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
@@ -161,14 +162,23 @@ class _InvoiceFormState extends State<InvoiceForm> {
                   widget.existingInvoice != null
                       ? 'Edit Invoice'
                       : 'Create Invoice',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 24.dp,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(
+                      0xFF111827,
+                    ),
+                  ),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
+                  icon: Icon(
+                    Icons.close,
+                    size: 24.dp,
+                    color: const Color(
+                      0xFF4B5563,
+                    ),
+                  ),
                 )
               ],
             ),
@@ -176,11 +186,11 @@ class _InvoiceFormState extends State<InvoiceForm> {
             SizedBox(
               width: double.infinity,
               child: Divider(
-                color: Colors.grey.shade300,
-                thickness: 1,
+                color: const Color(0xFFE5E7EB),
+                thickness: 1.dp,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.dp),
             Row(
               children: [
                 Expanded(
@@ -200,7 +210,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.dp),
             Text(
               'Product Information :',
               style: Theme.of(context).textTheme.titleMedium,
@@ -299,13 +309,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                               : null,
                         ),
                       ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 12.dp,
-                  ),
-                  Row(
-                    children: [
+                      SizedBox(width: 12.dp),
                       Flexible(
                         child: TextFormField(
                           controller: _rateController,
@@ -316,7 +320,13 @@ class _InvoiceFormState extends State<InvoiceForm> {
                               : null,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 12.dp,
+                  ),
+                  Row(
+                    children: [
                       Flexible(
                         child: TextFormField(
                           controller: _amountController,
@@ -327,6 +337,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
                               : null,
                         ),
                       ),
+                      const Flexible(child: SizedBox()),
+                      const Flexible(child: SizedBox()),
                     ],
                   ),
                 ],
@@ -339,7 +351,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                   style: TextStyle(color: Colors.red.shade700),
                 ),
               ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.dp),
             Text(
               'Customer Information :',
               style: Theme.of(context).textTheme.titleMedium,
@@ -347,6 +359,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
             SizedBox(height: 12.dp),
             if (widget.customers != null && widget.customers!.isNotEmpty)
               Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Flexible(
                     child: Autocomplete<CustomerModel>(
@@ -416,7 +429,10 @@ class _InvoiceFormState extends State<InvoiceForm> {
                       },
                     ),
                   ),
-                  Expanded(
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  Flexible(
                     child: DropdownButtonFormField<UsertypeEnum>(
                       focusColor: Colors.white,
                       value: _selectedCustomer != null
@@ -436,6 +452,10 @@ class _InvoiceFormState extends State<InvoiceForm> {
                       validator: (value) => value == null ? 'Required' : null,
                     ),
                   ),
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  const Flexible(child: SizedBox()),
                 ],
               )
             else
@@ -515,7 +535,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                     validator: (value) => value == null ? 'Required' : null,
                   ),
                 ),
-                Expanded(child: SizedBox())
+                const Expanded(child: SizedBox())
               ],
             ),
             SizedBox(height: 24.dp),

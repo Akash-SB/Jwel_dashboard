@@ -6,7 +6,6 @@ import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 import '../../../models/product_model.dart';
 import '../../../widgets/custom_image_button.dart';
-import '../../../widgets/filter_dropdown_button.dart';
 import '../../../widgets/normal_button.dart';
 import '../store/product_store.dart';
 import 'product_form_widget.dart';
@@ -59,37 +58,42 @@ class _ProductsScreenState extends State<ProductsScreen> {
     ];
     return Observer(builder: (context) {
       return Container(
-        color: const Color.fromARGB(143, 255, 255, 255),
+        color: Colors.white,
         padding: EdgeInsets.all(24.dp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 16.dp,
-            ),
             Observer(builder: (context) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'User Management',
+                    'Product Management',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Color(
-                        0xFF1F2937,
+                        0xFF111827,
                       ),
                     ),
                   ),
                   IntrinsicWidth(
                     child: NormalButton(
-                      text: 'Add New User',
+                      text: 'Add New Product',
                       onPressed: () => _openForm(context),
                     ),
                   ),
                 ],
               );
             }),
+            SizedBox(height: 12.dp),
+            SizedBox(
+              width: double.infinity,
+              child: Divider(
+                thickness: 1.dp,
+                color: const Color(0xFFE5E7EB),
+              ),
+            ),
             SizedBox(height: 24.dp),
             Observer(builder: (context) {
               return SizedBox(
@@ -99,7 +103,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     SizedBox(
                       width: 300.dp,
                       child: CustomSearchBar(
-                        controller: TextEditingController(),
+                        controller: productStore.searchController,
                         onChanged: (final value) {
                           productStore.setSearchText(value);
                         },
@@ -107,21 +111,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       ),
                     ),
                     const Spacer(),
-                    FilterDropdownButton(
-                      selectedValue: productStore.selectedRowCount,
-                      onChanged: (final value) {
-                        productStore.setSelectedRowCount(value ?? '5');
-                      },
-                      items: const [
-                        '5',
-                        '10',
-                        '15',
-                        '20',
-                      ],
-                    ),
-                    SizedBox(
-                      width: 12.dp,
-                    ),
                     CustomImageButton(
                       imagePath: 'assets/icons/pdf_icon.png',
                       text: 'PDF',
@@ -149,19 +138,26 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Colors.grey,
+                            color: productStore.searchedText.isNotEmpty
+                                ? Colors.red
+                                : Colors.grey,
                           )),
                       child: IconButton(
                         splashColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        focusColor: Colors.transparent,
                         padding: EdgeInsets.zero,
                         icon: Image.asset(
                           'assets/icons/cross_icon.png',
-                          color: Colors.grey,
+                          color: productStore.searchedText.isNotEmpty
+                              ? Colors.red
+                              : Colors.grey,
                           width: 30.dp,
                           height: 30.dp,
                         ),
                         tooltip: 'Clear All Filters',
-                        onPressed: () {},
+                        onPressed: productStore.clearAllFilters,
                         // onPressed: _clearAllFilters,
                       ),
                     ),
@@ -182,15 +178,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8.dp),
                         border: Border.all(
-                          color: Colors.grey.shade400,
-                          width: 0.5,
+                          color: const Color(0xFFE5E7EB),
+                          width: 1.5.dp,
                         ),
                       ),
                       child: DataTable(
+                        dividerThickness: 0.1.dp,
                         headingRowHeight: 48,
                         dataRowMinHeight: 48,
                         headingRowColor:
-                            WidgetStateProperty.all(Colors.grey.shade100),
+                            WidgetStateProperty.all(const Color(0xFFF9FAFB)),
                         dataRowColor: WidgetStateProperty.resolveWith(
                             (states) => Colors.white),
                         showBottomBorder: false,
@@ -202,7 +199,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                   : null,
                               child: Row(
                                 children: [
-                                  Text(col.label),
+                                  Text(
+                                    col.label,
+                                    style: TextStyle(
+                                      fontSize: 16.dp,
+                                      color: const Color(
+                                        0xFF4B5563,
+                                      ),
+                                    ),
+                                  ),
                                   if (col.isSortable &&
                                       productStore.sortKey == col.key)
                                     Icon(
@@ -244,6 +249,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                   },
                                   child: Text(
                                     _getCellValue(row, col.key),
+                                    style: TextStyle(
+                                      fontSize: 14.dp,
+                                      color: const Color(0xFF111827),
+                                    ),
                                   ),
                                 ),
                               );
@@ -256,7 +265,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 ),
               );
             }),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.dp),
             Observer(builder: (context) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -314,12 +323,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
         return AlertDialog(
           title: Text(product == null ? 'Add Product' : 'Edit Product'),
           content: SizedBox(
-            width: 400, // Adjust as needed
+            width: 400.dp, // Adjust as needed
             child: ProductForm(
               existingProduct: product,
               onSubmit: (productData) {
                 if (product?.id != null) {
-                  productStore.updateProduct(product!.id!, productData);
+                  productStore.updateProduct(product!.id, productData);
                 } else {
                   productStore.addProduct(productData);
                 }

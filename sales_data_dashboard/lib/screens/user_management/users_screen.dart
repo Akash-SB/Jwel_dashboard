@@ -91,7 +91,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     );
                   }),
                   SizedBox(height: 12.dp),
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: Divider(
                       thickness: 1.dp,
@@ -108,6 +108,14 @@ class _UsersScreenState extends State<UsersScreen> {
                             selectedValue: customerStore.selectedUserType,
                             onChanged: (final value) {
                               customerStore.setSelectedUserType(value ?? 'All');
+                              if (customerStore.searchedText.isEmpty &&
+                                  customerStore.selectedUserType
+                                          .toLowerCase() ==
+                                      'all') {
+                                customerStore.setIsFilterApplied(false);
+                              } else {
+                                customerStore.setIsFilterApplied(true);
+                              }
                             },
                             items: const [
                               'All',
@@ -121,9 +129,17 @@ class _UsersScreenState extends State<UsersScreen> {
                           SizedBox(
                             width: 300.dp,
                             child: CustomSearchBar(
-                              controller: TextEditingController(),
+                              controller: customerStore.searchController,
                               onChanged: (final value) {
                                 customerStore.setSearchText(value);
+                                if (customerStore.searchedText.isEmpty &&
+                                    customerStore.selectedUserType
+                                            .toLowerCase() ==
+                                        'all') {
+                                  customerStore.setIsFilterApplied(false);
+                                } else {
+                                  customerStore.setIsFilterApplied(true);
+                                }
                               },
                               hintText:
                                   'Search By Name, SSN Number, GST Number',
@@ -157,7 +173,9 @@ class _UsersScreenState extends State<UsersScreen> {
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: Colors.grey,
+                                  color: customerStore.isFilterApplied
+                                      ? Colors.red
+                                      : Colors.grey,
                                 )),
                             child: IconButton(
                               splashColor: Colors.transparent,
@@ -167,12 +185,14 @@ class _UsersScreenState extends State<UsersScreen> {
                               padding: EdgeInsets.zero,
                               icon: Image.asset(
                                 'assets/icons/cross_icon.png',
-                                color: Colors.grey,
+                                color: customerStore.isFilterApplied
+                                    ? Colors.red
+                                    : Colors.grey,
                                 width: 30.dp,
                                 height: 30.dp,
                               ),
                               tooltip: 'Clear All Filters',
-                              onPressed: () {},
+                              onPressed: customerStore.clearAllFilters,
                               // onPressed: _clearAllFilters,
                             ),
                           ),
@@ -198,7 +218,6 @@ class _UsersScreenState extends State<UsersScreen> {
                               ),
                             ),
                             child: DataTable(
-                              showCheckboxColumn: true,
                               dividerThickness: 0.1.dp,
                               headingRowHeight: 48,
                               dataRowMinHeight: 48,

@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:excel/excel.dart' as excel;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:printing/printing.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 part 'invoice_store.g.dart';
 
@@ -23,6 +29,9 @@ abstract class _InvoiceStore with Store {
   String selectedPaymentStatus = 'All';
 
   @observable
+  String selectedPaymentType = 'All';
+
+  @observable
   String searchQuery = '';
 
   @observable
@@ -30,6 +39,9 @@ abstract class _InvoiceStore with Store {
 
   @observable
   int currentTablePage = 0;
+
+  @observable
+  bool isFilterApplied = false;
 
   @observable
   int totalPages = 0;
@@ -47,6 +59,11 @@ abstract class _InvoiceStore with Store {
   @action
   void setSelectedPaymentStatus(String status) {
     selectedPaymentStatus = status;
+  }
+
+  @action
+  void setselectedPaymentTYpe(String status) {
+    selectedPaymentType = status;
   }
 
   @action
@@ -113,6 +130,14 @@ abstract class _InvoiceStore with Store {
   }
 
   @action
+  void isFiltersApplied() {
+    isFilterApplied = searchQuery.isNotEmpty ||
+        selectedPaymentStatus.toLowerCase() != 'all' ||
+        selectedPaymentType.toLowerCase() != 'all' ||
+        sortKey != null;
+  }
+
+  @action
   Future<void> deleteInvoice(String id) async {
     isLoading = true;
     errorMessage = null;
@@ -135,42 +160,74 @@ abstract class _InvoiceStore with Store {
   @computed
   List<InvoiceModel> get filteredData {
     List<InvoiceModel> filtered = invoices.toList();
-    if (selectedPaymentStatus != 'All') {
-      filtered = filtered
-          .where((item) =>
-              item.paymentStatus.name.toLowerCase() ==
-              selectedPaymentStatus.toLowerCase())
-          .toList();
-    }
-    if (searchQuery.isNotEmpty) {
-      filtered = filtered
-          .where((item) => item.toMap().values.any((v) =>
-              v.toString().toLowerCase().contains(searchQuery.toLowerCase())))
-          .toList();
-    }
-    return filtered;
+    return filtered.where((item) {
+      final query = searchQuery.toLowerCase();
+      final matchesSearch = item.invoiceId.toLowerCase().contains(query) ||
+          item.custName.toLowerCase().contains(query);
+
+      final paymentStatusStr =
+          item.paymentStatus.toString().split('.').last.toLowerCase();
+      final paymentTypeStr =
+          (item.paymentType?.toString().split('.').last.toLowerCase()) ?? '';
+
+      final matchesStatus = selectedPaymentStatus.toLowerCase() == 'all'
+          ? true
+          : paymentStatusStr == selectedPaymentStatus.toLowerCase();
+
+      final matchesType = selectedPaymentType.toLowerCase() == 'all'
+          ? true
+          : paymentTypeStr == selectedPaymentType.toLowerCase();
+
+      return matchesSearch && matchesStatus && matchesType;
+    }).toList();
   }
 
   @computed
   List<InvoiceModel> get sortedData {
-    List<InvoiceModel> sorted = [...filteredData];
+    final sorted = [...filteredData];
     if (sortKey != null) {
       sorted.sort((a, b) {
-        final aValue = a.toMap()[sortKey];
-        final bValue = b.toMap()[sortKey];
-        if (aValue == null || bValue == null) return 0;
-        return sortAsc
-            ? aValue.toString().compareTo(bValue.toString())
-            : bValue.toString().compareTo(aValue.toString());
+        final aValue = getFieldValue(a, sortKey!);
+        final bValue = getFieldValue(b, sortKey!);
+        return sortAsc ? aValue.compareTo(bValue) : bValue.compareTo(aValue);
       });
     }
     return sorted;
   }
 
+  String getFieldValue(InvoiceModel item, String key) {
+    switch (key) {
+      case 'invoiceId':
+        return item.invoiceId;
+      case 'date':
+        return item.date;
+      case 'size':
+        return item.size;
+      case 'rate':
+        return item.rate;
+      case 'amount':
+        return item.amount;
+      case 'custName':
+        return item.custName;
+      case 'transactionType':
+        return item.transactionType.name;
+      case 'custType':
+        return item.custType.name;
+      case 'paymentStatus':
+        return item.paymentStatus.name;
+      case 'paymentType':
+        return item.paymentType?.name ?? '';
+      case 'note':
+        return item.note ?? 'NA';
+      default:
+        return '';
+    }
+  }
+
   @computed
   List<InvoiceModel> get paginatedData {
-    final start = currentTablePage * 5;
-    final end = (start + 5).clamp(0, sortedData.length);
+    final start = currentTablePage * 10;
+    final end = (start + 10).clamp(0, sortedData.length);
     return sortedData.sublist(start, end);
   }
 
@@ -182,5 +239,103 @@ abstract class _InvoiceStore with Store {
       sortKey = key;
       sortAsc = true;
     }
+  }
+
+  @action
+  void clearFilters() {
+    searchQuery = '';
+    selectedPaymentStatus = 'All';
+    selectedPaymentType = 'All';
+    sortKey = null;
+    sortAsc = true;
+    isFilterApplied = false;
+  }
+
+  Future<void> exportPDF() async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.Page(
+        build: (context) {
+          return pw.TableHelper.fromTextArray(
+            data: <List<String>>[
+              <String>[
+                'Invoice ID',
+                'Date',
+                'Size',
+                'Rate',
+                'Amount',
+                'Customer Name',
+                'Transaction Type',
+                'Customer Type',
+                'Payment Status',
+                'Payment Type',
+                'Note',
+              ],
+              ...filteredData.map((item) => [
+                    item.invoiceId,
+                    item.date,
+                    item.size,
+                    item.rate,
+                    item.amount,
+                    item.custName,
+                    item.transactionType.toString().split('.').last,
+                    item.custType.toString().split('.').last,
+                    item.paymentStatus.toString().split('.').last,
+                    item.paymentType?.toString().split('.').last ?? '',
+                    item.note ?? '',
+                  ]),
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(onLayout: (format) => pdf.save());
+  }
+
+  Future<void> exportExcel() async {
+    var excelFile = excel.Excel.createExcel();
+    final sheet = excelFile['Sheet1'];
+
+    final headers = [
+      'Invoice ID',
+      'Date',
+      'Carat',
+      'Rate',
+      'Amount',
+      'Customer Name',
+      'Transaction Type',
+      'Customer Type',
+      'Payment Status',
+      'Payment Type',
+      'Note',
+    ];
+
+    sheet.appendRow(headers);
+
+    for (var item in filteredData) {
+      sheet.appendRow([
+        item.invoiceId,
+        item.date,
+        item.size,
+        item.rate,
+        item.amount,
+        item.custName,
+        item.transactionType.toString().split('.').last,
+        item.custType.toString().split('.').last,
+        item.paymentStatus.toString().split('.').last,
+        item.paymentType?.toString().split('.').last ?? '',
+        item.note ?? '',
+      ]);
+    }
+
+    final fileBytes = excelFile.encode();
+    if (fileBytes == null) return;
+
+    final directory = await getTemporaryDirectory();
+    final path = '${directory.path}/invoices_export.xlsx';
+    final file = File(path);
+    await file.writeAsBytes(fileBytes);
   }
 }

@@ -35,9 +35,6 @@ abstract class _CustomerStore with Store {
   String selectedUserType = 'All';
 
   @observable
-  String selectedRowCount = '5';
-
-  @observable
   bool isFilterApplied = false;
 
   @observable
@@ -73,11 +70,6 @@ abstract class _CustomerStore with Store {
   }
 
   @action
-  void setSelectedRowCount(final String text) {
-    selectedRowCount = text;
-  }
-
-  @action
   void setCurrentPageIndex(final int index) {
     currentTablePage = index;
   }
@@ -87,7 +79,7 @@ abstract class _CustomerStore with Store {
     if (filteredData.isEmpty) {
       totalPages = 0;
     } else {
-      totalPages = (filteredData.length / int.parse(selectedRowCount)).ceil();
+      totalPages = (filteredData.length / 10).ceil();
     }
   }
 
@@ -97,8 +89,12 @@ abstract class _CustomerStore with Store {
     setSearchText('');
     setSelectedUserType('All');
     setCurrentPageIndex(0);
-    setSelectedRowCount('5');
     isFilterApplied = false;
+  }
+
+  @action
+  void setIsFilterApplied(final bool value) {
+    isFilterApplied = value;
   }
 
   @action
@@ -183,7 +179,7 @@ abstract class _CustomerStore with Store {
   @computed
   List<CustomerModel> get filteredData {
     List<CustomerModel> filtered = customers.toList();
-    if (selectedUserType != 'All') {
+    if (selectedUserType.toLowerCase() != 'all') {
       filtered = filtered
           .where((item) =>
               item.usertype.name.toLowerCase() ==
@@ -217,9 +213,8 @@ abstract class _CustomerStore with Store {
 
   @computed
   List<CustomerModel> get paginatedData {
-    final start = currentTablePage * int.parse(selectedRowCount);
-    final end =
-        (start + int.parse(selectedRowCount)).clamp(0, sortedData.length);
+    final start = currentTablePage * 10;
+    final end = (start + 10).clamp(0, sortedData.length);
     return sortedData.sublist(start, end);
   }
 

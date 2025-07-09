@@ -5,8 +5,12 @@ import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
+import '../../widgets/custom_image_button.dart';
+import '../../widgets/custom_searchbar.dart';
+import '../../widgets/filter_dropdown_button.dart';
 import '../../widgets/invoice_form_widget.dart';
-import 'invoice_data_table.dart';
+import '../../widgets/normal_button.dart';
+import '../products/view/products_screen.dart';
 
 final getIt = GetIt.instance;
 
@@ -40,41 +44,313 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     } else {
       invoiceStore.setInvoices(userDataStore.invoices);
     }
+    invoiceStore.initSearchController();
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final List<TableColumn> columns = [
+      TableColumn(label: 'Invoice ID', key: 'invoiceId', isSortable: true),
+      TableColumn(label: 'Date', key: 'date', isSortable: true),
+      TableColumn(label: 'Size', key: 'size', isSortable: true),
+      TableColumn(label: 'Rate', key: 'rate', isSortable: true),
+      TableColumn(label: 'Amount', key: 'amount', isSortable: true),
+      TableColumn(label: 'Customer Name', key: 'custName'),
+      TableColumn(label: 'Customer Type', key: 'custType'),
+      TableColumn(label: 'Transaction Type', key: 'transactionType'),
+      TableColumn(label: 'Payment Status', key: 'paymentStatus'),
+      TableColumn(label: 'Payment Type', key: 'paymentType'),
+      TableColumn(label: 'Note', key: 'note'),
+      TableColumn(label: 'Actions', key: 'actions', isAction: true),
+    ];
     return Container(
       color: Colors.white,
       padding: EdgeInsets.all(24.dp),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _header(),
-          SizedBox(height: 24.dp),
-          Expanded(
-            child: Observer(builder: (context) {
-              return InvoiceDataTable(
-                data: invoiceStore.invoices, // from the store's invoices list
-                onDelete: (invoice) => _confirmDelete(context, invoice),
-                onEdit: (invoice) => _openInvoiceForm(context, invoice),
-                onExportPDF: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Exporting to PDF...')),
-                  );
-                },
-                onExportExcel: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Exporting to Excel...')),
-                  );
-                },
-              );
-            }),
+          Observer(builder: (context) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Invoice Management',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(
+                      0xFF111827,
+                    ),
+                  ),
+                ),
+                IntrinsicWidth(
+                  child: NormalButton(
+                    text: 'Create New Invoice',
+                    onPressed: () => _openInvoiceForm(context),
+                  ),
+                ),
+              ],
+            );
+          }),
+          SizedBox(height: 12.dp),
+          SizedBox(
+            width: double.infinity,
+            child: Divider(
+              thickness: 1.dp,
+              color: const Color(0xFFE5E7EB),
+            ),
           ),
+          SizedBox(height: 24.dp),
+          Observer(builder: (context) {
+            return SizedBox(
+              height: 40.dp,
+              child: Row(
+                children: [
+                  FilterDropdownButton(
+                    selectedValue: invoiceStore.selectedPaymentStatus,
+                    onChanged: (final value) {
+                      invoiceStore.setSelectedPaymentStatus(value ?? 'All');
+                      invoiceStore.isFiltersApplied();
+                    },
+                    items: const [
+                      'All',
+                      'Paid',
+                      'Unpaid',
+                    ],
+                  ),
+                  SizedBox(
+                    width: 8.dp,
+                  ),
+                  FilterDropdownButton(
+                    selectedValue: invoiceStore.selectedPaymentType,
+                    onChanged: (final value) {
+                      invoiceStore.setselectedPaymentTYpe(value ?? 'All');
+                      invoiceStore.isFiltersApplied();
+                    },
+                    items: const ['All', 'Cash', 'Cheque', 'Online'],
+                  ),
+                  SizedBox(
+                    width: 8.dp,
+                  ),
+                  SizedBox(
+                    width: 300.dp,
+                    child: CustomSearchBar(
+                      controller: invoiceStore.ledgerController,
+                      onChanged: (final value) {
+                        invoiceStore.setSearchQuery(value);
+                        invoiceStore.isFiltersApplied();
+                      },
+                      hintText: 'Search By Name, SSN Number, GST Number',
+                    ),
+                  ),
+                  const Spacer(),
+                  CustomImageButton(
+                    imagePath: 'assets/icons/pdf_icon.png',
+                    text: 'PDF',
+                    borderColor: const Color(0xffE5E7EB),
+                    buttonColor: Colors.white,
+                    onClicked: () {
+                      invoiceStore.exportPDF();
+                    },
+                  ),
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  CustomImageButton(
+                    imagePath: 'assets/icons/excel_icon.png',
+                    text: 'Excel',
+                    borderColor: const Color(0xffE5E7EB),
+                    buttonColor: Colors.white,
+                    onClicked: () {
+                      invoiceStore.exportExcel();
+                    },
+                  ),
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  Container(
+                    height: 30.dp,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: invoiceStore.isFilterApplied
+                              ? Colors.red
+                              : Colors.grey,
+                        )),
+                    child: IconButton(
+                      splashColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      focusColor: Colors.transparent,
+                      padding: EdgeInsets.zero,
+                      icon: Image.asset(
+                        'assets/icons/cross_icon.png',
+                        color: invoiceStore.isFilterApplied
+                            ? Colors.red
+                            : Colors.grey,
+                        width: 30.dp,
+                        height: 30.dp,
+                      ),
+                      tooltip: 'Clear All Filters',
+                      onPressed: invoiceStore.clearFilters,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+          SizedBox(
+            height: 24.dp,
+          ),
+          Observer(builder: (context) {
+            return Expanded(
+              child: SingleChildScrollView(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8.dp),
+                      border: Border.all(
+                        color: const Color(0xFFE5E7EB),
+                        width: 1.5.dp,
+                      ),
+                    ),
+                    child: DataTable(
+                      dividerThickness: 0.1.dp,
+                      headingRowHeight: 48,
+                      dataRowMinHeight: 48,
+                      headingRowColor:
+                          WidgetStateProperty.all(const Color(0xFFF9FAFB)),
+                      dataRowColor: WidgetStateProperty.resolveWith(
+                          (states) => Colors.white),
+                      showBottomBorder: false,
+                      columns: columns.map((col) {
+                        return DataColumn(
+                          label: InkWell(
+                            onTap: col.isSortable
+                                ? () => invoiceStore.setSortKey(col.key)
+                                : null,
+                            child: Row(
+                              children: [
+                                Text(
+                                  col.label,
+                                  style: TextStyle(
+                                    fontSize: 16.dp,
+                                    color: const Color(
+                                      0xFF4B5563,
+                                    ),
+                                  ),
+                                ),
+                                if (col.isSortable &&
+                                    invoiceStore.sortKey == col.key)
+                                  Icon(
+                                    invoiceStore.sortAsc
+                                        ? Icons.arrow_upward
+                                        : Icons.arrow_downward,
+                                    size: 14.dp,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      rows: invoiceStore.paginatedData.map((row) {
+                        return DataRow(
+                          cells: columns.map((col) {
+                            if (col.isAction) {
+                              return DataCell(Row(
+                                children: [
+                                  IconButton(
+                                    icon: Image.asset(
+                                      'assets/icons/edit_icon.png',
+                                    ),
+                                    onPressed: () {},
+                                    // onPressed: () => _openForm(context, row),
+                                  ),
+                                  IconButton(
+                                    icon: Image.asset(
+                                      'assets/icons/delete_icon.png',
+                                    ),
+                                    onPressed: () => _onDelete(context, row),
+                                  ),
+                                ],
+                              ));
+                            }
+                            return DataCell(
+                              Text(
+                                invoiceStore.getFieldValue(row, col.key),
+                                style: TextStyle(
+                                  fontSize: 14.dp,
+                                  color: const Color(0xFF111827),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: 10),
+          Observer(builder: (context) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: invoiceStore.currentTablePage > 0
+                      ? () => invoiceStore.setCurrentPageIndex(
+                          invoiceStore.currentTablePage - 1)
+                      : null,
+                  icon: const Icon(Icons.chevron_left),
+                ),
+                Text(
+                    'Page ${invoiceStore.currentTablePage + 1} of ${invoiceStore.totalPages}'),
+                IconButton(
+                  onPressed: invoiceStore.currentTablePage <
+                          invoiceStore.totalPages - 1
+                      ? () => invoiceStore.setCurrentPageIndex(
+                          invoiceStore.currentTablePage + 1)
+                      : null,
+                  icon: const Icon(Icons.chevron_right),
+                ),
+              ],
+            );
+          }),
         ],
       ),
+    );
+  }
+
+  void _onDelete(BuildContext context, InvoiceModel invoice) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete User'),
+          content: const Text('Are you sure you want to delete this Invoice?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                invoiceStore.deleteInvoice(
+                  invoice.invoiceId,
+                );
+                Navigator.of(context).pop();
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
     );
   }
 
