@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/Utils/generate_invoice.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
@@ -54,6 +55,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     final List<TableColumn> columns = [
       TableColumn(label: 'Invoice ID', key: 'invoiceId', isSortable: true),
       TableColumn(label: 'Date', key: 'date', isSortable: true),
+      TableColumn(label: 'Product Name', key: 'productName', isSortable: true),
       TableColumn(label: 'Size', key: 'size', isSortable: true),
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
@@ -282,11 +284,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                               ));
                             }
                             return DataCell(
-                              Text(
-                                invoiceStore.getFieldValue(row, col.key),
-                                style: TextStyle(
-                                  fontSize: 14.dp,
-                                  color: const Color(0xFF111827),
+                              InkWell(
+                                onTap: () {
+                                  generateTransactionInvoicePdf(row, context);
+                                },
+                                child: Text(
+                                  invoiceStore.getFieldValue(row, col.key),
+                                  style: TextStyle(
+                                    fontSize: 14.dp,
+                                    color: const Color(0xFF111827),
+                                  ),
                                 ),
                               ),
                             );

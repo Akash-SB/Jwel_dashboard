@@ -201,6 +201,8 @@ abstract class _InvoiceStore with Store {
         return item.invoiceId;
       case 'date':
         return item.date;
+      case 'productName':
+        return item.productName ?? 'N/A';
       case 'size':
         return item.size;
       case 'rate':

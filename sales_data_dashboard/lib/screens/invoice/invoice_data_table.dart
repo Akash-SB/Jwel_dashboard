@@ -88,6 +88,10 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
         return item.invoiceId;
       case 'date':
         return item.date;
+      case 'hsnCode':
+        return item.hsnCode;
+      case 'productName':
+        return item.productName ?? '';
       case 'size':
         return item.size;
       case 'rate':
@@ -150,6 +154,8 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
               <String>[
                 'Invoice ID',
                 'Date',
+                'HSN Code',
+                'Product Name',
                 'Carat',
                 'Rate',
                 'Amount',
@@ -163,6 +169,8 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
               ...filteredData.map((item) => [
                     item.invoiceId,
                     item.date,
+                    item.hsnCode,
+                    item.productName ?? '',
                     item.size,
                     item.rate,
                     item.amount,
@@ -189,6 +197,8 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
     final headers = [
       'Invoice ID',
       'Date',
+      'HSN Code',
+      'Product Name',
       'Carat',
       'Rate',
       'Amount',
@@ -329,6 +339,8 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
             columns: [
               _buildColumn('Invoice ID', 'invoiceId'),
               _buildColumn('Date', 'date'),
+              _buildColumn('HSN Code', 'hsnCode'),
+              _buildColumn('Product Name', 'productName'),
               _buildColumn('Carat', 'carat'),
               _buildColumn('Rate', 'rate'),
               _buildColumn('Amount', 'amount'),
@@ -343,6 +355,8 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
                 .map((item) => DataRow(cells: [
                       DataCell(Text(item.invoiceId)),
                       DataCell(Text(item.date)),
+                      DataCell(Text(item.hsnCode)),
+                      DataCell(Text(item.productName ?? '')),
                       DataCell(Text(item.size)),
                       DataCell(Text(item.rate)),
                       DataCell(Text(item.amount)),

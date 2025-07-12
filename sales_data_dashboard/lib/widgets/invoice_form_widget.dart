@@ -36,6 +36,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
   final _custNameController = TextEditingController();
   final _noteController = TextEditingController();
   final _prodNameController = TextEditingController();
+  final _hsnCodeController = TextEditingController();
 
   TransactionTypeEnum? _transactionType;
   UsertypeEnum? _custType;
@@ -61,6 +62,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
       _custType = invoice.custType;
       _paymentStatus = invoice.paymentStatus;
       _paymentType = invoice.paymentType;
+      _hsnCodeController.text = invoice.hsnCode;
+      _prodNameController.text = invoice.productName ?? '';
     } else {
       _invoiceIdController.text =
           DateTime.now().millisecondsSinceEpoch.toString();
@@ -78,6 +81,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
     _custNameController.dispose();
     _noteController.dispose();
     _prodNameController.dispose();
+    _hsnCodeController.dispose();
     super.dispose();
   }
 
@@ -97,8 +101,9 @@ class _InvoiceFormState extends State<InvoiceForm> {
         transactionType: _transactionType!,
         custType: _custType!,
         paymentStatus: _paymentStatus!,
-        paymentType: _paymentType,
-        productIds: [],
+        paymentType: _paymentType!,
+        productName: _prodNameController.text,
+        hsnCode: _hsnCodeController.text,
       );
 
       widget.onSubmit(invoiceData);
@@ -217,7 +222,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                                       ? 'Product name required'
                                       : null,
                               onChanged: (value) {
-                                _custNameController.text = value;
+                                _prodNameController.text = value;
                               },
                             );
                           },
@@ -257,6 +262,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                               _sizeController.text = selection.size;
                               _rateController.text = selection.rate;
                               _amountController.text = selection.amount;
+                              _hsnCodeController.text = selection.hsnCode;
                             });
                           },
                         ),
@@ -341,7 +347,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                       displayStringForOption: (CustomerModel option) =>
                           option.custName,
                       initialValue:
-                          TextEditingValue(text: _prodNameController.text),
+                          TextEditingValue(text: _custNameController.text),
                       fieldViewBuilder:
                           (context, controller, focusNode, onFieldSubmitted) {
                         return TextFormField(
@@ -352,7 +358,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                               ? 'Customer name required'
                               : null,
                           onChanged: (value) {
-                            _prodNameController.text = value;
+                            _custNameController.text = value;
                           },
                         );
                       },
@@ -390,6 +396,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                         setState(() {
                           _selectedCustomer = selection;
                           _custNameController.text = selection.custName;
+                          _custType = selection.usertype;
                         });
                       },
                     ),

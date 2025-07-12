@@ -7,13 +7,14 @@ class InvoiceModel {
   final String size;
   final String rate;
   final String amount;
-  final List<int> productIds;
   final TransactionTypeEnum transactionType;
   final UsertypeEnum custType;
   final String custName;
   final PaymentStatusEnum paymentStatus;
   final PaymentTypeEnum? paymentType;
   final String? note;
+  final String? productName;
+  final String hsnCode;
 
   InvoiceModel({
     required this.invoiceId,
@@ -21,13 +22,14 @@ class InvoiceModel {
     required this.size,
     required this.rate,
     required this.amount,
-    required this.productIds,
+    required this.productName,
     required this.transactionType,
     required this.custType,
     required this.custName,
     required this.paymentStatus,
     this.paymentType,
     this.note,
+    this.hsnCode = '',
   });
 
   /// Convert to Firestore map
@@ -37,7 +39,7 @@ class InvoiceModel {
         'carat': size,
         'rate': rate,
         'amount': amount,
-        'productIds': productIds,
+        'productName': productName,
         'transactionType': transactionType.name,
         'custType': custType.name,
         'custName': custName,
@@ -45,6 +47,7 @@ class InvoiceModel {
         'paymentType': paymentType?.name,
         'createdAt': FieldValue.serverTimestamp(),
         'note': note,
+        'hsnCode': hsnCode,
       };
 
   /// Construct from Firestore map
@@ -55,7 +58,7 @@ class InvoiceModel {
       size: map['carat'] ?? '',
       rate: map['rate'] ?? '',
       amount: map['amount'] ?? '',
-      productIds: List<int>.from(map['productIds'] ?? []),
+      productName: map['productName'] ?? '',
       transactionType: TransactionTypeEnum.values.firstWhere(
         (e) => e.name == map['transactionType'],
         orElse: () => TransactionTypeEnum.sell,
@@ -75,6 +78,8 @@ class InvoiceModel {
               orElse: () => PaymentTypeEnum.cash,
             )
           : null,
+      note: map['note'],
+      hsnCode: map['hsnCode'] ?? '',
     );
   }
 
@@ -92,13 +97,14 @@ class InvoiceModel {
       size: size,
       rate: rate,
       amount: amount,
-      productIds: List<int>.from(productIds),
+      productName: productName,
       transactionType: transactionType,
       custType: custType,
       custName: custName,
       paymentStatus: paymentStatus,
       paymentType: paymentType,
       note: note,
+      hsnCode: hsnCode,
     );
   }
 

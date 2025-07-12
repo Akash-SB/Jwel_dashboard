@@ -64,7 +64,9 @@ abstract class _TransactionStore with Store {
       custName: tx.custName,
       paymentStatus: tx.paymentStatus,
       paymentType: tx.paymentType,
-      productIds: [...tx.productIds],
+      note: tx.note,
+      hsnCode: tx.hsnCode,
+      productName: tx.productName,
     );
   }
 }
