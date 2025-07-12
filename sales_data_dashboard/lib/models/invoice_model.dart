@@ -101,4 +101,7 @@ class InvoiceModel {
       note: note,
     );
   }
+
+  double get parsedAmount => double.tryParse(amount) ?? 0.0;
+  DateTime get parsedDate => DateTime.tryParse(date) ?? DateTime.now();
 }

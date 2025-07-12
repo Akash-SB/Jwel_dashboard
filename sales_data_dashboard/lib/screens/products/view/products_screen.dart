@@ -237,7 +237,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                       icon: Image.asset(
                                         'assets/icons/delete_icon.png',
                                       ),
-                                      onPressed: () => _onDelete(context, row),
+                                      onPressed: () =>
+                                          _confirmDelete(context, row),
                                     ),
                                   ],
                                 ));
@@ -322,8 +323,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
       builder: (context) {
         return AlertDialog(
           title: Text(product == null ? 'Add Product' : 'Edit Product'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.dp),
+          ),
           content: SizedBox(
-            width: 400.dp, // Adjust as needed
+            width: 500.dp, // Adjust as needed
             child: ProductForm(
               existingProduct: product,
               onSubmit: (productData) {
@@ -346,30 +350,111 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  void _onDelete(BuildContext context, ProductModel product) {
+  void _confirmDelete(BuildContext context, ProductModel product) {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Delete Product'),
-          content: const Text('Are you sure you want to delete this product?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.dp),
+        ),
+        title: Text(
+          'Delete Product',
+          style: TextStyle(
+            fontSize: 20.dp,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF1A1A1A),
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Are you sure you want to delete this product?',
+              style: TextStyle(
+                fontSize: 14.dp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF4A4A4A),
+              ),
             ),
-            TextButton(
-              onPressed: () {
-                productStore.deleteProduct(
-                  product.id,
-                );
-                Navigator.of(context).pop();
-              },
-              child: const Text('Delete'),
+            SizedBox(
+              height: 32.dp,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                InkWell(
+                  onTap: () => Navigator.pop(ctx),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(
+                        0xFFF3F4F6,
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.dp),
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8.dp,
+                      horizontal: 16.dp,
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 14.dp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(
+                          0xFF374151,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 12.dp,
+                ),
+                InkWell(
+                  onTap: () {
+                    productStore.deleteProduct(
+                      product.id,
+                    );
+                    Navigator.of(context).pop();
+                  },
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.dp),
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8.dp,
+                      horizontal: 16.dp,
+                    ),
+                    child: Text(
+                      'Yes, Delete',
+                      style: TextStyle(
+                        fontSize: 14.dp,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(
+                          0xFFFFFFFF,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }

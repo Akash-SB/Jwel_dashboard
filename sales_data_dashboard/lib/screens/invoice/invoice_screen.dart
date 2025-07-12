@@ -267,14 +267,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                     icon: Image.asset(
                                       'assets/icons/edit_icon.png',
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () =>
+                                        _openInvoiceForm(context, row),
                                     // onPressed: () => _openForm(context, row),
                                   ),
                                   IconButton(
                                     icon: Image.asset(
                                       'assets/icons/delete_icon.png',
                                     ),
-                                    onPressed: () => _onDelete(context, row),
+                                    onPressed: () =>
+                                        _confirmDelete(context, row),
                                   ),
                                 ],
                               ));
@@ -327,72 +329,39 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
   }
 
-  void _onDelete(BuildContext context, InvoiceModel invoice) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Delete User'),
-          content: const Text('Are you sure you want to delete this Invoice?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                invoiceStore.deleteInvoice(
-                  invoice.invoiceId,
-                );
-                Navigator.of(context).pop();
-              },
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _header() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          "Invoice Management",
-          style: TextStyle(
-            color: const Color(0xff1F2937),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () => _openInvoiceForm(context),
-          child: const Text(
-            "Create an Invoice",
-          ),
-        )
-      ],
-    );
-  }
-
   void _openInvoiceForm(BuildContext context, [InvoiceModel? existingInvoice]) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
-        scrollable: true,
-        content: InvoiceForm(
-          existingInvoice: existingInvoice,
-          onSubmit: (invoiceData) {
-            invoiceStore.addInvoice(invoiceData);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Invoice ${invoiceData.invoiceId} added')),
-            );
-            Navigator.pop(context); // Close bottom sheet
-          },
-          customers: userDataStore.customers,
-          products: userDataStore.products,
+        // scrollable: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.dp),
+        ),
+        title: Text(
+          existingInvoice != null ? 'Edit Invoice' : 'Create Invoice',
+          style: TextStyle(
+            fontSize: 24.dp,
+            fontWeight: FontWeight.w600,
+            color: const Color(
+              0xFF111827,
+            ),
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: InvoiceForm(
+            existingInvoice: existingInvoice,
+            onSubmit: (invoiceData) {
+              invoiceStore.addInvoice(invoiceData);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text('Invoice ${invoiceData.invoiceId} added')),
+              );
+              Navigator.pop(context); // Close bottom sheet
+            },
+            customers: userDataStore.customers,
+            products: userDataStore.products,
+          ),
         ),
       ),
     );
@@ -402,26 +371,110 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Delete Invoice'),
-        content: Text(
-            'Are you sure you want to delete invoice ${invoice.invoiceId}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.dp),
+        ),
+        title: Text(
+          'Delete Invoice',
+          style: TextStyle(
+            fontSize: 20.dp,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF1A1A1A),
           ),
-          ElevatedButton(
-            onPressed: () {
-              invoiceStore.deleteInvoice(invoice.invoiceId);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Invoice ${invoice.invoiceId} deleted')),
-              );
-              setState(() {});
-              Navigator.pop(ctx);
-            },
-            child: Text('Yes, Delete'),
-          ),
-        ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Are you sure you want to delete invoice ${invoice.invoiceId}?',
+              style: TextStyle(
+                fontSize: 14.dp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF4A4A4A),
+              ),
+            ),
+            SizedBox(
+              height: 32.dp,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                InkWell(
+                  onTap: () => Navigator.pop(ctx),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(
+                        0xFFF3F4F6,
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.dp),
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8.dp,
+                      horizontal: 16.dp,
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 14.dp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(
+                          0xFF374151,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 12.dp,
+                ),
+                InkWell(
+                  onTap: () {
+                    invoiceStore.deleteInvoice(invoice.invoiceId);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Invoice ${invoice.invoiceId} deleted')),
+                    );
+                    setState(() {});
+                    Navigator.pop(ctx);
+                  },
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.dp),
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8.dp,
+                      horizontal: 16.dp,
+                    ),
+                    child: Text(
+                      'Yes, Delete',
+                      style: TextStyle(
+                        fontSize: 14.dp,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(
+                          0xFFFFFFFF,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

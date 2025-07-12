@@ -362,8 +362,11 @@ class _UsersScreenState extends State<UsersScreen> {
       builder: (context) {
         return AlertDialog(
           title: Text(customer == null ? 'Add User' : 'Edit User'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.dp),
+          ),
           content: SizedBox(
-            width: 400, // Adjust as needed
+            width: 500.dp, // Adjust as needed
             child: CustomerForm(
               existingCustomer: customer,
               onSubmit: (customerData) {
@@ -389,25 +392,106 @@ class _UsersScreenState extends State<UsersScreen> {
   void _onDelete(BuildContext context, CustomerModel customer) {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Delete User'),
-          content: const Text('Are you sure you want to delete this user?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.dp),
+        ),
+        title: Text(
+          'Delete User',
+          style: TextStyle(
+            fontSize: 20.dp,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF1A1A1A),
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Are you sure you want to delete this user?',
+              style: TextStyle(
+                fontSize: 14.dp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF4A4A4A),
+              ),
             ),
-            TextButton(
-              onPressed: () {
-                customerStore.deleteCustomer(customer.id!);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Delete'),
+            SizedBox(
+              height: 32.dp,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                InkWell(
+                  onTap: () => Navigator.pop(ctx),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(
+                        0xFFF3F4F6,
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.dp),
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8.dp,
+                      horizontal: 16.dp,
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 14.dp,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(
+                          0xFF374151,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 12.dp,
+                ),
+                InkWell(
+                  onTap: () {
+                    customerStore.deleteCustomer(customer.id!);
+                    Navigator.of(context).pop();
+                  },
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.dp),
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8.dp,
+                      horizontal: 16.dp,
+                    ),
+                    child: Text(
+                      'Yes, Delete',
+                      style: TextStyle(
+                        fontSize: 14.dp,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(
+                          0xFFFFFFFF,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/customer_model.dart';
 import 'package:sales_data_dashboard/models/app_enum.dart';
+
+import '../../widgets/normal_button.dart';
 
 class CustomerForm extends StatefulWidget {
   final CustomerModel? existingCustomer;
@@ -89,8 +92,9 @@ class _CustomerFormState extends State<CustomerForm> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -99,88 +103,105 @@ class _CustomerFormState extends State<CustomerForm> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 24),
-                TextFormField(
-                  controller: _custNameController,
-                  decoration: _inputDecoration('Customer Name'),
-                  validator: (value) =>
-                      value == null || value.trim().isEmpty ? 'Required' : null,
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _custNameController,
+                        decoration: _inputDecoration('Customer Name'),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                                ? 'Required'
+                                : null,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 12.dp,
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _mobileController,
+                        keyboardType: TextInputType.phone,
+                        decoration: _inputDecoration('Mobile Number'),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Required';
+                          }
+                          final isValid =
+                              RegExp(r'^[0-9]{10}$').hasMatch(value);
+                          return isValid ? null : 'Enter valid 10-digit number';
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _mobileController,
-                  keyboardType: TextInputType.phone,
-                  decoration: _inputDecoration('Mobile Number'),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Required';
-                    }
-                    final isValid = RegExp(r'^[0-9]{10}$').hasMatch(value);
-                    return isValid ? null : 'Enter valid 10-digit number';
-                  },
+                SizedBox(height: 24.dp),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _gstController,
+                        decoration: _inputDecoration('GST Number'),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                                ? 'Required'
+                                : null,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 12.dp,
+                    ),
+                    Expanded(
+                      child: DropdownButtonFormField<UsertypeEnum>(
+                        value: _userType,
+                        iconEnabledColor: Colors.grey,
+                        iconDisabledColor: Colors.grey,
+                        decoration: _inputDecoration('Customer Type'),
+                        items: UsertypeEnum.values.map((e) {
+                          return DropdownMenuItem(
+                            value: e,
+                            child: Text(e.name.toUpperCase()),
+                          );
+                        }).toList(),
+                        onChanged: (value) => setState(() => _userType = value),
+                        validator: (value) => value == null ? 'Required' : null,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _gstController,
-                  decoration: _inputDecoration('GST Number'),
-                  validator: (value) =>
-                      value == null || value.trim().isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<UsertypeEnum>(
-                  value: _userType,
-                  iconEnabledColor: Colors.grey,
-                  iconDisabledColor: Colors.grey,
-                  decoration: _inputDecoration('Customer Type'),
-                  items: UsertypeEnum.values.map((e) {
-                    return DropdownMenuItem(
-                      value: e,
-                      child: Text(e.name.toUpperCase()),
-                    );
-                  }).toList(),
-                  onChanged: (value) => setState(() => _userType = value),
-                  validator: (value) => value == null ? 'Required' : null,
-                ),
-                const SizedBox(height: 12),
+                SizedBox(height: 24.dp),
                 TextFormField(
                   controller: _addressController,
                   maxLines: 3,
                   decoration: _inputDecoration('Address (Optional)'),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.dp),
+                const SizedBox(
+                  width: double.infinity,
+                  child: Divider(
+                    color: Color(0xFFE5E7EB),
+                  ),
+                ),
+                SizedBox(height: 12.dp),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Expanded(
-                      child: OutlinedButton(
+                    IntrinsicWidth(
+                      child: NormalButton(
                         onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.grey),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text('Cancel',
-                            style: TextStyle(color: Colors.black)),
+                        text: 'Cancel',
+                        filledColor: const Color(0xFFF3F4F6),
+                        textColor: Colors.blue,
+                        borderColor: Colors.blueAccent,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
+                    SizedBox(width: 12.dp),
+                    IntrinsicWidth(
+                      child: NormalButton(
                         onPressed: _submitForm,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          widget.existingCustomer != null
-                              ? 'Update Customer'
-                              : 'Create Customer',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        text: widget.existingCustomer != null
+                            ? 'Update Customer'
+                            : 'Create Customer',
                       ),
                     ),
                   ],

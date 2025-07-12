@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/product_model.dart';
+
+import '../../../widgets/normal_button.dart';
 
 class ProductForm extends StatefulWidget {
   final ProductModel? existingProduct;
@@ -102,83 +105,101 @@ class _ProductFormState extends State<ProductForm> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 24),
                 TextFormField(
                   controller: _hsnController,
                   decoration: _inputDecoration('HSN Code'),
                   validator: (value) =>
                       value == null || value.trim().isEmpty ? 'Required' : null,
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: _inputDecoration('Product Name'),
-                  validator: (value) =>
-                      value == null || value.trim().isEmpty ? 'Required' : null,
+                SizedBox(height: 24.dp),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _nameController,
+                        decoration: _inputDecoration('Product Name'),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                                ? 'Required'
+                                : null,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 12.dp,
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _sizeController,
+                        decoration: _inputDecoration('Size'),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                                ? 'Required'
+                                : null,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _sizeController,
-                  decoration: _inputDecoration('Size'),
-                  validator: (value) =>
-                      value == null || value.trim().isEmpty ? 'Required' : null,
+                SizedBox(height: 24.dp),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _rateController,
+                        keyboardType: TextInputType.number,
+                        decoration: _inputDecoration('Rate'),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                                ? 'Required'
+                                : null,
+                      ),
+                    ),
+                    SizedBox(width: 12.dp),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _amountController,
+                        keyboardType: TextInputType.number,
+                        decoration: _inputDecoration('Amount'),
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                                ? 'Required'
+                                : null,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _rateController,
-                  keyboardType: TextInputType.number,
-                  decoration: _inputDecoration('Rate'),
-                  validator: (value) =>
-                      value == null || value.trim().isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _amountController,
-                  keyboardType: TextInputType.number,
-                  decoration: _inputDecoration('Amount'),
-                  validator: (value) =>
-                      value == null || value.trim().isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 12),
+                SizedBox(height: 24.dp),
                 TextFormField(
                   controller: _descController,
                   maxLines: 3,
                   decoration: _inputDecoration('Description (Optional)'),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.dp),
+                const SizedBox(
+                  width: double.infinity,
+                  child: Divider(
+                    color: Color(0xFFE5E7EB),
+                  ),
+                ),
+                SizedBox(height: 12.dp),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Expanded(
-                      child: OutlinedButton(
+                    IntrinsicWidth(
+                      child: NormalButton(
                         onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.grey),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text('Cancel',
-                            style: TextStyle(color: Colors.black)),
+                        text: 'Cancel',
+                        filledColor: const Color(0xFFF3F4F6),
+                        textColor: Colors.blue,
+                        borderColor: Colors.blueAccent,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
+                    SizedBox(width: 12.dp),
+                    IntrinsicWidth(
+                      child: NormalButton(
                         onPressed: _submitForm,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          widget.existingProduct != null
-                              ? 'Update Product'
-                              : 'Create Product',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        text: widget.existingProduct != null
+                            ? 'Update Product'
+                            : 'Create Product',
                       ),
                     ),
                   ],

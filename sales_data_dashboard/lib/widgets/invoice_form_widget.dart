@@ -155,41 +155,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.existingInvoice != null
-                      ? 'Edit Invoice'
-                      : 'Create Invoice',
-                  style: TextStyle(
-                    fontSize: 24.dp,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(
-                      0xFF111827,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(
-                    Icons.close,
-                    size: 24.dp,
-                    color: const Color(
-                      0xFF4B5563,
-                    ),
-                  ),
-                )
-              ],
-            ),
-            SizedBox(height: 8.dp),
-            SizedBox(
-              width: double.infinity,
-              child: Divider(
-                color: const Color(0xFFE5E7EB),
-                thickness: 1.dp,
-              ),
-            ),
             SizedBox(height: 24.dp),
             Row(
               children: [
@@ -514,11 +479,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                     ),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: 12.dp),
-            Row(
-              children: [
+                SizedBox(width: 12.dp),
                 Expanded(
                   child: DropdownButtonFormField<TransactionTypeEnum>(
                     value: _transactionType,
@@ -535,31 +496,36 @@ class _InvoiceFormState extends State<InvoiceForm> {
                     validator: (value) => value == null ? 'Required' : null,
                   ),
                 ),
-                const Expanded(child: SizedBox())
               ],
             ),
             SizedBox(height: 24.dp),
-            // Note
             TextFormField(
               controller: _noteController,
               decoration: _inputDecoration('Note (Optional)'),
               maxLines: 3,
             ),
             SizedBox(height: 24.dp),
-
+            const SizedBox(
+              width: double.infinity,
+              child: Divider(
+                color: Color(0xFFE5E7EB),
+              ),
+            ),
+            SizedBox(height: 12.dp),
             Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
+                IntrinsicWidth(
                   child: NormalButton(
                     onPressed: () => Navigator.pop(context),
                     text: 'Cancel',
-                    filledColor: Colors.white,
+                    filledColor: const Color(0xFFF3F4F6),
                     textColor: Colors.blue,
                     borderColor: Colors.blueAccent,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
+                SizedBox(width: 12.dp),
+                IntrinsicWidth(
                   child: NormalButton(
                     onPressed: _submitForm,
                     text: widget.existingInvoice != null
