@@ -37,22 +37,24 @@ class FilterDropdownButton extends StatelessWidget {
           child: DropdownButton<String>(
             value: selectedValue,
             onChanged: onChanged,
-            icon: const Icon(Icons.keyboard_arrow_down),
+            icon: const Icon(
+              Icons.keyboard_arrow_down,
+            ),
             isDense: true,
             dropdownColor: Colors.white,
-            style: const TextStyle(color: Colors.black),
+            style: const TextStyle(
+              color: Colors.black,
+            ),
             items: items.map((item) {
               final bool isSelected = item == selectedValue;
               return DropdownMenuItem<String>(
                 value: item,
                 child: Container(
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFFEAF1FF) : Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8.dp,
+                    vertical: 4.dp,
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: Text(
                     item,
                     style: TextStyle(
@@ -71,7 +73,7 @@ class FilterDropdownButton extends StatelessWidget {
                   children: [
                     if (imagePath != null)
                       Padding(
-                        padding: const EdgeInsets.only(right: 6),
+                        padding: EdgeInsets.only(right: 6.dp),
                         child: Image.asset(
                           imagePath!,
                           height: 18,
@@ -80,11 +82,16 @@ class FilterDropdownButton extends StatelessWidget {
                         ),
                       )
                     else
-                      const Padding(
-                        padding: EdgeInsets.only(right: 6),
-                        child: Icon(Icons.filter_alt, size: 18),
+                      Padding(
+                        padding: EdgeInsets.only(right: 6.dp),
+                        child: Icon(
+                          Icons.filter_alt,
+                          size: 18.dp,
+                        ),
                       ),
-                    Text(item),
+                    Text(
+                      item,
+                    ),
                   ],
                 );
               }).toList();

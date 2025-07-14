@@ -38,70 +38,204 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
         date: DateTime(2024, 2, 18),
         title: 'Supplier payment processed',
         amount: -3200.00),
+    Activity(
+        date: DateTime(2024, 2, 18),
+        title: 'New client account created',
+        amount: null),
+    Activity(
+        date: DateTime(2024, 2, 18),
+        title: 'Supplier payment processed',
+        amount: -3200.00),
+    Activity(
+        date: DateTime(2024, 2, 18),
+        title: 'New client account created',
+        amount: null),
+    Activity(
+        date: DateTime(2024, 2, 18),
+        title: 'Supplier payment processed',
+        amount: -3200.00),
   ];
 
   @override
   Widget build(BuildContext context) {
     final monthlyData = getMonthlyTotals(transactions);
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.all(24.dp),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _header(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height:
-                              300, // Set fixed height to avoid layout issues
-                          child: BarChart(buildBarChartData(monthlyData)),
-                        ),
-                        const SizedBox(height: 20),
-                        buildSummaryCards(transactions),
-                      ],
-                    ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        surfaceTintColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          'Dashboard Management',
+          style: TextStyle(
+            fontSize: 20.dp,
+            fontWeight: FontWeight.bold,
+            color: const Color(
+              0xFF111827,
+            ),
+          ),
+        ),
+        actions: [
+          Builder(
+            builder: (context) => InkWell(
+              splashColor: Colors.white,
+              hoverColor: Colors.white,
+              highlightColor: Colors.white,
+              focusColor: Colors.white,
+              onTap: () {
+                Scaffold.of(context).openEndDrawer();
+              },
+              child: Container(
+                padding: EdgeInsets.all(
+                  8.dp,
+                ),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFF6B7280),
                   ),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: RecentActivityCard(activities: activities),
+                child: Image.asset(
+                  width: 16.dp,
+                  height: 16.dp,
+                  'assets/icons/notf_icon.png',
                 ),
-              ],
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 16.dp,
+          ),
+        ],
+      ),
+      endDrawer: const Drawer(
+        child: Column(
+          children: [
+            DrawerHeader(
+              child: Text('Right Drawer'),
+            ),
+            ListTile(
+              title: Text('Option 1'),
+            ),
+            ListTile(
+              title: Text('Option 2'),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _header() {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "Dashboard",
-          style: TextStyle(
-            color: Color(0xff1F2937),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+      body: Container(
+        color: Colors.white,
+        padding: EdgeInsets.all(24.dp),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Sales vs Purchase Analysis',
+                style: TextStyle(
+                  fontSize: 18.dp,
+                  color: const Color(0xFF111827),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                'Last 6 Months Transaction Overview',
+                style: TextStyle(
+                  fontSize: 12.dp,
+                  color: const Color(0xFF6B7280),
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              SizedBox(
+                height: 12.dp,
+              ),
+              SizedBox(
+                height: 400.dp,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: BarChart(
+                          buildBarChartData(monthlyData),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 4.dp,
+                    ),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 4.dp,
+                          horizontal: 8.dp,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color(0xFFF3F4F6),
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(
+                              8.dp,
+                            ),
+                          ),
+                        ),
+                        child: ListView.separated(
+                          itemCount: activities.length,
+                          separatorBuilder: (context, index) => const Divider(
+                            color: Color(
+                              0xFFF3F4F6,
+                            ),
+                          ),
+                          itemBuilder: (context, index) {
+                            final activity = activities[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(activity.date),
+                                    style: TextStyle(
+                                        color: Colors.grey[600], fontSize: 12),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(activity.title,
+                                      style: const TextStyle(fontSize: 14)),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    activity.amount != null
+                                        ? "${activity.amount! >= 0 ? "+" : "-"}\$${activity.amount!.abs().toStringAsFixed(2)}"
+                                        : "-",
+                                    style: TextStyle(
+                                      color: activity.amount == null
+                                          ? Colors.orange
+                                          : activity.amount! >= 0
+                                              ? Colors.green
+                                              : Colors.deepOrange,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20.dp),
+              buildSummaryCards(transactions),
+            ],
           ),
         ),
-        // ElevatedButton(
-        //   onPressed: () {},
-        //   child: const Text(
-        //     "Create an Invoice",
-        //   ),
-        // )
-      ],
+      ),
     );
   }
 
@@ -117,15 +251,34 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
     final net = totalSales - totalPurchase;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _SummaryCard(
-            title: 'Total Sales', amount: totalSales, color: Colors.green),
-        _SummaryCard(
+        Flexible(
+          child: _SummaryCard(
+            title: 'Total Sales',
+            amount: totalSales,
+            color: Colors.green,
+          ),
+        ),
+        SizedBox(
+          width: 24.dp,
+        ),
+        Flexible(
+          child: _SummaryCard(
             title: 'Total Purchases',
             amount: totalPurchase,
-            color: Colors.orange),
-        _SummaryCard(title: 'Net Difference', amount: net, color: Colors.blue),
+            color: Colors.orange,
+          ),
+        ),
+        SizedBox(
+          width: 24.dp,
+        ),
+        Flexible(
+          child: _SummaryCard(
+            title: 'Net Difference',
+            amount: net,
+            color: Colors.blue,
+          ),
+        ),
       ],
     );
   }
@@ -161,19 +314,39 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
     });
 
     return BarChartData(
+      gridData: const FlGridData(
+        drawVerticalLine: false,
+      ),
+      barTouchData: BarTouchData(
+        enabled: false,
+      ),
+      borderData: FlBorderData(
+        border: Border.all(
+          color: const Color(0xFFE5E7EB),
+        ),
+      ),
       barGroups: barGroups,
       titlesData: FlTitlesData(
-        leftTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: true),
-        ),
+        topTitles: const AxisTitles(
+            sideTitles: SideTitles(
+          showTitles: false,
+        )),
+        rightTitles: const AxisTitles(
+            sideTitles: SideTitles(
+          showTitles: false,
+        )),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             getTitlesWidget: (value, meta) {
               final index = value.toInt();
               if (index < monthlyData.length) {
-                return Text(monthlyData.keys.elementAt(index),
-                    style: const TextStyle(fontSize: 10));
+                return Text(
+                  monthlyData.keys.elementAt(index),
+                  style: const TextStyle(
+                    fontSize: 10,
+                  ),
+                );
               }
               return const SizedBox.shrink();
             },
@@ -216,22 +389,53 @@ class _SummaryCard extends StatelessWidget {
   final double amount;
   final Color color;
 
-  const _SummaryCard(
-      {required this.title, required this.amount, required this.color});
+  const _SummaryCard({
+    required this.title,
+    required this.amount,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text("\$${amount.toStringAsFixed(2)}",
-                style: TextStyle(color: color, fontSize: 16)),
-          ],
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        vertical: 16.dp,
+        horizontal: 16.dp,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: const Color(
+            0xFFE5E7EB,
+          ),
         ),
+        borderRadius: BorderRadius.all(
+          Radius.circular(8.dp),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14.dp,
+              color: const Color(
+                0xFF4B5563,
+              ),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 8.dp),
+          Text(
+            "\$${amount.toStringAsFixed(2)}",
+            style: TextStyle(
+              color: color,
+              fontSize: 24.dp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -240,51 +444,59 @@ class _SummaryCard extends StatelessWidget {
 class RecentActivityCard extends StatelessWidget {
   final List<Activity> activities;
 
-  const RecentActivityCard({required this.activities});
+  const RecentActivityCard({
+    super.key,
+    required this.activities,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Recent Activities',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            const SizedBox(height: 16),
-            ...activities.map((activity) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(DateFormat('yyyy-MM-dd').format(activity.date),
-                          style:
-                              TextStyle(color: Colors.grey[600], fontSize: 12)),
-                      const SizedBox(height: 4),
-                      Text(activity.title, style: TextStyle(fontSize: 14)),
-                      const SizedBox(height: 4),
-                      Text(
-                        activity.amount != null
-                            ? "${activity.amount! >= 0 ? "+" : "-"}\$${activity.amount!.abs().toStringAsFixed(2)}"
-                            : "-",
-                        style: TextStyle(
-                          color: activity.amount == null
-                              ? Colors.orange
-                              : activity.amount! >= 0
-                                  ? Colors.green
-                                  : Colors.deepOrange,
-                          fontWeight: FontWeight.w500,
-                        ),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Recent Activities',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18.dp,
+            ),
+          ),
+          SizedBox(height: 16.dp),
+          ...activities.map((activity) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      DateFormat('yyyy-MM-dd').format(activity.date),
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12.dp,
                       ),
-                      const Divider(),
-                    ],
-                  ),
-                )),
-          ],
-        ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(activity.title, style: const TextStyle(fontSize: 14)),
+                    const SizedBox(height: 4),
+                    Text(
+                      activity.amount != null
+                          ? "${activity.amount! >= 0 ? "+" : "-"}\$${activity.amount!.abs().toStringAsFixed(2)}"
+                          : "-",
+                      style: TextStyle(
+                        color: activity.amount == null
+                            ? Colors.orange
+                            : activity.amount! >= 0
+                                ? Colors.green
+                                : Colors.deepOrange,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const Divider(),
+                  ],
+                ),
+              )),
+        ],
       ),
     );
   }
