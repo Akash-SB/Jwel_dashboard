@@ -37,12 +37,12 @@ class _ShowUserInfoScreenState extends State<ShowUserInfoScreen> {
   Widget build(BuildContext context) {
     final customer = widget.customer;
     final List<TableColumn> columns = [
-      TableColumn(label: 'Invoice ID', key: 'id', isSortable: true),
+      TableColumn(label: 'Invoice ID', key: 'invoiceId', isSortable: true),
       TableColumn(label: 'Date', key: 'date', isSortable: true),
       TableColumn(label: 'Carat', key: 'carat', isSortable: true),
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
-      TableColumn(label: 'Customer Name', key: 'customerName', isAction: true),
+      TableColumn(label: 'Customer Name', key: 'custName', isAction: true),
       TableColumn(
           label: 'Payment Status', key: 'paymentStatus', isAction: true),
       TableColumn(label: 'Payment Type', key: 'paymentType', isAction: true),
@@ -195,7 +195,10 @@ class _ShowUserInfoScreenState extends State<ShowUserInfoScreen> {
                         ),
                       );
                     }).toList(),
-                    rows: invoiceStore.paginatedData.map((row) {
+                    rows: invoiceStore.paginatedData
+                        .where(
+                            (data) => data.custName == widget.customer.custName)
+                        .map((row) {
                       return DataRow(
                         cells: columns.map((col) {
                           return DataCell(
