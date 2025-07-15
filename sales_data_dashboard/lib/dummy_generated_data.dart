@@ -1,12 +1,9 @@
-import 'dart:math';
-
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 
 import 'models/app_enum.dart';
 
 List<InvoiceModel> generateDummyTransactions() {
   final now = DateTime.now();
-  final random = Random();
 
   List<InvoiceModel> dummy = [];
 

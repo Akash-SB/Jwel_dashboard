@@ -1,22 +1,28 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show ByteData, Uint8List, rootBundle;
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
 import '../models/invoice_model.dart';
-import 'package:intl/intl.dart';
 
-Future<void> generateTransactionInvoicePdf(
-    InvoiceModel tx, final BuildContext context) async {
+/// Generate PDF as bytes
+Future<Uint8List> generateTransactionInvoicePdfBytes(
+    InvoiceModel tx, CompanyModel selectedParentCompany) async {
   final pdf = pw.Document();
 
   // Load logo
   final ByteData logoData = await rootBundle.load('assets/logo.jpg');
   final Uint8List logoBytes = logoData.buffer.asUint8List();
+
+  // Load font for ₹ symbol
   final robotoFont =
       pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto-Regular.ttf'));
 
-  // Financial calculations
+  // Calculations
   final double qty = double.tryParse(tx.size) ?? 0;
   final double rate = double.tryParse(tx.rate) ?? 0;
   final double baseAmount = double.tryParse(tx.amount) ?? (qty * rate);
@@ -27,15 +33,12 @@ Future<void> generateTransactionInvoicePdf(
   final double roundOff = rawTotal.roundToDouble() - rawTotal;
   final double grandTotal = rawTotal + roundOff;
 
-  // Convert total to words
   final formatter = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
-  final totalInWords =
-      "INR ${NumberFormat.compact().format(grandTotal)} Only"; // optional: use a words converter
 
   pdf.addPage(
     pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
-      margin: pw.EdgeInsets.all(24),
+      margin: const pw.EdgeInsets.all(24),
       build: (context) => [
         // Header
         pw.Row(
@@ -45,52 +48,56 @@ Future<void> generateTransactionInvoicePdf(
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.end,
               children: [
-                pw.Text("Your Company Name",
+                pw.Text(selectedParentCompany.name,
                     style: pw.TextStyle(
-                      fontSize: 16,
-                      fontWeight: pw.FontWeight.bold,
-                    )),
-                pw.Text("GSTIN: 27ABCDE1234F1Z5"),
-                pw.Text("Phone: +91-9999999999"),
+                        fontSize: 16,
+                        fontWeight: pw.FontWeight.bold,
+                        font: robotoFont)),
+                pw.Text("GSTIN: ${selectedParentCompany.gstin}",
+                    style: pw.TextStyle(font: robotoFont)),
+                pw.Text("Phone: ${selectedParentCompany.phone}",
+                    style: pw.TextStyle(font: robotoFont)),
               ],
             ),
           ],
         ),
         pw.SizedBox(height: 20),
 
-        // Invoice and customer info
+        // Invoice info
         pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text("Invoice No: ${tx.invoiceId}"),
-                pw.Text("Date: ${tx.date}"),
-                pw.Text("Transaction Type: ${tx.transactionType.name}"),
+                pw.Text("Invoice No: ${tx.invoiceId}",
+                    style: pw.TextStyle(font: robotoFont)),
+                pw.Text("Date: ${tx.date}",
+                    style: pw.TextStyle(font: robotoFont)),
+                pw.Text("Transaction Type: ${tx.transactionType.name}",
+                    style: pw.TextStyle(font: robotoFont)),
               ],
             ),
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.end,
               children: [
                 pw.Text("Customer: ${tx.custName}",
-                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                pw.Text("Customer Type: ${tx.custType.name}"),
+                    style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold, font: robotoFont)),
+                pw.Text("Customer Type: ${tx.custType.name}",
+                    style: pw.TextStyle(font: robotoFont)),
               ],
             ),
           ],
         ),
         pw.SizedBox(height: 20),
 
-        // Item Table Header
+        // Table
         pw.TableHelper.fromTextArray(
           border: pw.TableBorder.all(),
-          headerStyle:
-              pw.TextStyle(fontWeight: pw.FontWeight.bold, font: robotoFont),
-          cellStyle: pw.TextStyle(
-            font: robotoFont,
-            fontSize: 10,
-          ),
+          headerStyle: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold, font: robotoFont, fontSize: 10),
+          cellStyle: pw.TextStyle(font: robotoFont, fontSize: 9),
           cellAlignments: {
             0: pw.Alignment.center,
             1: pw.Alignment.centerLeft,
@@ -112,7 +119,7 @@ Future<void> generateTransactionInvoicePdf(
           data: [
             [
               '1',
-              tx.productName ?? 'N/A',
+              tx.note ?? 'Goods',
               tx.hsnCode,
               '${tx.size} Carat',
               tx.rate,
@@ -124,7 +131,7 @@ Future<void> generateTransactionInvoicePdf(
               'IGST',
               '',
               '',
-              '0.25 %',
+              '0.25%',
               '',
               formatter.format(gstAmount),
             ],
@@ -140,10 +147,10 @@ Future<void> generateTransactionInvoicePdf(
           ],
         ),
 
-        // Footer total row
+        // Total
         pw.Container(
           alignment: pw.Alignment.centerRight,
-          padding: pw.EdgeInsets.only(top: 12),
+          padding: const pw.EdgeInsets.only(top: 12),
           child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.end,
             children: [
@@ -162,33 +169,118 @@ Future<void> generateTransactionInvoicePdf(
           ),
         ),
 
-        // Amount in words
         pw.SizedBox(height: 16),
-        pw.Text("Amount Chargeable (in words)",
-            style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
-        pw.Text(convertNumberToWords(grandTotal.round()),
+        pw.Text("Amount Chargeable (in words):",
+            style: pw.TextStyle(
+                fontSize: 10,
+                fontWeight: pw.FontWeight.bold,
+                font: robotoFont)),
+        pw.Text(convertNumberToWords(grandTotal),
             style: pw.TextStyle(fontSize: 10, font: robotoFont)),
 
         pw.SizedBox(height: 20),
         pw.Text("E. & O.E",
-            style: pw.TextStyle(fontSize: 10, fontStyle: pw.FontStyle.italic)),
-
+            style: pw.TextStyle(
+                fontSize: 10,
+                fontStyle: pw.FontStyle.italic,
+                font: robotoFont)),
         pw.SizedBox(height: 30),
         pw.Text("Thank you for your business!",
-            style: pw.TextStyle(fontStyle: pw.FontStyle.italic)),
+            style:
+                pw.TextStyle(fontStyle: pw.FontStyle.italic, font: robotoFont)),
       ],
     ),
   );
 
-  // Preview and Save
-  await Printing.layoutPdf(onLayout: (format) async => pdf.save());
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('Invoice ${tx.invoiceId} Created')),
+  return pdf.save();
+}
+
+/// Show preview in a modal with download
+Future<void> showInvoicePreview(
+    BuildContext context, InvoiceModel tx, CompanyModel selectedCompany) async {
+  final bytes = await generateTransactionInvoicePdfBytes(tx, selectedCompany);
+
+  showDialog(
+    context: context,
+    builder: (ctx) => Dialog(
+      insetPadding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Invoice Preview',
+                      style: Theme.of(ctx).textTheme.titleLarge),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  tooltip: 'Close',
+                  onPressed: () => Navigator.of(ctx).pop(),
+                ),
+              ],
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: PdfPreview(
+              build: (format) async => bytes,
+              canChangePageFormat: false,
+              canChangeOrientation: false,
+              allowPrinting: false,
+              allowSharing: false,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Close')),
+                SizedBox(width: 20.dp),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.download),
+                  label: const Text('Download'),
+                  onPressed: () async {
+                    final file = File(
+                        'C:/Users/Public/Downloads/invoice_${tx.invoiceId}.pdf');
+                    await file.writeAsBytes(bytes).then((final onValue) {
+                      Navigator.of(ctx).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Saved to ${file.path}')),
+                      );
+                    });
+                  },
+                ),
+                SizedBox(width: 12.dp),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
   );
 }
 
-String convertNumberToWords(int number) {
-  if (number == 0) return 'Zero Rupees Only';
+/// Convert to words (handles rupees and paise)
+String convertNumberToWords(double number) {
+  int rupees = number.floor();
+  int paise = ((number - rupees) * 100).round();
+  String words = _convertIntToWords(rupees) + ' Rupees';
+  if (paise > 0) {
+    words += ' and ${_convertIntToWords(paise)} Paise';
+  }
+  return words + ' Only';
+}
+
+String _convertIntToWords(int number) {
+  if (number == 0) return 'Zero';
 
   final units = [
     '',
@@ -227,47 +319,91 @@ String convertNumberToWords(int number) {
     'Ninety'
   ];
 
-  String convertBelowThousand(int n) {
-    String str = '';
-
+  String part(int n) {
+    String s = '';
     if (n >= 100) {
-      str += '${units[n ~/ 100]} Hundred ';
+      s += '${units[n ~/ 100]} Hundred ';
       n %= 100;
     }
-
-    if (n >= 10 && n <= 19) {
-      str += '${teens[n - 10]} ';
-    } else if (n >= 20) {
-      str += '${tens[n ~/ 10]} ';
-      if (n % 10 > 0) str += '${units[n % 10]} ';
+    if (n >= 20) {
+      s += '${tens[n ~/ 10]} ';
+      if (n % 10 > 0) s += '${units[n % 10]} ';
+    } else if (n >= 10) {
+      s += '${teens[n - 10]} ';
     } else if (n > 0) {
-      str += '${units[n]} ';
+      s += '${units[n]} ';
     }
-
-    return str.trim();
+    return s.trim();
   }
 
-  final parts = <String>[];
-
+  String words = '';
   if ((number ~/ 10000000) > 0) {
-    parts.add('${convertBelowThousand(number ~/ 10000000)} Crore');
+    words += '${part(number ~/ 10000000)} Crore ';
     number %= 10000000;
   }
   if ((number ~/ 100000) > 0) {
-    parts.add('${convertBelowThousand(number ~/ 100000)} Lakh');
+    words += '${part(number ~/ 100000)} Lakh ';
     number %= 100000;
   }
   if ((number ~/ 1000) > 0) {
-    parts.add('${convertBelowThousand(number ~/ 1000)} Thousand');
+    words += '${part(number ~/ 1000)} Thousand ';
     number %= 1000;
   }
   if ((number ~/ 100) > 0) {
-    parts.add('${convertBelowThousand(number ~/ 100)} Hundred');
+    words += '${part(number ~/ 100)} Hundred ';
     number %= 100;
   }
   if (number > 0) {
-    parts.add(convertBelowThousand(number));
+    words += part(number);
   }
+  return words.trim();
+}
 
-  return parts.join(' ') + ' Rupees Only';
+Future<CompanyModel?> showCompanyPicker(
+    BuildContext context, List<CompanyModel> companies) async {
+  CompanyModel? selectedCompany;
+
+  return showDialog<CompanyModel>(
+    context: context,
+    builder: (ctx) {
+      return AlertDialog(
+        title: const Text('Select Company'),
+        content: StatefulBuilder(
+          builder: (ctx, setState) {
+            return DropdownButtonFormField<CompanyModel>(
+              decoration: const InputDecoration(labelText: 'Company'),
+              value: selectedCompany,
+              items: companies.map((c) {
+                return DropdownMenuItem<CompanyModel>(
+                  value: c,
+                  child: Text(c.name),
+                );
+              }).toList(),
+              onChanged: (val) {
+                setState(() {
+                  selectedCompany = val;
+                });
+              },
+              validator: (val) =>
+                  val == null ? 'Please select a company' : null,
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (selectedCompany != null) {
+                Navigator.of(ctx).pop(selectedCompany);
+              }
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
 }

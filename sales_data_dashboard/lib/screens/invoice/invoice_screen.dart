@@ -285,8 +285,26 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             }
                             return DataCell(
                               InkWell(
-                                onTap: () {
-                                  generateTransactionInvoicePdf(row, context);
+                                onTap: () async {
+                                  final companies = [
+                                    CompanyModel(
+                                      name: 'ABC Jewellers Pvt Ltd',
+                                      gstin: '27ABCDE1234F1Z5',
+                                      address: '123 Business Street, Mumbai',
+                                      phone: '+91-9999999999',
+                                    ),
+                                    CompanyModel(
+                                      name: 'XYZ Gold Traders',
+                                      gstin: '27XYZ9876F1Z5',
+                                      address: '45 Market Road, Pune',
+                                      phone: '+91-8888888888',
+                                    ),
+                                  ];
+                                  final selected = await showCompanyPicker(
+                                      context, companies);
+                                  if (selected != null) {
+                                    showInvoicePreview(context, row, selected);
+                                  }
                                 },
                                 child: Text(
                                   invoiceStore.getFieldValue(row, col.key),
@@ -485,4 +503,18 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       ),
     );
   }
+}
+
+class CompanyModel {
+  final String name;
+  final String gstin;
+  final String address;
+  final String phone;
+
+  CompanyModel({
+    required this.name,
+    required this.gstin,
+    required this.address,
+    required this.phone,
+  });
 }
