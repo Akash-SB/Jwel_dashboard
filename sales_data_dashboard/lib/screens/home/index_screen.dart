@@ -74,7 +74,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         overflow: TextOverflow.fade,
                         maxLines: 1,
                         style: TextStyle(
-                          fontSize: 14.dp,
+                          fontSize: 10.dp,
                           fontWeight: FontWeight.bold,
                           color: const Color(0xFF111827),
                         ),
@@ -85,7 +85,7 @@ class _IndexScreenState extends State<IndexScreen> {
                         overflow: TextOverflow.fade,
                         maxLines: 2,
                         style: TextStyle(
-                          fontSize: 10.dp,
+                          fontSize: 8.dp,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF6B7280),
                         ),
