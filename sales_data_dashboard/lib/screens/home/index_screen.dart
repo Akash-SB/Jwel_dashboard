@@ -61,13 +61,36 @@ class _IndexScreenState extends State<IndexScreen> {
                   SizedBox(
                     height: 30.dp,
                   ),
-                  const ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: AssetImage('assets/avatar.png'),
-                      child: Icon(Icons.assignment_ind_outlined,
-                          color: Colors.white),
+                  Card(
+                    child: ListTile(
+                      titleAlignment: ListTileTitleAlignment.top,
+                      leading: CircleAvatar(
+                        radius: 20.dp,
+                        backgroundImage: const AssetImage('assets/logo.png'),
+                      ),
+                      title: Text(
+                        "SAHAJANAND GEMS",
+                        softWrap: true,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 14.dp,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF111827),
+                        ),
+                      ),
+                      subtitle: Text(
+                        "Speciality All Kinds of Precious Stones",
+                        softWrap: true,
+                        overflow: TextOverflow.fade,
+                        maxLines: 2,
+                        style: TextStyle(
+                          fontSize: 10.dp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF6B7280),
+                        ),
+                      ),
                     ),
-                    title: Text("AdminPRO"),
                   ),
                   SizedBox(
                     height: 30.dp,
