@@ -15,7 +15,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
   final pdf = pw.Document();
 
   // Load logo
-  final ByteData logoData = await rootBundle.load('assets/logo.jpg');
+  final ByteData logoData = await rootBundle.load('assets/logo.png');
   final Uint8List logoBytes = logoData.buffer.asUint8List();
 
   // Load font for ₹ symbol

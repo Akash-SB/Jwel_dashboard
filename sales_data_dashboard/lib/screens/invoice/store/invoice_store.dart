@@ -221,6 +221,8 @@ abstract class _InvoiceStore with Store {
         return item.paymentType?.name ?? '';
       case 'note':
         return item.note ?? 'NA';
+      case 'interestDays':
+        return item.interestDays ?? '';
       default:
         return '';
     }
