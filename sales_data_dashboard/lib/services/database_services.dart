@@ -70,4 +70,26 @@ class DatabaseService {
       )
     ''');
   }
+
+  Future<Database> getNotfDatabase() async {
+    final dbPath = await databaseFactory.getDatabasesPath();
+    final path = join(dbPath, 'app_database.db');
+
+    return databaseFactory.openDatabase(path,
+        options: OpenDatabaseOptions(
+          version: 1,
+          onCreate: (db, version) async {
+            await db.execute('''
+        CREATE TABLE notifications(
+          id TEXT PRIMARY KEY,
+          invoiceId TEXT,
+          userId TEXT,
+          message TEXT,
+          notifyDate TEXT,
+          isRead INTEGER
+        )
+      ''');
+          },
+        ));
+  }
 }

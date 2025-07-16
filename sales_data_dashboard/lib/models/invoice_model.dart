@@ -15,6 +15,7 @@ class InvoiceModel {
   final String? note;
   final String? productName;
   final String hsnCode;
+  final String? interestDays;
 
   InvoiceModel({
     required this.invoiceId,
@@ -30,6 +31,7 @@ class InvoiceModel {
     this.paymentType,
     this.note,
     this.hsnCode = '',
+    this.interestDays,
   });
 
   /// Convert to Firestore map
@@ -48,6 +50,7 @@ class InvoiceModel {
         'createdAt': FieldValue.serverTimestamp(),
         'note': note,
         'hsnCode': hsnCode,
+        'interestDays': interestDays
       };
 
   /// Construct from Firestore map
@@ -80,6 +83,7 @@ class InvoiceModel {
           : null,
       note: map['note'],
       hsnCode: map['hsnCode'] ?? '',
+      interestDays: map['interestDays'] ?? '',
     );
   }
 
@@ -105,6 +109,7 @@ class InvoiceModel {
       paymentType: paymentType,
       note: note,
       hsnCode: hsnCode,
+      interestDays: interestDays,
     );
   }
 

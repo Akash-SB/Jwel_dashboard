@@ -1,11 +1,18 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 
 import '../../dummy_generated_data.dart';
 import '../../models/app_enum.dart';
+import '../../models/invoice_notification_model.dart';
+import '../../services/notification_checker_services.dart';
+import '../../services/notification_db_services.dart';
+import '../../widgets/notification_sidebar.dart';
+import '../home/store/userdata_store.dart';
 
 class DashboardSccreen extends StatefulWidget {
   const DashboardSccreen({super.key});
@@ -15,6 +22,9 @@ class DashboardSccreen extends StatefulWidget {
 }
 
 class _DashboardSccreenState extends State<DashboardSccreen> {
+  late UserDataStore userDataStore;
+  List<InvoiceNotificationModel> notf = [];
+
   final List<InvoiceModel> transactions = generateDummyTransactions();
 
   final List<Activity> activities = [
@@ -57,6 +67,18 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    if (!GetIt.I.isRegistered<UserDataStore>()) {
+      GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
+    }
+    userDataStore = GetIt.I<UserDataStore>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationCheckerService.checkInvoicesForToday(userDataStore.invoices);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final monthlyData = getMonthlyTotals(transactions);
     return Scaffold(
@@ -77,14 +99,23 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
           ),
         ),
         actions: [
-          Builder(
+          Observer(
             builder: (context) => InkWell(
               splashColor: Colors.white,
               hoverColor: Colors.white,
               highlightColor: Colors.white,
               focusColor: Colors.white,
-              onTap: () {
+              onTap: () async {
+                notf = await NotificationDBService.getAllNotifications();
                 Scaffold.of(context).openEndDrawer();
+                // void openNotificationSidebar(BuildContext context) async {
+                //   final notifs =
+                //       await NotificationDBService.getAllNotifications();
+                //   showModalBottomSheet(
+                //     context: context,
+                //     builder: (_) => NotificationSidebar(notifications: notifs),
+                //   );
+                // }
               },
               child: Container(
                 padding: EdgeInsets.all(
@@ -109,9 +140,41 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
           ),
         ],
       ),
-      endDrawer: const Drawer(
+      endDrawer: Drawer(
         child: Column(
           children: [
+            //  void openNotificationSidebar(BuildContext context) async {
+            //       final notifs =
+            //           await NotificationDBService.getAllNotifications();
+            //       showModalBottomSheet(
+            //         context: context,
+            //         builder: (_) => NotificationSidebar(notifications: notifs),
+            //       );
+            // }
+            Text("Notifications",
+                style: Theme.of(context).textTheme.titleLarge),
+            const Divider(),
+            SizedBox(
+              height: 200,
+              child: ListView.builder(
+                itemCount: notf.length,
+                itemBuilder: (ctx, index) {
+                  final notif = notf[index];
+                  return ListTile(
+                    title: Text(notif.message),
+                    subtitle: Text(notif.notifyDate.toLocal().toString()),
+                    trailing: notif.isRead
+                        ? Icon(Icons.check_circle, color: Colors.green)
+                        : Icon(Icons.circle, color: Colors.grey),
+                    onTap: () async {
+                      await NotificationDBService.markAsRead(notif.id);
+                      Navigator.pop(context);
+                      // Optionally refresh UI
+                    },
+                  );
+                },
+              ),
+            ),
             DrawerHeader(
               child: Text('Right Drawer'),
             ),

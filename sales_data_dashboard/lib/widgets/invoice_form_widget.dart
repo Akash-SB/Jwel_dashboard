@@ -33,6 +33,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
   final _sizeController = TextEditingController();
   final _rateController = TextEditingController();
   final _amountController = TextEditingController();
+  final _daysOfIntstController = TextEditingController();
   final _custNameController = TextEditingController();
   final _noteController = TextEditingController();
   final _prodNameController = TextEditingController();
@@ -56,6 +57,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
       _sizeController.text = invoice.size;
       _rateController.text = invoice.rate;
       _amountController.text = invoice.amount;
+      _daysOfIntstController.text = invoice.interestDays.toString();
       _custNameController.text = invoice.custName;
       _noteController.text = invoice.note ?? '';
       _transactionType = invoice.transactionType;
@@ -78,6 +80,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
     _sizeController.dispose();
     _rateController.dispose();
     _amountController.dispose();
+    _daysOfIntstController.dispose();
     _custNameController.dispose();
     _noteController.dispose();
     _prodNameController.dispose();
@@ -96,6 +99,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
         size: _sizeController.text,
         rate: _rateController.text,
         amount: _amountController.text,
+        interestDays: _daysOfIntstController.text,
         custName: _custNameController.text,
         note: _noteController.text,
         transactionType: _transactionType!,
@@ -427,7 +431,17 @@ class _InvoiceFormState extends State<InvoiceForm> {
                   SizedBox(
                     width: 12.dp,
                   ),
-                  const Flexible(child: SizedBox()),
+                  Flexible(
+                    child: TextFormField(
+                      controller: _daysOfIntstController,
+                      keyboardType: TextInputType.number,
+                      decoration:
+                          _inputDecoration('Days of Interest (Optional)'),
+                      // validator: (value) => value == null || value.isEmpty
+                      //     ? 'Required'
+                      //     : null,
+                    ),
+                  ),
                 ],
               )
             else

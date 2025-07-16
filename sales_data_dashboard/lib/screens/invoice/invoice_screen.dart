@@ -60,6 +60,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
       TableColumn(label: 'Customer Name', key: 'custName'),
+      TableColumn(
+        label: 'Days of Interest',
+        key: 'daysOfInterest',
+      ),
       TableColumn(label: 'Customer Type', key: 'custType'),
       TableColumn(label: 'Transaction Type', key: 'transactionType'),
       TableColumn(label: 'Payment Status', key: 'paymentStatus'),

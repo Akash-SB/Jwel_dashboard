@@ -50,6 +50,9 @@ dependencies:
   cloud_firestore: ^5.6.9
   printing: ^5.14.2
   intl: ^0.20.2
+  flutter_local_notifications: ^19.3.0
+  timezone: ^0.10.1
+  sqflite_common_ffi: ^2.3.4+4
 
 dev_dependencies:
   flutter_test:
