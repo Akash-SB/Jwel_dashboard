@@ -37,6 +37,9 @@ abstract class _UserDataStore with Store {
   ObservableList<InvoiceModel> invoices = ObservableList.of([]);
 
   @observable
+  ObservableList<InvoiceModel> sixMonthTxnList = ObservableList.of([]);
+
+  @observable
   ObservableList<CustomerModel> customers = ObservableList.of([]);
 
   @observable
@@ -102,6 +105,22 @@ abstract class _UserDataStore with Store {
     } finally {
       isLoading = false;
     }
+  }
+
+  @action
+  void getLastSixMonthsTxns(List<InvoiceModel> allInvoices) {
+    final now = DateTime.now();
+    final sixMonthsAgo = DateTime(now.year, now.month - 6, now.day);
+
+    setSixMonthTxn(ObservableList.of(allInvoices.where((invoice) {
+      final invoiceDate = DateTime.parse(invoice.date);
+      return invoiceDate.isAfter(sixMonthsAgo);
+    })));
+  }
+
+  @action
+  void setSixMonthTxn(List<InvoiceModel> invoiceList) {
+    sixMonthTxnList = ObservableList.of(invoiceList);
   }
 
   @action

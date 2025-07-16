@@ -41,6 +41,22 @@ mixin _$ActivityStore on _ActivityStore, Store {
     });
   }
 
+  late final _$errorMessageAtom =
+      Atom(name: '_ActivityStore.errorMessage', context: context);
+
+  @override
+  String? get errorMessage {
+    _$errorMessageAtom.reportRead();
+    return super.errorMessage;
+  }
+
+  @override
+  set errorMessage(String? value) {
+    _$errorMessageAtom.reportWrite(value, super.errorMessage, () {
+      super.errorMessage = value;
+    });
+  }
+
   late final _$loadActivitiesAsyncAction =
       AsyncAction('_ActivityStore.loadActivities', context: context);
 
@@ -69,7 +85,8 @@ mixin _$ActivityStore on _ActivityStore, Store {
   String toString() {
     return '''
 activities: ${activities},
-isLoading: ${isLoading}
+isLoading: ${isLoading},
+errorMessage: ${errorMessage}
     ''';
   }
 }

@@ -25,8 +25,6 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
   late UserDataStore userDataStore;
   List<InvoiceNotificationModel> notf = [];
 
-  final List<InvoiceModel> transactions = generateDummyTransactions();
-
   final List<Activity> activities = [
     Activity(
         date: DateTime(2024, 2, 20),
@@ -80,7 +78,6 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
 
   @override
   Widget build(BuildContext context) {
-    final monthlyData = getMonthlyTotals(transactions);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -213,15 +210,20 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: BarChart(
-                          buildBarChartData(monthlyData),
+                    Observer(builder: (context) {
+                      final monthlyData =
+                          getMonthlyTotals(userDataStore.sixMonthTxnList);
+
+                      return Flexible(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: BarChart(
+                            buildBarChartData(monthlyData),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                     SizedBox(
                       width: 4.dp,
                     ),
@@ -289,7 +291,9 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                 ),
               ),
               SizedBox(height: 20.dp),
-              buildSummaryCards(transactions),
+              Observer(
+                  builder: (context) =>
+                      buildSummaryCards(userDataStore.sixMonthTxnList)),
             ],
           ),
         ),
@@ -486,7 +490,7 @@ class _SummaryCard extends StatelessWidget {
           ),
           SizedBox(height: 8.dp),
           Text(
-            "\$${amount.toStringAsFixed(2)}",
+            "\₹${amount.toStringAsFixed(2)}",
             style: TextStyle(
               color: color,
               fontSize: 24.dp,

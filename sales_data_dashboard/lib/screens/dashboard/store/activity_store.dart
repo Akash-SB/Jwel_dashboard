@@ -18,6 +18,9 @@ abstract class _ActivityStore with Store {
   @observable
   bool isLoading = false;
 
+  @observable
+  String? errorMessage;
+
   // 🔹 Load all activities (one-time)
   @action
   Future<void> loadActivities() async {
@@ -47,12 +50,28 @@ abstract class _ActivityStore with Store {
   // 🔹 Add a new activity
   @action
   Future<void> addActivity(Activity activity) async {
-    await _collection.add(activity.toMap());
+    isLoading = true;
+    errorMessage = null;
+    try {
+      await _collection.add(activity.toMap());
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoading = false;
+    }
   }
 
   // 🔹 Delete an activity
   @action
   Future<void> deleteActivity(String id) async {
-    await _collection.doc(id).delete();
+    isLoading = true;
+    errorMessage = null;
+    try {
+      await _collection.doc(id).delete();
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoading = false;
+    }
   }
 }
