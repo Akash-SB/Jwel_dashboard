@@ -5,14 +5,16 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
+import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
 
 import '../../dummy_generated_data.dart';
 import '../../models/app_enum.dart';
 import '../../models/invoice_notification_model.dart';
 import '../../services/notification_checker_services.dart';
 import '../../services/notification_db_services.dart';
-import '../../widgets/notification_sidebar.dart';
 import '../home/store/userdata_store.dart';
+
+final getIt = GetIt.instance;
 
 class DashboardSccreen extends StatefulWidget {
   const DashboardSccreen({super.key});
@@ -23,6 +25,7 @@ class DashboardSccreen extends StatefulWidget {
 
 class _DashboardSccreenState extends State<DashboardSccreen> {
   late UserDataStore userDataStore;
+  late ActivityStore activityStore;
   List<InvoiceNotificationModel> notf = [];
 
   final List<InvoiceModel> transactions = generateDummyTransactions();
@@ -69,12 +72,22 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
   @override
   void initState() {
     super.initState();
-    if (!GetIt.I.isRegistered<UserDataStore>()) {
-      GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
+    if (!getIt.isRegistered<UserDataStore>()) {
+      getIt.registerSingleton<UserDataStore>(UserDataStore());
     }
     userDataStore = GetIt.I<UserDataStore>();
+    if (!getIt.isRegistered<ActivityStore>()) {
+      getIt.registerSingleton<ActivityStore>(ActivityStore());
+    }
+    activityStore = getIt<ActivityStore>();
+    if (userDataStore.invoices.isEmpty) {
+      activityStore.fetchInvoices();
+      userDataStore.setInvoices(activityStore.invoices);
+    } else {
+      activityStore.setInvoices(userDataStore.invoices);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      NotificationCheckerService.checkInvoicesForToday(userDataStore.invoices);
+      NotificationCheckerService.checkInvoicesForToday(activityStore.invoices);
     });
   }
 
@@ -108,15 +121,6 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
               onTap: () async {
                 notf = await NotificationDBService.getAllNotifications();
                 Scaffold.of(context).openEndDrawer();
-                // void openNotificationSidebar(BuildContext context) async {
-                //   final notifs =
-                //       await NotificationDBService.getAllNotifications();
-                //   showModalBottomSheet(
-                //     context: context,
-                //     builder: (_) => NotificationSidebar(notifications: notifs),
-                //   );
-                // }
-                // NotificationService.showTestNotification();
               },
               child: Container(
                 padding: EdgeInsets.all(
@@ -142,40 +146,159 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
         ],
       ),
       endDrawer: Drawer(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(0),
+        ),
         child: Observer(builder: (context) {
           return Column(
             children: [
-              //  void openNotificationSidebar(BuildContext context) async {
-              //       final notifs =
-              //           await NotificationDBService.getAllNotifications();
-              //       showModalBottomSheet(
-              //         context: context,
-              //         builder: (_) => NotificationSidebar(notifications: notifs),
-              //       );
-              // }
-              Text(
-                "Notifications",
-                style: Theme.of(context).textTheme.titleLarge,
+              Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Color(
+                        0xFFE5E7EB,
+                      ),
+                    ),
+                  ),
+                ),
+                padding: EdgeInsets.all(16.dp),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      'assets/icons/notf_icon.png',
+                      width: 20.dp,
+                      height: 20.dp,
+                    ),
+                    SizedBox(
+                      width: 8.dp,
+                    ),
+                    Text(
+                      "Notifications",
+                      style: TextStyle(
+                        fontSize: 18.dp,
+                        color: const Color(0xFF111827),
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const Divider(),
               Expanded(
-                child: ListView.builder(
-                  itemCount: notf.length,
-                  itemBuilder: (ctx, index) {
-                    final notif = notf[index];
-                    return ListTile(
-                      title: Text(notif.message),
-                      subtitle: Text(notif.notifyDate.toLocal().toString()),
-                      trailing: notif.isRead
-                          ? const Icon(Icons.check_circle, color: Colors.green)
-                          : const Icon(Icons.circle, color: Colors.grey),
-                      onTap: () async {
-                        await NotificationDBService.markAsRead(notif.id);
-                        Navigator.pop(context);
-                        // Optionally refresh UI
-                      },
-                    );
-                  },
+                child: Container(
+                  padding: EdgeInsets.all(18.dp),
+                  color: const Color.fromARGB(255, 239, 240, 241),
+                  child: ListView.builder(
+                    itemCount: notf.length,
+                    itemBuilder: (ctx, index) {
+                      final notif = notf[index];
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InkWell(
+                            onTap: () async {
+                              await NotificationDBService.markAsRead(notif.id);
+                              Navigator.pop(context);
+                              // Optionally refresh UI
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(
+                                12.dp,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                  color:
+                                      const Color.fromARGB(255, 200, 203, 210),
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(
+                                    8.dp,
+                                  ),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          notif.message,
+                                          softWrap: true,
+                                          overflow: TextOverflow.clip,
+                                          maxLines: 2,
+                                          style: TextStyle(
+                                            fontSize: 12.dp,
+                                            color: const Color(0xFF111827),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      notif.isRead
+                                          ? Icon(
+                                              Icons.check_circle,
+                                              color: Colors.green,
+                                              size: 16.dp,
+                                            )
+                                          : const SizedBox.shrink(),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 2.dp,
+                                  ),
+                                  Text(
+                                    notif.userId,
+                                    softWrap: true,
+                                    overflow: TextOverflow.fade,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 11.dp,
+                                      color: const Color(0xFF4B5563),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 2.dp,
+                                  ),
+                                  Text(
+                                    'Invoice : ${notif.invoiceId}',
+                                    softWrap: true,
+                                    overflow: TextOverflow.fade,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 11.dp,
+                                      color: const Color(0xFF4B5563),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 4.dp,
+                                  ),
+                                  Text(
+                                    '${notif.notifyDate.day}/${notif.notifyDate.month}/${notif.notifyDate.year}',
+                                    softWrap: true,
+                                    overflow: TextOverflow.fade,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 10.dp,
+                                      color: const Color(0xFF6B7280),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 12.dp,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
             ],

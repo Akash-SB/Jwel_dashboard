@@ -9,10 +9,17 @@ import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 import 'package:sales_data_dashboard/widgets/filter_dropdown_button.dart';
 
+import 'store/customer_store.dart';
+
 class ShowUserInfoScreen extends StatefulWidget {
   final CustomerModel customer;
+  final CustomerStore customerStore;
 
-  const ShowUserInfoScreen({super.key, required this.customer});
+  const ShowUserInfoScreen({
+    super.key,
+    required this.customer,
+    required this.customerStore,
+  });
 
   @override
   State<ShowUserInfoScreen> createState() => _ShowUserInfoScreenState();
@@ -54,6 +61,38 @@ class _ShowUserInfoScreenState extends State<ShowUserInfoScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Observer(builder: (context) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButton(
+                  onPressed: () => widget.customerStore.toggleFilter(),
+                  focusColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  icon: const Icon(
+                    Icons.arrow_back_sharp,
+                  ),
+                ),
+                SizedBox(
+                  width: 16.dp,
+                ),
+                Text(
+                  'User Ledger',
+                  style: TextStyle(
+                    fontSize: 20.dp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(
+                      0xFF111827,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
+          SizedBox(
+            height: 16.dp,
+          ),
           Card(
             elevation: 1,
             shape:
