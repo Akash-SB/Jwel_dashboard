@@ -381,12 +381,23 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           child: InvoiceForm(
             existingInvoice: existingInvoice,
             onSubmit: (invoiceData) {
-              invoiceStore.addInvoice(invoiceData);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text('Invoice ${invoiceData.invoiceId} added')),
+              invoiceStore.addInvoice(invoiceData).then((final onValue) {
+                invoiceStore.fetchInvoices().then((final val) {
+                  userDataStore.setInvoices(invoiceStore.invoices);
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text('Invoice ${invoiceData.invoiceId} added')),
+                );
+              }).onError(
+                (error, stackTrace) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(
+                            'Something went wrong while creating invoice')),
+                  );
+                },
               );
-              Navigator.pop(context); // Close bottom sheet
             },
             customers: userDataStore.customers,
             products: userDataStore.products,
