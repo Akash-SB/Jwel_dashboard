@@ -26,8 +26,8 @@ class NotificationCheckerService {
           if (alreadyExists) continue;
 
           final message = (daysLeft == 3)
-              ? 'Interest period for invoice ${invoice.invoiceId} ends in 3 days.'
-              : 'Interest period for invoice ${invoice.invoiceId} ends today!';
+              ? 'Interest period for invoice ${invoice.invoiceId} of Customer ${invoice.custName} ends in 3 days.'
+              : 'Interest period for invoice ${invoice.invoiceId} of Customer ${invoice.custName} ends today!';
 
           final notif = InvoiceNotificationModel(
             id: notificationId,

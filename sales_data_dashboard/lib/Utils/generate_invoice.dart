@@ -272,11 +272,11 @@ Future<void> showInvoicePreview(
 String convertNumberToWords(double number) {
   int rupees = number.floor();
   int paise = ((number - rupees) * 100).round();
-  String words = _convertIntToWords(rupees) + ' Rupees';
+  String words = '${_convertIntToWords(rupees)} Rupees';
   if (paise > 0) {
     words += ' and ${_convertIntToWords(paise)} Paise';
   }
-  return words + ' Only';
+  return '$words Only';
 }
 
 String _convertIntToWords(int number) {
@@ -367,7 +367,17 @@ Future<CompanyModel?> showCompanyPicker(
     context: context,
     builder: (ctx) {
       return AlertDialog(
-        title: const Text('Select Company'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.dp),
+        ),
+        title: Text(
+          'Select Company',
+          style: TextStyle(
+            fontSize: 20.dp,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF1A1A1A),
+          ),
+        ),
         content: StatefulBuilder(
           builder: (ctx, setState) {
             return DropdownButtonFormField<CompanyModel>(
@@ -390,17 +400,72 @@ Future<CompanyModel?> showCompanyPicker(
           },
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+          InkWell(
+            onTap: () => Navigator.of(ctx).pop(),
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            focusColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(
+                  0xFFF3F4F6,
+                ),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(8.dp),
+                ),
+              ),
+              padding: EdgeInsets.symmetric(
+                vertical: 8.dp,
+                horizontal: 16.dp,
+              ),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  fontSize: 14.dp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(
+                    0xFF374151,
+                  ),
+                ),
+              ),
+            ),
           ),
-          ElevatedButton(
-            onPressed: () {
+          SizedBox(
+            width: 12.dp,
+          ),
+          InkWell(
+            onTap: () {
               if (selectedCompany != null) {
                 Navigator.of(ctx).pop(selectedCompany);
               }
             },
-            child: const Text('OK'),
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            focusColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.blueAccent,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(8.dp),
+                ),
+              ),
+              padding: EdgeInsets.symmetric(
+                vertical: 8.dp,
+                horizontal: 16.dp,
+              ),
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  fontSize: 14.dp,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(
+                    0xFFFFFFFF,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       );

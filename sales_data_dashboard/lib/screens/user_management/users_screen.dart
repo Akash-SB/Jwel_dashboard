@@ -342,7 +342,10 @@ class _UsersScreenState extends State<UsersScreen> {
                 ],
               ),
             )
-          : ShowUserInfoScreen(customer: customerStore.selectedCustomer!);
+          : ShowUserInfoScreen(
+              customer: customerStore.selectedCustomer!,
+              customerStore: customerStore,
+            );
     });
   }
 
