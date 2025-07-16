@@ -9,6 +9,7 @@ import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 import 'package:sales_data_dashboard/widgets/filter_dropdown_button.dart';
 
+import '../home/store/userdata_store.dart';
 import 'store/customer_store.dart';
 
 class ShowUserInfoScreen extends StatefulWidget {
@@ -27,6 +28,7 @@ class ShowUserInfoScreen extends StatefulWidget {
 
 class _ShowUserInfoScreenState extends State<ShowUserInfoScreen> {
   late List<InvoiceModel> transactions;
+  late UserDataStore userDataStore;
   late InvoiceStore invoiceStore;
 
   @override
@@ -36,8 +38,20 @@ class _ShowUserInfoScreenState extends State<ShowUserInfoScreen> {
       getIt.registerSingleton<InvoiceStore>(InvoiceStore());
     }
 
+    if (!getIt.isRegistered<UserDataStore>()) {
+      getIt.registerSingleton<UserDataStore>(UserDataStore());
+    }
+
     invoiceStore = getIt<InvoiceStore>();
     invoiceStore.initSearchController();
+    userDataStore = getIt<UserDataStore>();
+
+    if (userDataStore.invoices.isEmpty) {
+      invoiceStore.fetchInvoices();
+      userDataStore.setInvoices(invoiceStore.invoices);
+    } else {
+      invoiceStore.setInvoices(userDataStore.invoices);
+    }
   }
 
   @override
