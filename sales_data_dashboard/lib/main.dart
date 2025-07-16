@@ -23,9 +23,10 @@ class InvoiceDashboardApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Invoice Dashboard',
-        debugShowCheckedModeBanner: false,
-        theme: appTheme,
-        home: const IndexScreen());
+      title: 'Invoice Dashboard',
+      debugShowCheckedModeBanner: false,
+      theme: appTheme,
+      home: const IndexScreen(),
+    );
   }
 }

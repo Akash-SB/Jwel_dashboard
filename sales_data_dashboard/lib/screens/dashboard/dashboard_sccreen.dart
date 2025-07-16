@@ -116,6 +116,7 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                 //     builder: (_) => NotificationSidebar(notifications: notifs),
                 //   );
                 // }
+                // NotificationService.showTestNotification();
               },
               child: Container(
                 padding: EdgeInsets.all(
@@ -141,51 +142,45 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
         ],
       ),
       endDrawer: Drawer(
-        child: Column(
-          children: [
-            //  void openNotificationSidebar(BuildContext context) async {
-            //       final notifs =
-            //           await NotificationDBService.getAllNotifications();
-            //       showModalBottomSheet(
-            //         context: context,
-            //         builder: (_) => NotificationSidebar(notifications: notifs),
-            //       );
-            // }
-            Text("Notifications",
-                style: Theme.of(context).textTheme.titleLarge),
-            const Divider(),
-            SizedBox(
-              height: 200,
-              child: ListView.builder(
-                itemCount: notf.length,
-                itemBuilder: (ctx, index) {
-                  final notif = notf[index];
-                  return ListTile(
-                    title: Text(notif.message),
-                    subtitle: Text(notif.notifyDate.toLocal().toString()),
-                    trailing: notif.isRead
-                        ? Icon(Icons.check_circle, color: Colors.green)
-                        : Icon(Icons.circle, color: Colors.grey),
-                    onTap: () async {
-                      await NotificationDBService.markAsRead(notif.id);
-                      Navigator.pop(context);
-                      // Optionally refresh UI
-                    },
-                  );
-                },
+        child: Observer(builder: (context) {
+          return Column(
+            children: [
+              //  void openNotificationSidebar(BuildContext context) async {
+              //       final notifs =
+              //           await NotificationDBService.getAllNotifications();
+              //       showModalBottomSheet(
+              //         context: context,
+              //         builder: (_) => NotificationSidebar(notifications: notifs),
+              //       );
+              // }
+              Text(
+                "Notifications",
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-            ),
-            DrawerHeader(
-              child: Text('Right Drawer'),
-            ),
-            ListTile(
-              title: Text('Option 1'),
-            ),
-            ListTile(
-              title: Text('Option 2'),
-            ),
-          ],
-        ),
+              const Divider(),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: notf.length,
+                  itemBuilder: (ctx, index) {
+                    final notif = notf[index];
+                    return ListTile(
+                      title: Text(notif.message),
+                      subtitle: Text(notif.notifyDate.toLocal().toString()),
+                      trailing: notif.isRead
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : const Icon(Icons.circle, color: Colors.grey),
+                      onTap: () async {
+                        await NotificationDBService.markAsRead(notif.id);
+                        Navigator.pop(context);
+                        // Optionally refresh UI
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        }),
       ),
       body: Container(
         color: Colors.white,

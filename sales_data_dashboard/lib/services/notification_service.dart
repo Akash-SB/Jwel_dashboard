@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -33,16 +37,33 @@ class NotificationService {
     required String title,
     required String body,
   }) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
+    // Copy asset image to a file
+    final byteData = await rootBundle.load('assets/logo.png');
+    final tempDir = await getTemporaryDirectory();
+    final imagePath = '${tempDir.path}/logo_win.png';
+    final file = File(imagePath);
+    await file.writeAsBytes(byteData.buffer.asUint8List());
+
+    // Create URI
+    final imageUri = Uri.file(imagePath);
+    AndroidNotificationDetails androidDetails =
+        const AndroidNotificationDetails(
       'interest_channel_id',
       'Interest Notifications',
       importance: Importance.max,
       priority: Priority.high,
     );
 
-    const NotificationDetails generalNotificationDetails =
-        NotificationDetails(android: androidDetails);
+    NotificationDetails generalNotificationDetails = NotificationDetails(
+        android: androidDetails,
+        windows: WindowsNotificationDetails(
+          images: [
+            WindowsImage(imageUri,
+                altText: 'Company logo',
+                placement: WindowsImagePlacement.appLogoOverride,
+                crop: WindowsImageCrop.circle),
+          ],
+        ));
 
     await _notificationsPlugin.zonedSchedule(
       id,
