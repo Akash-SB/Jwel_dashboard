@@ -31,7 +31,9 @@ class _IndexScreenState extends State<IndexScreen> {
 
   Future<void> _fetchData() async {
     await userDataStore.fetchCustomers();
-    await userDataStore.fetchInvoices();
+    await userDataStore.fetchInvoices().then((final onValue) {
+      userDataStore.getLastSixMonthsTxns(userDataStore.invoices);
+    });
     await userDataStore.fetchProducts();
   }
 

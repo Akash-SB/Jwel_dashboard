@@ -460,8 +460,25 @@ class _UsersScreenState extends State<UsersScreen> {
                 ),
                 InkWell(
                   onTap: () {
-                    customerStore.deleteCustomer(customer.id!);
-                    Navigator.of(context).pop();
+                    customerStore
+                        .deleteCustomer(customer.id!)
+                        .then((final onValue) {
+                      customerStore.fetchCustomers();
+                      userDataStore.setCustomers(customerStore.customers);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text('User ${customer.custName} deleted')),
+                      );
+                    }).onError(
+                      (error, stackTrace) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  'Something went wrong while deleting user')),
+                        );
+                      },
+                    );
+                    Navigator.of(ctx).pop();
                   },
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,

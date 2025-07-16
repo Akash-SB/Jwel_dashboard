@@ -418,10 +418,28 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 ),
                 InkWell(
                   onTap: () {
-                    productStore.deleteProduct(
+                    productStore
+                        .deleteProduct(
                       product.id,
+                    )
+                        .then((final onValue) {
+                      productStore.fetchProducts();
+                      userDataStore.setProducts(productStore.products);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content:
+                                Text('Product ${product.prodName} deleted')),
+                      );
+                    }).onError(
+                      (error, stackTrace) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  'Something went wrong while Deleting product')),
+                        );
+                      },
                     );
-                    Navigator.of(context).pop();
+                    Navigator.of(ctx).pop();
                   },
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,

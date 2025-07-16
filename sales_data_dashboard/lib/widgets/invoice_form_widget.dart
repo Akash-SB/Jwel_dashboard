@@ -109,9 +109,23 @@ class _InvoiceFormState extends State<InvoiceForm> {
         productName: _prodNameController.text,
         hsnCode: _hsnCodeController.text,
       );
-
+      clearControllers();
       widget.onSubmit(invoiceData);
+      Navigator.of(context).pop();
     }
+  }
+
+  void clearControllers() {
+    _invoiceIdController.clear();
+    _dateController.clear();
+    _sizeController.clear();
+    _rateController.clear();
+    _amountController.clear();
+    _daysOfIntstController.clear();
+    _custNameController.clear();
+    _noteController.clear();
+    _prodNameController.clear();
+    _hsnCodeController.clear();
   }
 
   Future<void> _pickDate() async {
