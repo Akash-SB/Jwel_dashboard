@@ -5,13 +5,11 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
-
-import '../../dummy_generated_data.dart';
+import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
 import '../../models/app_enum.dart';
 import '../../models/invoice_notification_model.dart';
 import '../../services/notification_checker_services.dart';
 import '../../services/notification_db_services.dart';
-import '../../widgets/notification_sidebar.dart';
 import '../home/store/userdata_store.dart';
 
 class DashboardSccreen extends StatefulWidget {
@@ -23,57 +21,37 @@ class DashboardSccreen extends StatefulWidget {
 
 class _DashboardSccreenState extends State<DashboardSccreen> {
   late UserDataStore userDataStore;
+  late ActivityStore activityStore;
   List<InvoiceNotificationModel> notf = [];
-
-  final List<Activity> activities = [
-    Activity(
-        date: DateTime(2024, 2, 20),
-        title: 'New invoice #INV-2024-002',
-        amount: 2450.00),
-    Activity(
-        date: DateTime(2024, 2, 19),
-        title: 'Payment received from John Corp',
-        amount: 1850.00),
-    Activity(
-        date: DateTime(2024, 2, 19),
-        title: 'New product added: Premium Package',
-        amount: null),
-    Activity(
-        date: DateTime(2024, 2, 18),
-        title: 'New client account created',
-        amount: null),
-    Activity(
-        date: DateTime(2024, 2, 18),
-        title: 'Supplier payment processed',
-        amount: -3200.00),
-    Activity(
-        date: DateTime(2024, 2, 18),
-        title: 'New client account created',
-        amount: null),
-    Activity(
-        date: DateTime(2024, 2, 18),
-        title: 'Supplier payment processed',
-        amount: -3200.00),
-    Activity(
-        date: DateTime(2024, 2, 18),
-        title: 'New client account created',
-        amount: null),
-    Activity(
-        date: DateTime(2024, 2, 18),
-        title: 'Supplier payment processed',
-        amount: -3200.00),
-  ];
 
   @override
   void initState() {
     super.initState();
+    if (!GetIt.I.isRegistered<ActivityStore>()) {
+      GetIt.I.registerSingleton<ActivityStore>(ActivityStore());
+    }
+
     if (!GetIt.I.isRegistered<UserDataStore>()) {
       GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
     }
     userDataStore = GetIt.I<UserDataStore>();
+    activityStore = GetIt.I<ActivityStore>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationCheckerService.checkInvoicesForToday(userDataStore.invoices);
+      getActivityList();
     });
+  }
+
+  Future getActivityList() async {
+    await activityStore.loadActivities().then((final onValue) {}).onError(
+      (error, stackTrace) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text(activityStore.errorMessage ?? 'Something went wrong')),
+        );
+      },
+    );
   }
 
   @override
@@ -243,48 +221,54 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                             ),
                           ),
                         ),
-                        child: ListView.separated(
-                          itemCount: activities.length,
-                          separatorBuilder: (context, index) => const Divider(
-                            color: Color(
-                              0xFFF3F4F6,
-                            ),
-                          ),
-                          itemBuilder: (context, index) {
-                            final activity = activities[index];
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    DateFormat('yyyy-MM-dd')
-                                        .format(activity.date),
-                                    style: TextStyle(
-                                        color: Colors.grey[600], fontSize: 12),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(activity.title,
-                                      style: const TextStyle(fontSize: 14)),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    activity.amount != null
-                                        ? "${activity.amount! >= 0 ? "+" : "-"}\$${activity.amount!.abs().toStringAsFixed(2)}"
-                                        : "-",
-                                    style: TextStyle(
-                                      color: activity.amount == null
-                                          ? Colors.orange
-                                          : activity.amount! >= 0
-                                              ? Colors.green
-                                              : Colors.deepOrange,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
+                        child: Observer(builder: (context) {
+                          final activities = activityStore.activities;
+                          return ListView.separated(
+                            itemCount: activities.length,
+                            separatorBuilder: (context, index) => const Divider(
+                              color: Color(
+                                0xFFF3F4F6,
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                            itemBuilder: (context, index) {
+                              final activity = activities[index];
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      DateFormat('yyyy-MM-dd')
+                                          .format(activity.date),
+                                      style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 12),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(activity.title,
+                                        style: const TextStyle(fontSize: 14)),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      activity.amount != null &&
+                                              activity.amount != 0
+                                          ? "${activity.amount! >= 0 ? "+" : "-"}\₹${activity.amount!.abs().toStringAsFixed(2)}"
+                                          : "-",
+                                      style: TextStyle(
+                                        color: activity.amount == null
+                                            ? Colors.orange
+                                            : activity.amount! >= 0
+                                                ? Colors.green
+                                                : Colors.deepOrange,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }),
                       ),
                     ),
                   ],

@@ -86,6 +86,7 @@ class _CustomerFormState extends State<CustomerForm> {
         address: _addressController.text,
       );
       widget.onSubmit(customerData);
+      Navigator.of(context).pop();
     }
   }
 

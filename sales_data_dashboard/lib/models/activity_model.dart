@@ -4,13 +4,13 @@ class Activity {
   final String id;
   final DateTime date;
   final String title;
-  final double amount;
+  final double? amount;
 
   Activity({
     required this.id,
     required this.date,
     required this.title,
-    required this.amount,
+    this.amount,
   });
 
   Map<String, dynamic> toMap() {

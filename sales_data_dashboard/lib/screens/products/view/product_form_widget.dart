@@ -89,6 +89,7 @@ class _ProductFormState extends State<ProductForm> {
         description: _descController.text,
       );
       widget.onSubmit(product);
+      Navigator.of(context).pop();
     }
   }
 

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/user_management/show_user_info.dart';
 import 'package:sales_data_dashboard/screens/user_management/store/customer_store.dart';
 import 'package:sales_data_dashboard/screens/user_management/user_form.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 
+import '../../models/activity_model.dart';
 import '../../models/customer_model.dart';
 import '../../widgets/custom_image_button.dart';
 import '../../widgets/filter_dropdown_button.dart';
@@ -24,6 +26,7 @@ class UsersScreen extends StatefulWidget {
 
 class _UsersScreenState extends State<UsersScreen> {
   late CustomerStore customerStore;
+  late ActivityStore activityStore;
   late UserDataStore userDataStore;
 
   @override
@@ -33,9 +36,15 @@ class _UsersScreenState extends State<UsersScreen> {
       getIt.registerFactory<CustomerStore>(() => CustomerStore());
     }
 
+    if (!getIt.isRegistered<ActivityStore>()) {
+      getIt.registerSingleton<ActivityStore>(ActivityStore());
+    }
+
     if (!GetIt.I.isRegistered<UserDataStore>()) {
       GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
     }
+
+    activityStore = getIt<ActivityStore>();
     userDataStore = GetIt.I<UserDataStore>();
     customerStore = getIt<CustomerStore>();
     customerStore.initializeSearchController();
@@ -380,7 +389,12 @@ class _UsersScreenState extends State<UsersScreen> {
                       content: Text(
                           'User ${customerData.custName} ${customer?.id != null ? 'updated' : 'added'}')),
                 );
-                Navigator.pop(context); // Close dialog
+                activityStore.addActivity(Activity(
+                  id: customerData.id ?? '',
+                  date: DateTime.now(),
+                  title:
+                      '${customerData.custName} data ${customer?.id != null ? 'updated' : 'added'}',
+                ));
               },
             ),
           ),
@@ -462,6 +476,11 @@ class _UsersScreenState extends State<UsersScreen> {
                         .then((final onValue) {
                       customerStore.fetchCustomers();
                       userDataStore.setCustomers(customerStore.customers);
+                      activityStore.addActivity(Activity(
+                        id: customer.id ?? '',
+                        date: DateTime.now(),
+                        title: '${customer.custName} data deleted',
+                      ));
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content: Text('User ${customer.custName} deleted')),

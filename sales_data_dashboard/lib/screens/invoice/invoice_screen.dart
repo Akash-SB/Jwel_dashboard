@@ -3,7 +3,9 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/Utils/generate_invoice.dart';
+import 'package:sales_data_dashboard/models/activity_model.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
+import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
 import '../../widgets/custom_image_button.dart';
@@ -25,6 +27,7 @@ class InvoiceScreen extends StatefulWidget {
 class _InvoiceScreenState extends State<InvoiceScreen> {
   late InvoiceStore invoiceStore;
   late UserDataStore userDataStore;
+  late ActivityStore activityStore;
 
   @override
   void initState() {
@@ -32,12 +35,19 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       getIt.registerSingleton<InvoiceStore>(InvoiceStore());
     }
 
-    if (!GetIt.I.isRegistered<UserDataStore>()) {
-      GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
+    if (!getIt.isRegistered<UserDataStore>()) {
+      getIt.registerSingleton<UserDataStore>(UserDataStore());
     }
-    userDataStore = GetIt.I<UserDataStore>();
+
+    if (!getIt.isRegistered<ActivityStore>()) {
+      getIt.registerSingleton<ActivityStore>(ActivityStore());
+    }
+
+    userDataStore = getIt<UserDataStore>();
 
     invoiceStore = getIt<InvoiceStore>();
+
+    activityStore = getIt<ActivityStore>();
 
     if (userDataStore.invoices.isEmpty) {
       invoiceStore.fetchInvoices();
@@ -389,6 +399,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   SnackBar(
                       content: Text('Invoice ${invoiceData.invoiceId} added')),
                 );
+                activityStore.addActivity(Activity(
+                    id: invoiceData.invoiceId,
+                    date: DateTime.parse(invoiceData.date),
+                    title: 'Invoice for ${invoiceData.custName} Created',
+                    amount: invoiceData.parsedAmount));
               }).onError(
                 (error, stackTrace) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -475,12 +490,29 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 ),
                 InkWell(
                   onTap: () {
-                    invoiceStore.deleteInvoice(invoice.invoiceId);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text('Invoice ${invoice.invoiceId} deleted')),
+                    invoiceStore
+                        .deleteInvoice(invoice.invoiceId)
+                        .then((final onValue) {
+                      activityStore.addActivity(Activity(
+                        id: invoice.invoiceId,
+                        date: DateTime.parse(invoice.date),
+                        title: 'Invoice data for ${invoice.custName} Deleted',
+                      ));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content:
+                                Text('Invoice ${invoice.invoiceId} deleted')),
+                      );
+                    }).onError(
+                      (error, stackTrace) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(invoiceStore.errorMessage ??
+                                  'Something went wrong')),
+                        );
+                      },
                     );
+
                     setState(() {});
                     Navigator.pop(ctx);
                   },

@@ -4,9 +4,11 @@ import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
+import '../../../models/activity_model.dart';
 import '../../../models/product_model.dart';
 import '../../../widgets/custom_image_button.dart';
 import '../../../widgets/normal_button.dart';
+import '../../dashboard/store/activity_store.dart';
 import '../store/product_store.dart';
 import 'product_form_widget.dart';
 
@@ -21,6 +23,7 @@ class ProductsScreen extends StatefulWidget {
 
 class _ProductsScreenState extends State<ProductsScreen> {
   late ProductStore productStore;
+  late ActivityStore activityStore;
   late UserDataStore userDataStore;
 
   @override
@@ -33,8 +36,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
     if (!GetIt.I.isRegistered<UserDataStore>()) {
       GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
     }
+
+    if (!getIt.isRegistered<ActivityStore>()) {
+      getIt.registerSingleton<ActivityStore>(ActivityStore());
+    }
+
     userDataStore = GetIt.I<UserDataStore>();
     productStore = getIt<ProductStore>();
+    activityStore = getIt<ActivityStore>();
+
     productStore.initializeSearchController();
     if (userDataStore.products.isEmpty) {
       productStore.fetchProducts();
@@ -49,6 +59,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget build(BuildContext context) {
     final List<TableColumn> columns = [
       TableColumn(label: 'Product Id', key: 'id', isSortable: true),
+      TableColumn(label: 'Product Name', key: 'prodName', isSortable: true),
       TableColumn(label: 'HSN Code', key: 'hsnCode'),
       TableColumn(label: 'Size', key: 'size', isSortable: true),
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
@@ -311,7 +322,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
         return row.amount;
       case 'description':
         return row.description ?? '';
-
+      case 'prodName':
+        return row.prodName;
       default:
         return '';
     }
@@ -341,7 +353,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       content: Text(
                           'Product ${productData.prodName} ${product?.id != null ? 'updated' : 'added'}')),
                 );
-                Navigator.pop(context); // Close dialog
+                activityStore.addActivity(Activity(
+                  id: productData.id,
+                  date: DateTime.now(),
+                  title:
+                      'Product ${productData.prodName} ${product?.id != null ? 'updated' : 'added'}',
+                ));
               },
             ),
           ),
@@ -425,6 +442,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         .then((final onValue) {
                       productStore.fetchProducts();
                       userDataStore.setProducts(productStore.products);
+                      activityStore.addActivity(Activity(
+                        id: product.id,
+                        date: DateTime.now(),
+                        title: 'Product ${product.prodName} Deleted',
+                      ));
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content:
@@ -434,7 +456,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       (error, stackTrace) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                              content: Text(
+                              content: Text(productStore.errorMessage ??
                                   'Something went wrong while Deleting product')),
                         );
                       },
