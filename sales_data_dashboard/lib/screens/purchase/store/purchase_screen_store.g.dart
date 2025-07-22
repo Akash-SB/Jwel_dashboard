@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'sales_screen_store.dart';
+part of 'purchase_screen_store.dart';
 
 // **************************************************************************
 // StoreGenerator
@@ -8,47 +8,47 @@ part of 'sales_screen_store.dart';
 
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
-mixin _$SalesScreenStore on _SalesScreenStore, Store {
-  Computed<List<Sale>>? _$paginatedDataComputed;
+mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
+  Computed<List<Purchase>>? _$paginatedDataComputed;
 
   @override
-  List<Sale> get paginatedData => (_$paginatedDataComputed ??=
-          Computed<List<Sale>>(() => super.paginatedData,
-              name: '_SalesScreenStore.paginatedData'))
+  List<Purchase> get paginatedData => (_$paginatedDataComputed ??=
+          Computed<List<Purchase>>(() => super.paginatedData,
+              name: '_PurchaseScreenStore.paginatedData'))
       .value;
-  Computed<List<Sale>>? _$sortedDataComputed;
+  Computed<List<Purchase>>? _$sortedDataComputed;
 
   @override
-  List<Sale> get sortedData =>
-      (_$sortedDataComputed ??= Computed<List<Sale>>(() => super.sortedData,
-              name: '_SalesScreenStore.sortedData'))
+  List<Purchase> get sortedData =>
+      (_$sortedDataComputed ??= Computed<List<Purchase>>(() => super.sortedData,
+              name: '_PurchaseScreenStore.sortedData'))
           .value;
-  Computed<List<Sale>>? _$filteredDataComputed;
+  Computed<List<Purchase>>? _$filteredDataComputed;
 
   @override
-  List<Sale> get filteredData =>
-      (_$filteredDataComputed ??= Computed<List<Sale>>(() => super.filteredData,
-              name: '_SalesScreenStore.filteredData'))
-          .value;
+  List<Purchase> get filteredData => (_$filteredDataComputed ??=
+          Computed<List<Purchase>>(() => super.filteredData,
+              name: '_PurchaseScreenStore.filteredData'))
+      .value;
 
-  late final _$salesAtom =
-      Atom(name: '_SalesScreenStore.sales', context: context);
+  late final _$purchaseListAtom =
+      Atom(name: '_PurchaseScreenStore.purchaseList', context: context);
 
   @override
-  ObservableList<Sale> get sales {
-    _$salesAtom.reportRead();
-    return super.sales;
+  ObservableList<Purchase> get purchaseList {
+    _$purchaseListAtom.reportRead();
+    return super.purchaseList;
   }
 
   @override
-  set sales(ObservableList<Sale> value) {
-    _$salesAtom.reportWrite(value, super.sales, () {
-      super.sales = value;
+  set purchaseList(ObservableList<Purchase> value) {
+    _$purchaseListAtom.reportWrite(value, super.purchaseList, () {
+      super.purchaseList = value;
     });
   }
 
   late final _$sortKeyAtom =
-      Atom(name: '_SalesScreenStore.sortKey', context: context);
+      Atom(name: '_PurchaseScreenStore.sortKey', context: context);
 
   @override
   String? get sortKey {
@@ -64,7 +64,7 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   }
 
   late final _$totalPagesAtom =
-      Atom(name: '_SalesScreenStore.totalPages', context: context);
+      Atom(name: '_PurchaseScreenStore.totalPages', context: context);
 
   @override
   int get totalPages {
@@ -80,7 +80,7 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   }
 
   late final _$sortAscAtom =
-      Atom(name: '_SalesScreenStore.sortAsc', context: context);
+      Atom(name: '_PurchaseScreenStore.sortAsc', context: context);
 
   @override
   bool get sortAsc {
@@ -96,7 +96,7 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   }
 
   late final _$searchedTextAtom =
-      Atom(name: '_SalesScreenStore.searchedText', context: context);
+      Atom(name: '_PurchaseScreenStore.searchedText', context: context);
 
   @override
   String get searchedText {
@@ -112,7 +112,7 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   }
 
   late final _$selectedRowCountAtom =
-      Atom(name: '_SalesScreenStore.selectedRowCount', context: context);
+      Atom(name: '_PurchaseScreenStore.selectedRowCount', context: context);
 
   @override
   String get selectedRowCount {
@@ -128,7 +128,7 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   }
 
   late final _$currentTablePageAtom =
-      Atom(name: '_SalesScreenStore.currentTablePage', context: context);
+      Atom(name: '_PurchaseScreenStore.currentTablePage', context: context);
 
   @override
   int get currentTablePage {
@@ -144,88 +144,88 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   }
 
   late final _$initDbAsyncAction =
-      AsyncAction('_SalesScreenStore.initDb', context: context);
+      AsyncAction('_PurchaseScreenStore.initDb', context: context);
 
   @override
   Future<void> initDb() {
     return _$initDbAsyncAction.run(() => super.initDb());
   }
 
-  late final _$addSaleAsyncAction =
-      AsyncAction('_SalesScreenStore.addSale', context: context);
+  late final _$addPurchaseAsyncAction =
+      AsyncAction('_PurchaseScreenStore.addPurchase', context: context);
 
   @override
-  Future<void> addSale(Sale sale) {
-    return _$addSaleAsyncAction.run(() => super.addSale(sale));
+  Future<void> addPurchase(Purchase purchase) {
+    return _$addPurchaseAsyncAction.run(() => super.addPurchase(purchase));
   }
 
-  late final _$deleteSaleAsyncAction =
-      AsyncAction('_SalesScreenStore.deleteSale', context: context);
+  late final _$deletePurchaseAsyncAction =
+      AsyncAction('_PurchaseScreenStore.deletePurchase', context: context);
 
   @override
-  Future<void> deleteSale(Sale sale) {
-    return _$deleteSaleAsyncAction.run(() => super.deleteSale(sale));
+  Future<void> deletePurchase(Purchase sale) {
+    return _$deletePurchaseAsyncAction.run(() => super.deletePurchase(sale));
   }
 
-  late final _$fetchSalesAsyncAction =
-      AsyncAction('_SalesScreenStore.fetchSales', context: context);
+  late final _$fetchPurchasesAsyncAction =
+      AsyncAction('_PurchaseScreenStore.fetchPurchases', context: context);
 
   @override
-  Future<void> fetchSales() {
-    return _$fetchSalesAsyncAction.run(() => super.fetchSales());
+  Future<void> fetchPurchases() {
+    return _$fetchPurchasesAsyncAction.run(() => super.fetchPurchases());
   }
 
-  late final _$_SalesScreenStoreActionController =
-      ActionController(name: '_SalesScreenStore', context: context);
+  late final _$_PurchaseScreenStoreActionController =
+      ActionController(name: '_PurchaseScreenStore', context: context);
 
   @override
   void setCurrentPageIndex(int index) {
-    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
-        name: '_SalesScreenStore.setCurrentPageIndex');
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setCurrentPageIndex');
     try {
       return super.setCurrentPageIndex(index);
     } finally {
-      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   void setSearchText(String text) {
-    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
-        name: '_SalesScreenStore.setSearchText');
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setSearchText');
     try {
       return super.setSearchText(text);
     } finally {
-      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   void setSortKey(String? key) {
-    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
-        name: '_SalesScreenStore.setSortKey');
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setSortKey');
     try {
       return super.setSortKey(key);
     } finally {
-      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   void calculateTotalPages() {
-    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
-        name: '_SalesScreenStore.calculateTotalPages');
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.calculateTotalPages');
     try {
       return super.calculateTotalPages();
     } finally {
-      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
   String toString() {
     return '''
-sales: ${sales},
+purchaseList: ${purchaseList},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},

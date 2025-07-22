@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/screens/dashboard/dashboard_sccreen.dart';
 import 'package:sales_data_dashboard/screens/home/index_screen.dart';
 import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
+import 'package:sales_data_dashboard/screens/purchase/view/purchase_screen.dart';
 import 'package:sales_data_dashboard/screens/sales/view/sales_screen.dart';
-import 'package:sales_data_dashboard/screens/settings/setting_screen.dart';
 import 'package:sales_data_dashboard/screens/user_management/users_screen.dart';
 import 'screens/products/view/products_screen.dart';
 
@@ -13,8 +13,8 @@ class AppRoutes {
   static const String invoices = '/invoices';
   static const String users = '/users';
   static const String products = '/products';
-  static const String setting = '/setting';
   static const String sales = '/sales';
+  static const String purchase = '/purchase';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final selectedRoute = switch (settings.name) {
@@ -24,7 +24,7 @@ class AppRoutes {
       users => const UsersScreen(),
       products => const ProductsScreen(),
       sales => const SalesScreen(),
-      setting => const SettingScreen(),
+      purchase => const PurchaseScreen(),
       _ => const DashboardSccreen()
     };
 
@@ -43,5 +43,6 @@ class AppRoutes {
     users,
     products,
     sales,
+    purchase,
   ];
 }

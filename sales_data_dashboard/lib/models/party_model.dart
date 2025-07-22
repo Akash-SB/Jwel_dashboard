@@ -5,7 +5,7 @@ class Party {
   final String name;
   final String address;
   final String mobileNumber;
-  final String gstNumber;
+  final String? gstNumber;
   final String partyType; // "company" or "agent"
   final bool synced;
   final Firm firm;
@@ -15,7 +15,7 @@ class Party {
     required this.name,
     required this.address,
     required this.mobileNumber,
-    required this.gstNumber,
+    this.gstNumber,
     required this.partyType,
     this.synced = false,
     required this.firm,
@@ -38,7 +38,7 @@ class Party {
         name: map['name'],
         address: map['address'],
         mobileNumber: map['mobileNumber'],
-        gstNumber: map['gstNumber'],
+        gstNumber: map['gstNumber'] ?? '',
         partyType: map['partyType'],
         synced: map['synced'] == 1,
         firm: Firm.fromString(map['firm']),

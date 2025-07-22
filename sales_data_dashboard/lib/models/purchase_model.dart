@@ -1,17 +1,17 @@
+import 'dart:convert';
+
 import 'package:sales_data_dashboard/models/sales_model.dart';
 
 import 'firm_model.dart';
+import 'party_model.dart';
+import 'stock_item.dart';
 
 class Purchase {
   final String id;
-  final String itemName;
-  final String size;
-  final double carat;
-  final double rate;
-  final double amount;
-  final PaymentOption paymentOption;
+  final Party partyDetails;
+  final StockItem stockDetails;
+  final PaymentOption? paymentOption;
   final PaymentStatus paymentStatus;
-  final DateTime dueDate;
   final String description;
   final DateTime createdAt;
   final bool synced;
@@ -19,14 +19,10 @@ class Purchase {
 
   Purchase({
     required this.id,
-    required this.itemName,
-    required this.size,
-    required this.carat,
-    required this.rate,
-    required this.amount,
-    required this.paymentOption,
+    required this.partyDetails,
+    required this.stockDetails,
+    this.paymentOption,
     required this.paymentStatus,
-    required this.dueDate,
     required this.description,
     required this.createdAt,
     required this.firm,
@@ -35,14 +31,10 @@ class Purchase {
 
   Map<String, dynamic> toMap() => {
         'id': id,
-        'itemName': itemName,
-        'size': size,
-        'carat': carat,
-        'rate': rate,
-        'amount': amount,
+        'party': jsonEncode(partyDetails.toMap()),
+        'stock': jsonEncode(stockDetails.toMap()),
         'paymentOption': paymentOption,
         'paymentStatus': paymentStatus,
-        'dueDate': dueDate.toIso8601String(),
         'description': description,
         'createdAt': createdAt.toIso8601String(),
         'synced': synced ? 1 : 0,
@@ -51,14 +43,10 @@ class Purchase {
 
   factory Purchase.fromMap(Map<String, dynamic> map) => Purchase(
         id: map['id'],
-        itemName: map['itemName'],
-        size: map['size'],
-        carat: map['carat'],
-        rate: map['rate'],
-        amount: map['amount'],
+        partyDetails: Party.fromMap(jsonDecode(map['party'])),
+        stockDetails: StockItem.fromMap(jsonDecode(map['stock'])),
         paymentOption: map['paymentOption'],
         paymentStatus: map['paymentStatus'],
-        dueDate: DateTime.parse(map['dueDate']),
         description: map['description'],
         createdAt: DateTime.parse(map['createdAt']),
         synced: map['synced'] == 1,
@@ -67,15 +55,31 @@ class Purchase {
 
   Map<String, dynamic> toFirestore() => {
         'id': id,
-        'itemName': itemName,
-        'size': size,
-        'carat': carat,
-        'rate': rate,
-        'amount': amount,
+        'partyDetails': partyDetails,
+        'stockDetails': stockDetails,
         'paymentOption': paymentOption,
         'paymentStatus': paymentStatus,
-        'dueDate': dueDate.toIso8601String(),
         'description': description,
         'createdAt': createdAt.toIso8601String(),
       };
+
+  /// For Firebase
+  Map<String, dynamic> toJson() => toMap();
+  factory Purchase.fromJson(Map<String, dynamic> json) =>
+      Purchase.fromMap(json);
+
+  /// For Google Sheets: flat map with essential info
+  Map<String, dynamic> toSheetRow() {
+    return {
+      'Sale ID': id,
+      'Party': partyDetails.name,
+      'Item': stockDetails.itemId,
+      'Qty': stockDetails.availableQuantity,
+      'Amount': stockDetails.amount,
+      'Payment Option': paymentOption?.name,
+      'Status': paymentStatus.name,
+      'Created': createdAt.toIso8601String(),
+      'Firm': firm.name,
+    };
+  }
 }

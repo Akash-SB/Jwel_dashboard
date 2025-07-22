@@ -2,32 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
+import 'package:sales_data_dashboard/screens/purchase/view/purchase_form_widget.dart';
 import 'package:sales_data_dashboard/screens/sales/store/sales_screen_store.dart';
 
 import '../../../widgets/normal_button.dart';
 import '../../products/view/products_screen.dart';
-import 'sales_form_widget.dart';
+import '../store/purchase_screen_store.dart';
 
 final getIt = GetIt.instance;
 
-class SalesScreen extends StatefulWidget {
-  const SalesScreen({super.key});
+class PurchaseScreen extends StatefulWidget {
+  const PurchaseScreen({super.key});
 
   @override
-  State<SalesScreen> createState() => _SalesScreenState();
+  State<PurchaseScreen> createState() => _PurchaseScreenState();
 }
 
-class _SalesScreenState extends State<SalesScreen> {
-  late SalesScreenStore salesScreenStore;
+class _PurchaseScreenState extends State<PurchaseScreen> {
+  late PurchaseScreenStore purchaseScreenStore;
 
   @override
   void initState() {
     super.initState();
-    if (!getIt.isRegistered<SalesScreenStore>()) {
-      getIt.registerFactory<SalesScreenStore>(() => SalesScreenStore());
+    if (!getIt.isRegistered<PurchaseScreenStore>()) {
+      getIt.registerFactory<PurchaseScreenStore>(() => PurchaseScreenStore());
     }
-    salesScreenStore = getIt<SalesScreenStore>();
+    purchaseScreenStore = getIt<PurchaseScreenStore>();
   }
 
   @override
@@ -61,7 +63,7 @@ class _SalesScreenState extends State<SalesScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Sales Management',
+                  'Purchase Management',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -72,8 +74,8 @@ class _SalesScreenState extends State<SalesScreen> {
                 ),
                 IntrinsicWidth(
                   child: NormalButton(
-                    text: 'Create New Entry',
-                    onPressed: () => _openSalesForm(context),
+                    text: 'Create New Purchase',
+                    onPressed: () => _openPurchaseForm(context),
                   ),
                 ),
               ],
@@ -115,7 +117,7 @@ class _SalesScreenState extends State<SalesScreen> {
                         return DataColumn(
                           label: InkWell(
                             onTap: col.isSortable
-                                ? () => salesScreenStore.setSortKey(col.key)
+                                ? () => purchaseScreenStore.setSortKey(col.key)
                                 : null,
                             child: Row(
                               children: [
@@ -129,9 +131,9 @@ class _SalesScreenState extends State<SalesScreen> {
                                   ),
                                 ),
                                 if (col.isSortable &&
-                                    salesScreenStore.sortKey == col.key)
+                                    purchaseScreenStore.sortKey == col.key)
                                   Icon(
-                                    salesScreenStore.sortAsc
+                                    purchaseScreenStore.sortAsc
                                         ? Icons.arrow_upward
                                         : Icons.arrow_downward,
                                     size: 14.dp,
@@ -141,7 +143,7 @@ class _SalesScreenState extends State<SalesScreen> {
                           ),
                         );
                       }).toList(),
-                      rows: salesScreenStore.paginatedData.map((row) {
+                      rows: purchaseScreenStore.paginatedData.map((row) {
                         return DataRow(
                           cells: columns.map((col) {
                             if (col.isAction) {
@@ -187,19 +189,19 @@ class _SalesScreenState extends State<SalesScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: salesScreenStore.currentTablePage > 0
-                      ? () => salesScreenStore.setCurrentPageIndex(
-                          salesScreenStore.currentTablePage - 1)
+                  onPressed: purchaseScreenStore.currentTablePage > 0
+                      ? () => purchaseScreenStore.setCurrentPageIndex(
+                          purchaseScreenStore.currentTablePage - 1)
                       : null,
                   icon: const Icon(Icons.chevron_left),
                 ),
                 Text(
-                    'Page ${salesScreenStore.currentTablePage + 1} of ${salesScreenStore.totalPages}'),
+                    'Page ${purchaseScreenStore.currentTablePage + 1} of ${purchaseScreenStore.totalPages}'),
                 IconButton(
-                  onPressed: salesScreenStore.currentTablePage <
-                          salesScreenStore.totalPages - 1
-                      ? () => salesScreenStore.setCurrentPageIndex(
-                          salesScreenStore.currentTablePage + 1)
+                  onPressed: purchaseScreenStore.currentTablePage <
+                          purchaseScreenStore.totalPages - 1
+                      ? () => purchaseScreenStore.setCurrentPageIndex(
+                          purchaseScreenStore.currentTablePage + 1)
                       : null,
                   icon: const Icon(Icons.chevron_right),
                 ),
@@ -211,7 +213,7 @@ class _SalesScreenState extends State<SalesScreen> {
     );
   }
 
-  void _openSalesForm(BuildContext context, [Sale? existingSale]) {
+  void _openPurchaseForm(BuildContext context, [Purchase? existingPurchase]) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -221,7 +223,7 @@ class _SalesScreenState extends State<SalesScreen> {
           borderRadius: BorderRadius.circular(8.dp),
         ),
         title: Text(
-          existingSale != null ? 'Edit Sales' : 'Create Sales',
+          existingPurchase != null ? 'Edit Purchase' : 'Create Purchase',
           style: TextStyle(
             fontSize: 24.dp,
             fontWeight: FontWeight.w600,
@@ -231,13 +233,13 @@ class _SalesScreenState extends State<SalesScreen> {
           ),
         ),
         content: const SingleChildScrollView(
-          child: SalesFormWidget(),
+          child: PurchaseFormWidget(),
         ),
       ),
     );
   }
 
-  void _confirmDelete(BuildContext context, Sale sale) {
+  void _confirmDelete(BuildContext context, Purchase purchase) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -256,7 +258,7 @@ class _SalesScreenState extends State<SalesScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Are you sure you want to delete invoice ${sale.id}?',
+              'Are you sure you want to delete invoice ${purchase.id}?',
               style: TextStyle(
                 fontSize: 14.dp,
                 fontWeight: FontWeight.w600,
@@ -305,14 +307,17 @@ class _SalesScreenState extends State<SalesScreen> {
                 ),
                 InkWell(
                   onTap: () {
-                    salesScreenStore.deleteSale(sale).then((final onValue) {
+                    purchaseScreenStore
+                        .deletePurchase(purchase)
+                        .then((final onValue) {
                       // activityStore.addActivity(Activity(
                       //   id: invoice.invoiceId,
                       //   date: DateTime.parse(invoice.date),
                       //   title: 'Invoice data for ${invoice.custName} Deleted',
                       // ));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Invoice ${sale.id} deleted')),
+                        SnackBar(
+                            content: Text('Invoice ${purchase.id} deleted')),
                       );
                     });
 
@@ -354,7 +359,7 @@ class _SalesScreenState extends State<SalesScreen> {
     );
   }
 
-  String _getCellValue(Sale row, String key) {
+  String _getCellValue(Purchase row, String key) {
     switch (key) {
       case 'date':
         return row.createdAt.toIso8601String();
@@ -368,8 +373,7 @@ class _SalesScreenState extends State<SalesScreen> {
         return row.stockDetails.amount.toString();
       case 'description':
         return row.description ?? '';
-      case 'dueDays':
-        return row.dueDays.toString();
+
       case 'paymentOption':
         return row.paymentOption.toString() ?? 'NA';
       case 'paymentStatus':

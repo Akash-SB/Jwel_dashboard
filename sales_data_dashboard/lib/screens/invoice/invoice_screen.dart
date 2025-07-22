@@ -407,7 +407,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               }).onError(
                 (error, stackTrace) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                         content: Text(
                             'Something went wrong while creating invoice')),
                   );

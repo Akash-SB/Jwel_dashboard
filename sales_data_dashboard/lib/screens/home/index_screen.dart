@@ -100,21 +100,23 @@ class _IndexScreenState extends State<IndexScreen> {
                   Observer(builder: (context) {
                     return Expanded(
                       child: ListView.builder(
-                        itemCount: 4,
+                        itemCount: 6,
                         itemBuilder: (context, index) {
                           final icons = [
                             Icons.dashboard,
                             Icons.receipt_long,
                             Icons.person_3_rounded,
                             Icons.inventory_2,
-                            Icons.settings,
+                            Icons.satellite,
+                            Icons.money,
                           ];
                           final labels = [
                             "Dashboard",
                             "Invoices",
                             "Users",
                             "Products",
-                            "Settings",
+                            "Sales",
+                            "Purchase"
                           ];
                           return _sidebarItem(
                               icons[index], labels[index], index);

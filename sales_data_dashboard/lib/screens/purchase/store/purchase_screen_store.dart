@@ -1,16 +1,16 @@
 import 'package:mobx/mobx.dart';
+import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sqflite/sqflite.dart';
-import '../../../models/sales_model.dart';
 
-part 'sales_screen_store.g.dart';
+part 'purchase_screen_store.g.dart';
 
-class SalesScreenStore = _SalesScreenStore with _$SalesScreenStore;
+class PurchaseScreenStore = _PurchaseScreenStore with _$PurchaseScreenStore;
 
-abstract class _SalesScreenStore with Store {
+abstract class _PurchaseScreenStore with Store {
   late Database db;
 
   @observable
-  ObservableList<Sale> sales = ObservableList<Sale>();
+  ObservableList<Purchase> purchaseList = ObservableList<Purchase>();
 
   @observable
   String? sortKey;
@@ -41,7 +41,7 @@ abstract class _SalesScreenStore with Store {
   }
 
   @computed
-  List<Sale> get paginatedData {
+  List<Purchase> get paginatedData {
     final start = currentTablePage * int.parse(selectedRowCount);
     final end =
         (start + int.parse(selectedRowCount)).clamp(0, sortedData.length);
@@ -55,13 +55,12 @@ abstract class _SalesScreenStore with Store {
       version: 1,
       onCreate: (db, version) async {
         await db.execute('''
-         CREATE TABLE IF NOT EXISTS sales (
+         CREATE TABLE IF NOT EXISTS purchase (
   id TEXT PRIMARY KEY,
   partyDetails TEXT,
   stockDetails TEXT,
   paymentOption TEXT,
   paymentStatus TEXT,
-  dueDays INTEGER,
   description TEXT,
   createdAt TEXT,
   synced INTEGER,
@@ -73,22 +72,22 @@ abstract class _SalesScreenStore with Store {
   }
 
   @action
-  Future<void> addSale(Sale sale) async {
-    await db.insert('sales', sale.toMap(),
+  Future<void> addPurchase(Purchase purchase) async {
+    await db.insert('purchase', purchase.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
-    sales.add(sale);
+    purchaseList.add(purchase);
   }
 
   @action
-  Future<void> deleteSale(Sale sale) async {
-    await db.delete('sales', where: 'id = ?', whereArgs: [sale.id]);
-    sales.remove(sale);
+  Future<void> deletePurchase(Purchase sale) async {
+    await db.delete('purchase', where: 'id = ?', whereArgs: [sale.id]);
+    purchaseList.remove(sale);
   }
 
   @action
-  Future<void> fetchSales() async {
-    final List<Map<String, dynamic>> maps = await db.query('sales');
-    sales = ObservableList.of(maps.map((map) => Sale.fromMap(map)));
+  Future<void> fetchPurchases() async {
+    final List<Map<String, dynamic>> maps = await db.query('purchase');
+    purchaseList = ObservableList.of(maps.map((map) => Purchase.fromMap(map)));
   }
 
   @action
@@ -111,8 +110,8 @@ abstract class _SalesScreenStore with Store {
   }
 
   @computed
-  List<Sale> get sortedData {
-    List<Sale> sorted = [...filteredData];
+  List<Purchase> get sortedData {
+    List<Purchase> sorted = [...filteredData];
     if (sortKey != null) {
       sorted.sort((a, b) {
         final aValue = a.toMap()[sortKey];
@@ -127,8 +126,8 @@ abstract class _SalesScreenStore with Store {
   }
 
   @computed
-  List<Sale> get filteredData {
-    List<Sale> filtered = sales.toList();
+  List<Purchase> get filteredData {
+    List<Purchase> filtered = purchaseList.toList();
     if (searchedText.isNotEmpty) {
       filtered = filtered
           .where((item) => item.toMap().values.any((v) =>
