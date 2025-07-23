@@ -1,8 +1,12 @@
 // sale_form.dart
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 
+import '../../../models/sales_model.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/common_textfield.dart';
+import '../../../widgets/custom_radio_button.dart';
+import '../../../widgets/normal_button.dart';
 import '../../../widgets/searchable_textfield.dart';
 
 class PurchaseFormWidget extends StatefulWidget {
@@ -35,7 +39,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
     return SizedBox(
       width: 800,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.dp),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -48,7 +52,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                     enabled: false,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.dp),
                 Expanded(
                   child: TextFormField(
                     initialValue: DateTime.now().toString().split(' ')[0],
@@ -63,23 +67,29 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            const Text('Customer Information',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 24.dp),
+            const Text(
+              'Customer Information',
+              style: TextStyle(
+                fontSize: 18,
+                color: Color(0XFF111827),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             Row(
               children: [
-                Expanded(
-                  child: RadioListTile<String>(
-                    title: const Text('Agent'),
+                IntrinsicWidth(
+                  child: CustomRadioButton<String>(
+                    title: 'Agent',
                     value: 'agent',
                     groupValue: partySelection,
                     onChanged: (value) =>
                         setState(() => partySelection = value!),
                   ),
                 ),
-                Expanded(
-                  child: RadioListTile<String>(
-                    title: const Text('Company'),
+                IntrinsicWidth(
+                  child: CustomRadioButton<String>(
+                    title: 'Company',
                     value: 'company',
                     groupValue: partySelection,
                     onChanged: (value) =>
@@ -87,6 +97,9 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 12.dp,
             ),
             SearchableTextField<String>(
               label: 'Search by Party ID',
@@ -101,8 +114,20 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 partyTypeController.text = partySelection;
               },
             ),
-            CommonTextField(label: 'Name', controller: nameController),
-            CommonTextField(label: 'Address', controller: addressController),
+            Row(
+              children: [
+                Expanded(
+                    child: CommonTextField(
+                        label: 'Name', controller: nameController)),
+                SizedBox(
+                  width: 16.dp,
+                ),
+                Expanded(
+                  child: CommonTextField(
+                      label: 'Address', controller: addressController),
+                ),
+              ],
+            ),
             Row(
               children: [
                 Expanded(
@@ -113,27 +138,36 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                     child: CommonTextField(
                         label: 'GST Number (Optional)',
                         controller: gstController)),
+                SizedBox(
+                  width: 16.dp,
+                ),
+                Expanded(
+                  child: CommonTextField(
+                      label: 'Party Type', controller: partyTypeController),
+                ),
               ],
             ),
-            CommonTextField(
-                label: 'Party Type', controller: partyTypeController),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.dp),
             const Text('Item Information',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Color(0XFF111827),
+                  fontWeight: FontWeight.w600,
+                )),
             Row(
               children: [
-                Expanded(
-                  child: RadioListTile<String>(
-                    title: const Text('Existing Item'),
+                IntrinsicWidth(
+                  child: CustomRadioButton<String>(
+                    title: 'Existing Item',
                     value: 'existing',
                     groupValue: itemSelection,
                     onChanged: (value) =>
                         setState(() => itemSelection = value!),
                   ),
                 ),
-                Expanded(
-                  child: RadioListTile<String>(
-                    title: const Text('New Item'),
+                IntrinsicWidth(
+                  child: CustomRadioButton<String>(
+                    title: 'New Item',
                     value: 'new',
                     groupValue: itemSelection,
                     onChanged: (value) =>
@@ -162,11 +196,11 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 Expanded(
                     child: CommonTextField(
                         label: 'Item Name', controller: itemNameController)),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.dp),
                 Expanded(
                     child: CommonTextField(
                         label: 'Size', controller: sizeController)),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.dp),
                 Expanded(
                     child: CommonTextField(
                         label: 'Rate', controller: rateController)),
@@ -177,11 +211,11 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 Expanded(
                     child: CommonTextField(
                         label: 'Carat', controller: caratController)),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.dp),
                 Expanded(
                     child: CommonTextField(
                         label: 'Quantity', controller: quantityController)),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.dp),
                 Expanded(
                     child: CommonTextField(
                         label: 'Amount', controller: amountController)),
@@ -191,35 +225,66 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 label: 'Description',
                 controller: descriptionController,
                 maxLines: 3),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.dp),
             const Text('Other Information',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const Row(
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Color(0XFF111827),
+                  fontWeight: FontWeight.w600,
+                )),
+            Row(
               children: [
-                Expanded(child: CommonDropdown(label: 'Payment Status')),
-                SizedBox(width: 16),
-                Expanded(child: CommonDropdown(label: 'Payment Type')),
-                SizedBox(width: 16),
-                Expanded(child: CommonDropdown(label: 'Transaction Type')),
+                Expanded(
+                  child: CommonDropdown(
+                    label: 'Payment Status',
+                    options: [
+                      PaymentStatus.paid.name,
+                      PaymentStatus.unpaid.name
+                    ],
+                  ),
+                ),
+                SizedBox(width: 16.dp),
+                Expanded(
+                  child: CommonDropdown(
+                    label: 'Payment Type',
+                    options: [
+                      PaymentOption.bank.name,
+                      PaymentOption.cash.name,
+                      PaymentOption.cheque.name,
+                      PaymentOption.upi.name,
+                    ],
+                  ),
+                ),
+                SizedBox(width: 16.dp),
+                const Expanded(child: SizedBox.shrink()),
               ],
             ),
             CommonTextField(
                 label: 'Note (Optional)',
                 controller: noteController,
                 maxLines: 3),
-            const SizedBox(height: 24),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            SizedBox(height: 24.dp),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IntrinsicWidth(
+                  child: NormalButton(
+                    text: 'Cancle',
+                    textColor: const Color(0xFF374151),
+                    filledColor: const Color(0xFFF3F4F6),
+                    onPressed: () => Navigator.pop(context),
+                  ),
                 ),
-                child: const Text('Create Sale'),
-              ),
+                SizedBox(
+                  width: 16.dp,
+                ),
+                IntrinsicWidth(
+                  child: NormalButton(
+                    text: 'Create Purchase',
+                    onPressed: () {},
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 // searchable_textfield.dart
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 
 class SearchableTextField<T> extends StatefulWidget {
   final String label;
@@ -53,22 +54,30 @@ class _SearchableTextFieldState<T> extends State<SearchableTextField<T>> {
             controller: _controller,
             onChanged: _onChanged,
             decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: const Icon(
+                Icons.search,
+                color: Color(0xFF9CA3AF),
+              ),
               labelText: widget.label,
-              labelStyle: const TextStyle(fontSize: 14),
+              labelStyle: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF9CA3AF),
+              ),
               filled: true,
               fillColor: Colors.white,
+              hoverColor: Colors.transparent,
+              focusColor: Colors.transparent,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.grey),
+                borderRadius: BorderRadius.circular(6.dp),
+                borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.grey),
+                borderRadius: BorderRadius.circular(6.dp),
+                borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.blue),
+                borderRadius: BorderRadius.circular(6.dp),
+                borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
               ),
             ),
           ),
@@ -76,11 +85,11 @@ class _SearchableTextFieldState<T> extends State<SearchableTextField<T>> {
         if (showOptions && filteredOptions.isNotEmpty)
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+              borderRadius: BorderRadius.circular(8.dp),
               color: Colors.white,
             ),
-            constraints: const BoxConstraints(maxHeight: 180),
+            constraints: BoxConstraints(maxHeight: 180.dp),
             child: ListView.builder(
               shrinkWrap: true,
               itemCount: filteredOptions.length,
@@ -91,11 +100,20 @@ class _SearchableTextFieldState<T> extends State<SearchableTextField<T>> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       border: Border(
-                          bottom: BorderSide(color: Colors.grey.shade300)),
+                          bottom: BorderSide(
+                        color: Color(0xFFE5E7EB),
+                        width: 0.5,
+                      )),
                     ),
-                    child: Text(widget.displayString(item)),
+                    child: Text(
+                      widget.displayString(item),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF4B5563),
+                      ),
+                    ),
                   ),
                 );
               },

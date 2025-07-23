@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 
 class CommonTextField extends StatelessWidget {
   final String label;
@@ -31,20 +32,24 @@ class CommonTextField extends StatelessWidget {
         style: const TextStyle(fontSize: 14),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(fontSize: 14),
+          labelStyle: const TextStyle(
+            fontSize: 14,
+          ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: enabled ? Colors.white : const Color(0xFFF9FAFB),
+          hoverColor: Colors.transparent,
+          focusColor: Colors.transparent,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.circular(6.dp),
+            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.circular(6.dp),
+            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.blue),
+            borderRadius: BorderRadius.circular(6.dp),
+            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
           ),
         ),
       ),

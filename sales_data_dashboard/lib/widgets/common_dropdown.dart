@@ -1,5 +1,6 @@
 // common_dropdown.dart
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 
 class CommonDropdown extends StatelessWidget {
   final String label;
@@ -21,35 +22,41 @@ class CommonDropdown extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
         value: value,
-        focusColor: Colors.transparent,
         padding: EdgeInsets.zero,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(fontSize: 14),
+          labelStyle: const TextStyle(
+            fontSize: 16,
+            color: Color(0xFF000000),
+          ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: const Color(0xFFF9FAFB),
+          focusColor: Colors.transparent,
+          hoverColor: Colors.transparent,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.circular(6.dp),
+            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.circular(6.dp),
+            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.blue),
+            borderRadius: BorderRadius.circular(6.dp),
+            borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
           ),
         ),
-        dropdownColor: Colors.white,
+        // dropdownColor: Colors.white,
         items: options.map((opt) {
           return DropdownMenuItem(
             value: opt,
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
+            child: Text(
+              opt,
+              style: TextStyle(
+                fontSize: 14,
+                color:
+                    value == opt ? Colors.blueAccent : const Color(0xFF4B5563),
               ),
-              child: Text(opt),
             ),
           );
         }).toList(),
