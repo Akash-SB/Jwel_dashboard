@@ -35,6 +35,9 @@ class _InvoiceFormState extends State<InvoiceForm> {
   final _amountController = TextEditingController();
   final _daysOfIntstController = TextEditingController();
   final _custNameController = TextEditingController();
+  final _custAddressController = TextEditingController();
+  final _custPhoneController = TextEditingController();
+  final _custGstController = TextEditingController();
   final _noteController = TextEditingController();
   final _prodNameController = TextEditingController();
   final _hsnCodeController = TextEditingController();
@@ -44,7 +47,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
   PaymentStatusEnum? _paymentStatus;
   PaymentTypeEnum? _paymentType;
   CustomerModel? _selectedCustomer;
-  ProductModel? _selectedProduct;
 
   @override
   void initState() {
@@ -66,6 +68,9 @@ class _InvoiceFormState extends State<InvoiceForm> {
       _paymentType = invoice.paymentType;
       _hsnCodeController.text = invoice.hsnCode;
       _prodNameController.text = invoice.productName ?? '';
+      _custAddressController.text = invoice.custAddress ?? '';
+      _custPhoneController.text = invoice.custPhone ?? '';
+      _custGstController.text = invoice.custGst ?? '';
     } else {
       _invoiceIdController.text =
           DateTime.now().millisecondsSinceEpoch.toString();
@@ -275,7 +280,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
                           },
                           onSelected: (ProductModel selection) {
                             setState(() {
-                              _selectedProduct = selection;
                               _prodNameController.text = selection.prodName;
                               _sizeController.text = selection.size;
                               _rateController.text = selection.rate;
@@ -347,114 +351,154 @@ class _InvoiceFormState extends State<InvoiceForm> {
             ),
             SizedBox(height: 12.dp),
             if (widget.customers != null && widget.customers!.isNotEmpty)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+              Column(
                 children: [
-                  Flexible(
-                    child: Autocomplete<CustomerModel>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        if (textEditingValue.text.isEmpty) {
-                          return const Iterable<CustomerModel>.empty();
-                        }
-                        return widget.customers!.where(
-                          (CustomerModel customer) => customer.custName
-                              .toLowerCase()
-                              .contains(textEditingValue.text.toLowerCase()),
-                        );
-                      },
-                      displayStringForOption: (CustomerModel option) =>
-                          option.custName,
-                      initialValue:
-                          TextEditingValue(text: _custNameController.text),
-                      fieldViewBuilder:
-                          (context, controller, focusNode, onFieldSubmitted) {
-                        return TextFormField(
-                          controller: controller,
-                          focusNode: focusNode,
-                          decoration: _inputDecoration('Customer Name'),
-                          validator: (value) => value == null || value.isEmpty
-                              ? 'Customer name required'
-                              : null,
-                          onChanged: (value) {
-                            _custNameController.text = value;
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Autocomplete<CustomerModel>(
+                          optionsBuilder: (TextEditingValue textEditingValue) {
+                            if (textEditingValue.text.isEmpty) {
+                              return const Iterable<CustomerModel>.empty();
+                            }
+                            return widget.customers!.where(
+                              (CustomerModel customer) => customer.custName
+                                  .toLowerCase()
+                                  .contains(
+                                      textEditingValue.text.toLowerCase()),
+                            );
                           },
-                        );
-                      },
-                      optionsViewBuilder: (context,
-                          AutocompleteOnSelected<CustomerModel> onSelected,
-                          options) {
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: Material(
-                            elevation: 4,
-                            child: Container(
-                              constraints: BoxConstraints(
-                                maxWidth: 230.dp,
-                              ), // Adjust as needed
-                              child: ListView.builder(
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                itemCount: options.length,
-                                itemBuilder: (context, index) {
-                                  final CustomerModel option =
-                                      options.elementAt(index);
-                                  return ListTile(
-                                    title: Text(option.custName),
-                                    onTap: () {
-                                      onSelected(option);
+                          displayStringForOption: (CustomerModel option) =>
+                              option.custName,
+                          initialValue:
+                              TextEditingValue(text: _custNameController.text),
+                          fieldViewBuilder: (context, controller, focusNode,
+                              onFieldSubmitted) {
+                            return TextFormField(
+                              controller: controller,
+                              focusNode: focusNode,
+                              decoration: _inputDecoration('Customer Name'),
+                              validator: (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Customer name required'
+                                      : null,
+                              onChanged: (value) {
+                                _custNameController.text = value;
+                              },
+                            );
+                          },
+                          optionsViewBuilder: (context,
+                              AutocompleteOnSelected<CustomerModel> onSelected,
+                              options) {
+                            return Align(
+                              alignment: Alignment.topLeft,
+                              child: Material(
+                                elevation: 4,
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                    maxWidth: 230.dp,
+                                  ), // Adjust as needed
+                                  child: ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    shrinkWrap: true,
+                                    itemCount: options.length,
+                                    itemBuilder: (context, index) {
+                                      final CustomerModel option =
+                                          options.elementAt(index);
+                                      return ListTile(
+                                        title: Text(option.custName),
+                                        onTap: () {
+                                          onSelected(option);
+                                        },
+                                      );
                                     },
-                                  );
-                                },
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                      onSelected: (CustomerModel selection) {
-                        setState(() {
-                          _selectedCustomer = selection;
-                          _custNameController.text = selection.custName;
-                          _custType = selection.usertype;
-                        });
-                      },
-                    ),
+                            );
+                          },
+                          onSelected: (CustomerModel selection) {
+                            setState(() {
+                              _selectedCustomer = selection;
+                              _custNameController.text = selection.custName;
+                              _custType = selection.usertype;
+                              _custAddressController.text =
+                                  selection.address ?? '';
+                              _custPhoneController.text =
+                                  selection.mobileNumber;
+                              _custGstController.text = selection.gstNumber;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: 12.dp,
+                      ),
+                      Flexible(
+                        child: DropdownButtonFormField<UsertypeEnum>(
+                          focusColor: Colors.white,
+                          value: _selectedCustomer != null
+                              ? _selectedCustomer!.usertype
+                              : _custType,
+                          decoration: _inputDecoration('Customer Type'),
+                          items: [
+                            UsertypeEnum.broker,
+                            UsertypeEnum.company,
+                          ].map((e) {
+                            return DropdownMenuItem(
+                              value: e,
+                              child: Text(e.name.toUpperCase()),
+                            );
+                          }).toList(),
+                          onChanged: (value) =>
+                              setState(() => _custType = value),
+                          validator: (value) =>
+                              value == null ? 'Required' : null,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 12.dp,
+                      ),
+                      Flexible(
+                        child: TextFormField(
+                          controller: _daysOfIntstController,
+                          keyboardType: TextInputType.number,
+                          decoration:
+                              _inputDecoration('Days of Interest (Optional)'),
+                          // validator: (value) => value == null || value.isEmpty
+                          //     ? 'Required'
+                          //     : null,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  Flexible(
-                    child: DropdownButtonFormField<UsertypeEnum>(
-                      focusColor: Colors.white,
-                      value: _selectedCustomer != null
-                          ? _selectedCustomer!.usertype
-                          : _custType,
-                      decoration: _inputDecoration('Customer Type'),
-                      items: [
-                        UsertypeEnum.broker,
-                        UsertypeEnum.company,
-                      ].map((e) {
-                        return DropdownMenuItem(
-                          value: e,
-                          child: Text(e.name.toUpperCase()),
-                        );
-                      }).toList(),
-                      onChanged: (value) => setState(() => _custType = value),
-                      validator: (value) => value == null ? 'Required' : null,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  Flexible(
-                    child: TextFormField(
-                      controller: _daysOfIntstController,
-                      keyboardType: TextInputType.number,
-                      decoration:
-                          _inputDecoration('Days of Interest (Optional)'),
-                      // validator: (value) => value == null || value.isEmpty
-                      //     ? 'Required'
-                      //     : null,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: TextFormField(
+                          controller: _custAddressController,
+                          decoration: _inputDecoration('Customer Address'),
+                          maxLines: 2,
+                        ),
+                      ),
+                      SizedBox(width: 12.dp),
+                      Flexible(
+                        child: TextFormField(
+                          controller: _custPhoneController,
+                          keyboardType: TextInputType.phone,
+                          decoration: _inputDecoration('Customer Phone'),
+                        ),
+                      ),
+                      SizedBox(width: 12.dp),
+                      Flexible(
+                        child: TextFormField(
+                          controller: _custGstController,
+                          decoration: _inputDecoration('Customer GST'),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               )

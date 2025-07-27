@@ -306,12 +306,26 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                       gstin: '27ABCDE1234F1Z5',
                                       address: '123 Business Street, Mumbai',
                                       phone: '+91-9999999999',
+                                      email: 'contact@abcjewellers.com',
+                                      bankName: 'Bank of India',
+                                      bankAccountNo: '987654321012',
+                                      bankIfscCode: 'BKID0009876',
+                                      bankBranch: 'Main Branch',
+                                      bankAddress: '123 Bank Street, Mumbai',
+                                      panNumber: 'ABCDE1234F',
                                     ),
                                     CompanyModel(
                                       name: 'XYZ Gold Traders',
                                       gstin: '27XYZ9876F1Z5',
                                       address: '45 Market Road, Pune',
                                       phone: '+91-8888888888',
+                                      email: 'contact@xyzgoldtraders.com',
+                                      bankName: 'Bank of Maharashtra',
+                                      bankAccountNo: '123456789012',
+                                      bankIfscCode: 'MAHB0001234',
+                                      bankBranch: 'Main Branch',
+                                      bankAddress: '123 Bank Street, Mumbai',
+                                      panNumber: 'ABCDE1234F',
                                     ),
                                   ];
                                   final selected = await showCompanyPicker(
@@ -557,11 +571,25 @@ class CompanyModel {
   final String gstin;
   final String address;
   final String phone;
+  final String? email;
+  final String? bankName;
+  final String? bankAccountNo;
+  final String? bankIfscCode;
+  final String? bankBranch;
+  final String? bankAddress;
+  final String? panNumber;
 
   CompanyModel({
     required this.name,
     required this.gstin,
     required this.address,
     required this.phone,
+    this.email,
+    this.bankName,
+    this.bankAccountNo,
+    this.bankIfscCode,
+    this.bankBranch,
+    this.bankAddress,
+    this.panNumber,
   });
 }

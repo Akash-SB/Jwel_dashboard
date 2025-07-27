@@ -16,6 +16,9 @@ class InvoiceModel {
   final String? productName;
   final String hsnCode;
   final String? interestDays;
+  final String? custAddress;
+  final String? custPhone;
+  final String? custGst;
 
   InvoiceModel({
     required this.invoiceId,
@@ -32,6 +35,9 @@ class InvoiceModel {
     this.note,
     this.hsnCode = '',
     this.interestDays,
+    this.custAddress,
+    this.custPhone,
+    this.custGst,
   });
 
   /// Convert to Firestore map
@@ -50,7 +56,10 @@ class InvoiceModel {
         'createdAt': FieldValue.serverTimestamp(),
         'note': note,
         'hsnCode': hsnCode,
-        'interestDays': interestDays
+        'interestDays': interestDays,
+        'custAddress': custAddress,
+        'custPhone': custPhone,
+        'custGst': custGst,
       };
 
   /// Construct from Firestore map
@@ -84,6 +93,9 @@ class InvoiceModel {
       note: map['note'],
       hsnCode: map['hsnCode'] ?? '',
       interestDays: map['interestDays'] ?? '',
+      custAddress: map['custAddress'],
+      custPhone: map['custPhone'],
+      custGst: map['custGst'],
     );
   }
 
@@ -110,6 +122,9 @@ class InvoiceModel {
       note: note,
       hsnCode: hsnCode,
       interestDays: interestDays,
+      custAddress: custAddress,
+      custPhone: custPhone,
+      custGst: custGst,
     );
   }
 

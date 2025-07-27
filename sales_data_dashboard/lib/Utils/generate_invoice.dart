@@ -28,171 +28,527 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
   final double baseAmount = double.tryParse(tx.amount) ?? (qty * rate);
 
   const double gstRate = 0.0025; // 0.25%
+  const double cgstRate = 0.00125; // 0.125% for CGST
+  const double sgstRate = 0.00125; // 0.125% for SGST
   final double gstAmount = baseAmount * gstRate;
+  final double cgst = baseAmount * cgstRate;
+  final double sgst = baseAmount * sgstRate;
   final double rawTotal = baseAmount + gstAmount;
   final double roundOff = rawTotal.roundToDouble() - rawTotal;
   final double grandTotal = rawTotal + roundOff;
 
   final formatter = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
-
   pdf.addPage(
     pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
-      margin: const pw.EdgeInsets.all(24),
-      build: (context) => [
-        // Header
-        pw.Row(
-          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-          children: [
-            pw.Image(pw.MemoryImage(logoBytes), width: 80),
-            pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.end,
-              children: [
-                pw.Text(selectedParentCompany.name,
-                    style: pw.TextStyle(
-                        fontSize: 16,
-                        fontWeight: pw.FontWeight.bold,
-                        font: robotoFont)),
-                pw.Text("GSTIN: ${selectedParentCompany.gstin}",
-                    style: pw.TextStyle(font: robotoFont)),
-                pw.Text("Phone: ${selectedParentCompany.phone}",
-                    style: pw.TextStyle(font: robotoFont)),
-              ],
-            ),
-          ],
-        ),
-        pw.SizedBox(height: 20),
-
-        // Invoice info
-        pw.Row(
-          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-          children: [
-            pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Text("Invoice No: ${tx.invoiceId}",
-                    style: pw.TextStyle(font: robotoFont)),
-                pw.Text("Date: ${tx.date}",
-                    style: pw.TextStyle(font: robotoFont)),
-                pw.Text("Transaction Type: ${tx.transactionType.name}",
-                    style: pw.TextStyle(font: robotoFont)),
-              ],
-            ),
-            pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.end,
-              children: [
-                pw.Text("Customer: ${tx.custName}",
-                    style: pw.TextStyle(
-                        fontWeight: pw.FontWeight.bold, font: robotoFont)),
-                pw.Text("Customer Type: ${tx.custType.name}",
-                    style: pw.TextStyle(font: robotoFont)),
-              ],
-            ),
-          ],
-        ),
-        pw.SizedBox(height: 20),
-
-        // Table
-        pw.TableHelper.fromTextArray(
-          border: pw.TableBorder.all(),
-          headerStyle: pw.TextStyle(
-              fontWeight: pw.FontWeight.bold, font: robotoFont, fontSize: 10),
-          cellStyle: pw.TextStyle(font: robotoFont, fontSize: 9),
-          cellAlignments: {
-            0: pw.Alignment.center,
-            1: pw.Alignment.centerLeft,
-            2: pw.Alignment.center,
-            3: pw.Alignment.centerRight,
-            4: pw.Alignment.centerRight,
-            5: pw.Alignment.center,
-            6: pw.Alignment.centerRight,
-          },
-          headers: [
-            'Sl No',
-            'Description of Goods',
-            'HSN/SAC',
-            'Quantity',
-            'Rate',
-            'per',
-            'Amount'
-          ],
-          data: [
-            [
-              '1',
-              tx.note ?? 'Goods',
-              tx.hsnCode,
-              '${tx.size} Carat',
-              tx.rate,
-              'Carat',
-              formatter.format(baseAmount),
-            ],
-            [
-              '',
-              'IGST',
-              '',
-              '',
-              '0.25%',
-              '',
-              formatter.format(gstAmount),
-            ],
-            [
-              '',
-              'ROUND OFF',
-              '',
-              '',
-              '',
-              '',
-              formatter.format(roundOff),
-            ],
-          ],
-        ),
-
-        // Total
-        pw.Container(
-          alignment: pw.Alignment.centerRight,
-          padding: const pw.EdgeInsets.only(top: 12),
+      margin: const pw.EdgeInsets.all(16),
+      header: (context) {
+        // ✅ HEADER with logo and company name
+        return pw.Container(
+          color: PdfColor.fromInt(0xFF5D639E), // Light navy blue shade
+          padding: const pw.EdgeInsets.all(8),
           child: pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.end,
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
-              pw.Text("Total: ",
+              pw.Row(children: [
+                pw.Image(pw.MemoryImage(logoBytes), width: 50, height: 50),
+                pw.SizedBox(width: 8),
+                pw.Text(
+                  selectedParentCompany.name,
                   style: pw.TextStyle(
-                      fontWeight: pw.FontWeight.bold,
-                      fontSize: 12,
-                      font: robotoFont)),
-              pw.SizedBox(width: 10),
-              pw.Text(formatter.format(grandTotal),
-                  style: pw.TextStyle(
-                      fontWeight: pw.FontWeight.bold,
-                      fontSize: 14,
-                      font: robotoFont)),
+                    fontSize: 20,
+                    fontWeight: pw.FontWeight.bold,
+                    font: robotoFont,
+                    color: PdfColor.fromInt(0xFFFFD700),
+                  ),
+                ),
+              ]),
+              pw.SizedBox(
+                width: 150,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text("Dealers in :",
+                        style: pw.TextStyle(
+                          fontSize: 7,
+                          font: robotoFont,
+                          color: PdfColor.fromInt(0xFFFFD700),
+                        )),
+                    pw.SizedBox(height: 8),
+                    pw.Text(
+                        "Real Diamond & Colour Stones Jewellery, Precious Stones, Semi Precious Stones Jewellery, Fancy Gold Ornament, Wholesale Temple Jewellery",
+                        textAlign: pw.TextAlign.left,
+                        style: pw.TextStyle(
+                          fontSize: 7,
+                          font: robotoFont,
+                          color: PdfColors.white,
+                        )),
+                  ],
+                ),
+              ),
             ],
+          ),
+        );
+      },
+      build: (context) => [
+        pw.SizedBox(height: 10),
+        pw.Container(
+          padding: const pw.EdgeInsets.all(8),
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(),
+          ),
+          child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.center,
+              children: [
+                pw.Center(
+                    child: pw.Text('GST INVOICE',
+                        style: pw.TextStyle(
+                            fontSize: 12,
+                            fontWeight: pw.FontWeight.bold,
+                            font: robotoFont))),
+                pw.Text('(U/S - 31(1) of CGST Act, 2017 read with Rule 1)',
+                    style: pw.TextStyle(fontSize: 8, font: robotoFont)),
+              ]),
+        ),
+        pw.Container(
+          padding: const pw.EdgeInsets.all(8),
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(),
+          ),
+          child: pw.Center(
+            child: pw.Text('Cash / Credit',
+                style: pw.TextStyle(fontSize: 8, font: robotoFont)),
           ),
         ),
 
-        pw.SizedBox(height: 16),
-        pw.Text("Amount Chargeable (in words):",
-            style: pw.TextStyle(
-                fontSize: 10,
-                fontWeight: pw.FontWeight.bold,
-                font: robotoFont)),
-        pw.Text(convertNumberToWords(grandTotal),
-            style: pw.TextStyle(fontSize: 10, font: robotoFont)),
-
-        pw.SizedBox(height: 20),
-        pw.Text("E. & O.E",
-            style: pw.TextStyle(
-                fontSize: 10,
-                fontStyle: pw.FontStyle.italic,
-                font: robotoFont)),
-        pw.SizedBox(height: 30),
-        pw.Text("Thank you for your business!",
-            style:
-                pw.TextStyle(fontStyle: pw.FontStyle.italic, font: robotoFont)),
+        // ✅ INVOICE INFO BLOCK
+        pw.Container(
+          decoration: pw.BoxDecoration(border: pw.Border.all()),
+          child: pw.Row(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              // Left block
+              pw.Expanded(
+                child: pw.Container(
+                  padding: const pw.EdgeInsets.all(4),
+                  decoration: pw.BoxDecoration(
+                      border: pw.Border(
+                          right: pw.BorderSide(color: PdfColors.black))),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text("Invoice No : ${tx.invoiceId}",
+                          style: pw.TextStyle(font: robotoFont, fontSize: 9)),
+                      pw.Text("Invoice Date : ${tx.date}",
+                          style: pw.TextStyle(font: robotoFont, fontSize: 9)),
+                      pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text("State : Maharashtra",
+                                style: pw.TextStyle(
+                                    font: robotoFont, fontSize: 9)),
+                            pw.Text("State Code : 27",
+                                style: pw.TextStyle(
+                                    font: robotoFont, fontSize: 9)),
+                          ]),
+                    ],
+                  ),
+                ),
+              ),
+              // Right block
+              pw.Expanded(
+                child: pw.Container(
+                  padding: const pw.EdgeInsets.all(4),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text("GSTIN NO : ${selectedParentCompany.gstin}",
+                          style: pw.TextStyle(font: robotoFont, fontSize: 9)),
+                      pw.Text("PAN NO : ${selectedParentCompany.panNumber}",
+                          style: pw.TextStyle(font: robotoFont, fontSize: 9)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // ✅ RECIPIENT BLOCK
+        pw.Container(
+          decoration: pw.BoxDecoration(border: pw.Border.all()),
+          child: pw.Row(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Expanded(
+                child: pw.Container(
+                  padding: const pw.EdgeInsets.all(4),
+                  decoration: pw.BoxDecoration(
+                      border: pw.Border(
+                          right: pw.BorderSide(color: PdfColors.black))),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text("Detail of Recipient :",
+                          style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              font: robotoFont,
+                              fontSize: 9)),
+                      pw.SizedBox(height: 4),
+                      pw.Text(tx.custName,
+                          style: pw.TextStyle(
+                            font: robotoFont,
+                            fontSize: 9,
+                            fontWeight: pw.FontWeight.bold,
+                          )),
+                      pw.SizedBox(height: 4),
+                      pw.SizedBox(
+                        width: 200,
+                        child: pw.Text('Address: ${tx.custAddress ?? ''}',
+                            style: pw.TextStyle(font: robotoFont, fontSize: 9)),
+                      ),
+                      pw.SizedBox(height: 4),
+                      pw.Text('GSTIN: ${tx.custGst ?? ''}',
+                          style: pw.TextStyle(font: robotoFont, fontSize: 9)),
+                      pw.SizedBox(height: 4),
+                      pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Text("State : Maharashtra",
+                                style: pw.TextStyle(
+                                    font: robotoFont, fontSize: 9)),
+                            pw.Text("State Code : 27",
+                                style: pw.TextStyle(
+                                    font: robotoFont, fontSize: 9)),
+                          ]),
+                    ],
+                  ),
+                ),
+              ),
+              pw.Expanded(
+                child: pw.Container(
+                  padding: const pw.EdgeInsets.all(4),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text("PAYMENT TERMS: 30 DAYS",
+                          style: pw.TextStyle(font: robotoFont, fontSize: 9)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // ✅ TABLE
+        pw.Table(
+          border: pw.TableBorder.all(width: 0.8),
+          columnWidths: {
+            0: const pw.FlexColumnWidth(0.6),
+            1: const pw.FlexColumnWidth(3),
+            2: const pw.FlexColumnWidth(1),
+            3: const pw.FlexColumnWidth(0.8),
+            4: const pw.FlexColumnWidth(0.8),
+            5: const pw.FlexColumnWidth(1),
+            6: const pw.FlexColumnWidth(1.2),
+            7: const pw.FlexColumnWidth(1.2),
+          },
+          children: [
+            // header
+            pw.TableRow(
+              decoration: const pw.BoxDecoration(color: PdfColors.grey300),
+              children: [
+                headerCell('Sr. No', robotoFont),
+                headerCell('Description of Goods/Services', robotoFont),
+                headerCell('HSN/SAC', robotoFont),
+                headerCell('Rate Per', robotoFont),
+                headerCell('Quantity', robotoFont),
+                headerCell('Rate', robotoFont),
+                headerCell('Value', robotoFont),
+                headerCell('Taxable Value', robotoFont),
+              ],
+            ),
+            // single row
+            pw.TableRow(
+              children: [
+                dataCell(
+                  '1',
+                  robotoFont,
+                  contentPadding: const pw.EdgeInsets.only(
+                      top: 4, bottom: 150, left: 4, right: 4),
+                ),
+                dataCell(
+                  'CUT & POLISHED EMERALD',
+                  robotoFont,
+                  contentPadding: const pw.EdgeInsets.only(
+                      top: 4, bottom: 150, left: 4, right: 4),
+                ),
+                dataCell(
+                  tx.hsnCode,
+                  robotoFont,
+                  contentPadding: const pw.EdgeInsets.only(
+                      top: 4, bottom: 150, left: 4, right: 4),
+                ),
+                dataCell(
+                  'CTS.',
+                  robotoFont,
+                  contentPadding: const pw.EdgeInsets.only(
+                      top: 4, bottom: 150, left: 4, right: 4),
+                ),
+                dataCell(
+                  tx.size,
+                  robotoFont,
+                  contentPadding: const pw.EdgeInsets.only(
+                      top: 4, bottom: 150, left: 4, right: 4),
+                ),
+                dataCell(
+                  tx.rate,
+                  robotoFont,
+                  contentPadding: const pw.EdgeInsets.only(
+                      top: 4, bottom: 150, left: 4, right: 4),
+                ),
+                dataCell(
+                  tx.amount,
+                  robotoFont,
+                  contentPadding: const pw.EdgeInsets.only(
+                      top: 4, bottom: 150, left: 4, right: 4),
+                ),
+                dataCell(
+                  tx.amount,
+                  robotoFont,
+                  contentPadding: const pw.EdgeInsets.only(
+                      top: 4, bottom: 150, left: 4, right: 4),
+                ),
+              ],
+            ),
+            // total row
+            pw.TableRow(
+              children: [
+                dataCell('', robotoFont),
+                dataCell('', robotoFont),
+                dataCell('', robotoFont),
+                dataCell('Total', robotoFont),
+                dataCell(tx.size, robotoFont, bold: true),
+                dataCell('', robotoFont),
+                dataCell(formatter.format(baseAmount), robotoFont, bold: true),
+                dataCell(formatter.format(baseAmount), robotoFont, bold: true),
+              ],
+            ),
+          ],
+        ),
+        pw.Container(
+          height: 20,
+          width: double.infinity,
+          decoration: pw.BoxDecoration(border: pw.Border.all()),
+        ),
+        pw.Container(
+          decoration: pw.BoxDecoration(border: pw.Border.all()),
+          child: pw.Row(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Expanded(
+                child: pw.Column(children: [
+                  pw.Container(
+                    padding: const pw.EdgeInsets.all(4),
+                    decoration: pw.BoxDecoration(border: pw.Border.all()),
+                    child: pw.Text(
+                      "TOTAL INVOICE VALUE IN WORDS : ${convertNumberToWords(grandTotal)}",
+                      style: pw.TextStyle(font: robotoFont, fontSize: 9),
+                    ),
+                  ),
+                  pw.Container(
+                      width: double.infinity,
+                      padding: const pw.EdgeInsets.all(4),
+                      decoration: pw.BoxDecoration(border: pw.Border.all()),
+                      child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text('Bank Details:',
+                                style: pw.TextStyle(
+                                    font: robotoFont,
+                                    fontWeight: pw.FontWeight.bold,
+                                    fontSize: 9)),
+                            pw.Text(
+                                'Bank Name : ${selectedParentCompany.bankName}',
+                                style: pw.TextStyle(
+                                    font: robotoFont, fontSize: 9)),
+                            pw.Text(
+                                'Bank Account No : ${selectedParentCompany.bankAccountNo}',
+                                style: pw.TextStyle(
+                                    font: robotoFont, fontSize: 9)),
+                            pw.Text(
+                                'Bank IFSC Code : ${selectedParentCompany.bankIfscCode}',
+                                style: pw.TextStyle(
+                                    font: robotoFont, fontSize: 9)),
+                            pw.Text(
+                                'Bank Branch : ${selectedParentCompany.bankBranch}',
+                                style: pw.TextStyle(
+                                    font: robotoFont, fontSize: 9)),
+                          ])),
+                  pw.Container(
+                      width: double.infinity,
+                      padding: const pw.EdgeInsets.all(4),
+                      decoration: pw.BoxDecoration(border: pw.Border.all()),
+                      child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text('Terms & Conditions:',
+                                style: pw.TextStyle(
+                                  font: robotoFont,
+                                  fontWeight: pw.FontWeight.bold,
+                                  fontSize: 8,
+                                )),
+                            pw.SizedBox(height: 8),
+                            pw.Text(
+                              'Certified that the particulars in given above are true and correct\nSubject to MUMBAI Jurisdiction',
+                              style:
+                                  pw.TextStyle(fontSize: 8, font: robotoFont),
+                            ),
+                          ]))
+                ]),
+              ),
+              pw.Container(
+                width: 200,
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                  children: [
+                    rowTax('TAXABLE VALUE', formatter.format(baseAmount),
+                        robotoFont),
+                    rowTax(
+                        'Add CGST 0.125%', formatter.format(cgst), robotoFont),
+                    rowTax(
+                        'Add SGST 0.125%', formatter.format(sgst), robotoFont),
+                    rowTax('Add IGST 0.25%', formatter.format(gstAmount),
+                        robotoFont),
+                    rowTax(
+                        'Rounding Off', formatter.format(roundOff), robotoFont),
+                    rowTax(
+                        'TOTAL VALUE', formatter.format(grandTotal), robotoFont,
+                        bold: true),
+                    pw.Container(
+                      height: 80,
+                      padding: const pw.EdgeInsets.all(4),
+                      decoration: pw.BoxDecoration(border: pw.Border.all()),
+                      child: pw.Column(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: pw.CrossAxisAlignment.center,
+                        children: [
+                          pw.Text('For ${selectedParentCompany.name}',
+                              style: pw.TextStyle(
+                                  font: robotoFont,
+                                  fontSize: 9,
+                                  fontWeight: pw.FontWeight.bold)),
+                          pw.SizedBox(height: 4),
+                          pw.Text('Partner',
+                              style:
+                                  pw.TextStyle(font: robotoFont, fontSize: 9)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
+      footer: (context) {
+        return pw.Container(
+          width: double.infinity,
+          padding: const pw.EdgeInsets.only(top: 8),
+          decoration: const pw.BoxDecoration(
+            border: pw.Border(
+              top: pw.BorderSide(width: 0.5, color: PdfColors.grey),
+            ),
+          ),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              pw.Text('${selectedParentCompany.address}',
+                  style: pw.TextStyle(
+                      fontSize: 9, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 4),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                children: [
+                  pw.Text('Phone: ${selectedParentCompany.phone}',
+                      style: pw.TextStyle(fontSize: 9)),
+                  pw.SizedBox(width: 20),
+                  pw.Text('Email: ${selectedParentCompany.email}',
+                      style: pw.TextStyle(fontSize: 9)),
+                ],
+              ),
+              pw.SizedBox(height: 8),
+              pw.Container(
+                width: double.infinity,
+                padding: const pw.EdgeInsets.only(top: 8),
+                decoration: const pw.BoxDecoration(
+                  border: pw.Border(
+                    top: pw.BorderSide(width: 0.5, color: PdfColors.grey),
+                  ),
+                ),
+                child: pw.Text(
+                  'Bank Name : ${selectedParentCompany.bankName} | Bank Account No : ${selectedParentCompany.bankAccountNo} | Bank IFSC Code : ${selectedParentCompany.bankIfscCode} | Bank Branch : ${selectedParentCompany.bankBranch}',
+                  style: pw.TextStyle(fontSize: 8, font: robotoFont),
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     ),
   );
 
   return pdf.save();
+}
+
+pw.Widget headerCell(String text, pw.Font font) {
+  return pw.Container(
+    padding: const pw.EdgeInsets.all(4),
+    alignment: pw.Alignment.center,
+    child: pw.Text(text,
+        style: pw.TextStyle(
+            font: font, fontSize: 8, fontWeight: pw.FontWeight.bold),
+        textAlign: pw.TextAlign.center),
+  );
+}
+
+pw.Widget dataCell(String text, pw.Font font,
+    {bool bold = false, pw.EdgeInsetsGeometry? contentPadding}) {
+  return pw.Container(
+    padding: contentPadding ??
+        const pw.EdgeInsets.only(top: 4, bottom: 4, left: 4, right: 4),
+    alignment: pw.Alignment.topLeft,
+    child: pw.Text(text,
+        style: pw.TextStyle(
+            font: font,
+            fontSize: 8,
+            fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal)),
+  );
+}
+
+pw.Widget rowTax(String label, String value, pw.Font font,
+    {bool bold = false}) {
+  return pw.Container(
+    padding: const pw.EdgeInsets.all(4),
+    decoration: pw.BoxDecoration(border: pw.Border.all()),
+    child: pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [
+        pw.Text(label,
+            style: pw.TextStyle(
+                font: font,
+                fontSize: 8,
+                fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal)),
+        pw.Text(value,
+            style: pw.TextStyle(
+                font: font,
+                fontSize: 8,
+                fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal)),
+      ],
+    ),
+  );
 }
 
 /// Show preview in a modal with download
@@ -248,8 +604,9 @@ Future<void> showInvoicePreview(
                   icon: const Icon(Icons.download),
                   label: const Text('Download'),
                   onPressed: () async {
-                    final file = File(
-                        'C:/Users/Public/Downloads/invoice_${tx.invoiceId}.pdf');
+                    final downloadsPath = getDownloadsPath();
+                    final file =
+                        File('$downloadsPath/invoice_${tx.invoiceId}.pdf');
                     await file.writeAsBytes(bytes).then((final onValue) {
                       Navigator.of(ctx).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -266,6 +623,12 @@ Future<void> showInvoicePreview(
       ),
     ),
   );
+}
+
+String getDownloadsPath() {
+  final home =
+      Platform.environment['USERPROFILE'] ?? Platform.environment['HOME'] ?? '';
+  return '$home/Downloads';
 }
 
 /// Convert to words (handles rupees and paise)
