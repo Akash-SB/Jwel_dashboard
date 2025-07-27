@@ -42,10 +42,10 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
     pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(16),
-      build: (context) => [
+      header: (context) {
         // ✅ HEADER with logo and company name
-        pw.Container(
-          color: PdfColor.fromInt(0xFF23395d), // Light navy blue shade
+        return pw.Container(
+          color: PdfColor.fromInt(0xFF5D639E), // Light navy blue shade
           padding: const pw.EdgeInsets.all(8),
           child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -60,7 +60,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                     fontSize: 20,
                     fontWeight: pw.FontWeight.bold,
                     font: robotoFont,
-                    color: PdfColors.yellowAccent,
+                    color: PdfColor.fromInt(0xFFFFD700),
                   ),
                 ),
               ]),
@@ -73,7 +73,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                         style: pw.TextStyle(
                           fontSize: 7,
                           font: robotoFont,
-                          color: PdfColors.yellowAccent,
+                          color: PdfColor.fromInt(0xFFFFD700),
                         )),
                     pw.SizedBox(height: 8),
                     pw.Text(
@@ -89,7 +89,9 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
               ),
             ],
           ),
-        ),
+        );
+      },
+      build: (context) => [
         pw.SizedBox(height: 10),
         pw.Container(
           padding: const pw.EdgeInsets.all(8),
@@ -163,7 +165,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                     children: [
                       pw.Text("GSTIN NO : ${selectedParentCompany.gstin}",
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),
-                      pw.Text("PAN NO : ${'selectedParentCompany.pan'}",
+                      pw.Text("PAN NO : ${selectedParentCompany.panNumber}",
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),
                     ],
                   ),
@@ -192,17 +194,23 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                               fontWeight: pw.FontWeight.bold,
                               font: robotoFont,
                               fontSize: 9)),
-                      pw.SizedBox(height: 2),
+                      pw.SizedBox(height: 4),
                       pw.Text(tx.custName,
                           style: pw.TextStyle(
                             font: robotoFont,
                             fontSize: 9,
                             fontWeight: pw.FontWeight.bold,
                           )),
-                      pw.Text('Address: DUMMY ADDRESS',
+                      pw.SizedBox(height: 4),
+                      pw.SizedBox(
+                        width: 200,
+                        child: pw.Text('Address: ${tx.custAddress ?? ''}',
+                            style: pw.TextStyle(font: robotoFont, fontSize: 9)),
+                      ),
+                      pw.SizedBox(height: 4),
+                      pw.Text('GSTIN: ${tx.custGst ?? ''}',
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),
-                      pw.Text('GSTIN: DUMMY GSTIN',
-                          style: pw.TextStyle(font: robotoFont, fontSize: 9)),
+                      pw.SizedBox(height: 4),
                       pw.Row(
                           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                           children: [
@@ -360,16 +368,20 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                                     font: robotoFont,
                                     fontWeight: pw.FontWeight.bold,
                                     fontSize: 9)),
-                            pw.Text('Bank Name : Bank of Baroda',
+                            pw.Text(
+                                'Bank Name : ${selectedParentCompany.bankName}',
                                 style: pw.TextStyle(
                                     font: robotoFont, fontSize: 9)),
-                            pw.Text('Bank Account No : 13100200001502',
+                            pw.Text(
+                                'Bank Account No : ${selectedParentCompany.bankAccountNo}',
                                 style: pw.TextStyle(
                                     font: robotoFont, fontSize: 9)),
-                            pw.Text('Bank IFSC Code : BARB0VPROAD',
+                            pw.Text(
+                                'Bank IFSC Code : ${selectedParentCompany.bankIfscCode}',
                                 style: pw.TextStyle(
                                     font: robotoFont, fontSize: 9)),
-                            pw.Text('Bank Branch : V.P.Road, Mumbai',
+                            pw.Text(
+                                'Bank Branch : ${selectedParentCompany.bankBranch}',
                                 style: pw.TextStyle(
                                     font: robotoFont, fontSize: 9)),
                           ])),
@@ -462,10 +474,11 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                   pw.Text('Phone: ${selectedParentCompany.phone}',
                       style: pw.TextStyle(fontSize: 9)),
                   pw.SizedBox(width: 20),
-                  pw.Text('Email: ${'selectedParentCompany.email'}',
+                  pw.Text('Email: ${selectedParentCompany.email}',
                       style: pw.TextStyle(fontSize: 9)),
                 ],
               ),
+              pw.SizedBox(height: 8),
               pw.Container(
                 width: double.infinity,
                 padding: const pw.EdgeInsets.only(top: 8),
@@ -475,7 +488,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                   ),
                 ),
                 child: pw.Text(
-                  'Bank Name : Bank of Baroda | Bank Account No : 13100200001502 | Bank IFSC Code : BARB0VPROAD | Bank Branch : V.P.Road, Mumbai',
+                  'Bank Name : ${selectedParentCompany.bankName} | Bank Account No : ${selectedParentCompany.bankAccountNo} | Bank IFSC Code : ${selectedParentCompany.bankIfscCode} | Bank Branch : ${selectedParentCompany.bankBranch}',
                   style: pw.TextStyle(fontSize: 8, font: robotoFont),
                   textAlign: pw.TextAlign.center,
                 ),
@@ -591,8 +604,9 @@ Future<void> showInvoicePreview(
                   icon: const Icon(Icons.download),
                   label: const Text('Download'),
                   onPressed: () async {
-                    final file = File(
-                        'C:/Users/Public/Downloads/invoice_${tx.invoiceId}.pdf');
+                    final downloadsPath = getDownloadsPath();
+                    final file =
+                        File('$downloadsPath/invoice_${tx.invoiceId}.pdf');
                     await file.writeAsBytes(bytes).then((final onValue) {
                       Navigator.of(ctx).pop();
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -609,6 +623,12 @@ Future<void> showInvoicePreview(
       ),
     ),
   );
+}
+
+String getDownloadsPath() {
+  final home =
+      Platform.environment['USERPROFILE'] ?? Platform.environment['HOME'] ?? '';
+  return '$home/Downloads';
 }
 
 /// Convert to words (handles rupees and paise)
