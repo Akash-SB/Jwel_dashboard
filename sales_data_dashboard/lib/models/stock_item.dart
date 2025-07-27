@@ -3,6 +3,7 @@ import 'firm_model.dart';
 class StockItem {
   final String itemId; // itemName + size for uniqueness
   final String itemName;
+  final String hsnCode;
   final String size;
   final double rate;
   final double carat;
@@ -10,11 +11,12 @@ class StockItem {
   final double amount;
   final String description;
   final bool synced;
-  final Firm firm;
+  final String firm;
 
   StockItem({
     required this.itemId,
     required this.itemName,
+    required this.hsnCode,
     required this.size,
     required this.rate,
     required this.carat,
@@ -29,26 +31,28 @@ class StockItem {
         'itemId': itemId,
         'itemName': itemName,
         'size': size,
+        'hsnCode': hsnCode,
         'rate': rate,
         'carat': carat,
         'amount': amount,
         'availableQuantity': availableQuantity,
         'description': description,
         'synced': synced ? 1 : 0,
-        'firm': Firm.firmTypeToString(firm),
+        'firm': firm,
       };
 
   factory StockItem.fromMap(Map<String, dynamic> map) => StockItem(
         itemId: map['itemId'],
         itemName: map['itemName'],
         size: map['size'],
+        hsnCode: map['hsnCode'] ?? '',
         rate: map['rate'],
         carat: map['carat'],
         amount: map['amount'],
         availableQuantity: map['availableQuantity'],
         description: map['description'],
         synced: map['synced'] == 1,
-        firm: Firm.fromString(map['firm']),
+        firm: map['firm'] ?? Firm.sahajanand.name,
       );
 
   Map<String, dynamic> toFirestore() => {
@@ -58,6 +62,8 @@ class StockItem {
         'rate': rate,
         'carat': carat,
         'amount': amount,
+        'hsnCode': hsnCode,
+        'synced': synced,
         'availableQuantity': availableQuantity,
         'description': description,
         'firm': firm

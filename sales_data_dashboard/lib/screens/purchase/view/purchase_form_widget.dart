@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 
+import '../../../models/firm_model.dart';
 import '../../../models/sales_model.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/common_textfield.dart';
@@ -30,6 +31,10 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
   final TextEditingController amountController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
+  final TextEditingController itemIdController = TextEditingController();
+  final TextEditingController hsnController = TextEditingController();
+  final TextEditingController availableQuantController =
+      TextEditingController();
 
   String partySelection = 'agent';
   String itemSelection = 'existing';
@@ -176,55 +181,10 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 ),
               ],
             ),
-            if (itemSelection == 'existing')
-              SearchableTextField<String>(
-                label: 'Search by Item ID',
-                options: const ['ITEM-01', 'ITEM-02', 'ITEM-03'],
-                displayString: (s) => s,
-                onSelect: (val) {
-                  itemNameController.text = 'Gold Ring';
-                  sizeController.text = 'M';
-                  rateController.text = '5000';
-                  caratController.text = '22';
-                  quantityController.text = '2';
-                  amountController.text = '10000';
-                  descriptionController.text = '22 Carat Gold Ring';
-                },
-              ),
-            Row(
-              children: [
-                Expanded(
-                    child: CommonTextField(
-                        label: 'Item Name', controller: itemNameController)),
-                SizedBox(width: 16.dp),
-                Expanded(
-                    child: CommonTextField(
-                        label: 'Size', controller: sizeController)),
-                SizedBox(width: 16.dp),
-                Expanded(
-                    child: CommonTextField(
-                        label: 'Rate', controller: rateController)),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                    child: CommonTextField(
-                        label: 'Carat', controller: caratController)),
-                SizedBox(width: 16.dp),
-                Expanded(
-                    child: CommonTextField(
-                        label: 'Quantity', controller: quantityController)),
-                SizedBox(width: 16.dp),
-                Expanded(
-                    child: CommonTextField(
-                        label: 'Amount', controller: amountController)),
-              ],
-            ),
-            CommonTextField(
-                label: 'Description',
-                controller: descriptionController,
-                maxLines: 3),
+            // if (itemSelection == 'existing')
+            _existingItem(),
+            // else
+            // Expanded(child: _addNewItem()),
             SizedBox(height: 24.dp),
             const Text('Other Information',
                 style: TextStyle(
@@ -256,7 +216,15 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                   ),
                 ),
                 SizedBox(width: 16.dp),
-                const Expanded(child: SizedBox.shrink()),
+                Expanded(
+                  child: CommonDropdown(
+                    label: 'Firm',
+                    options: [
+                      Firm.firmTypeToString(Firm.sahajanand),
+                      Firm.firmTypeToString(Firm.harikrishnaEnterprise),
+                    ],
+                  ),
+                ),
               ],
             ),
             CommonTextField(
@@ -289,6 +257,213 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _existingItem() {
+    return Column(
+      children: [
+        SearchableTextField<String>(
+          label: 'Search by Item ID',
+          options: const ['ITEM-01', 'ITEM-02', 'ITEM-03'],
+          displayString: (s) => s,
+          onSelect: (val) {
+            itemNameController.text = 'Gold Ring';
+            sizeController.text = 'M';
+            rateController.text = '5000';
+            caratController.text = '22';
+            quantityController.text = '2';
+            amountController.text = '10000';
+            descriptionController.text = '22 Carat Gold Ring';
+          },
+        ),
+        SizedBox(
+          height: 12.dp,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: CommonTextField(
+                label: 'Item Id',
+                enabled: false,
+                controller: itemIdController,
+              ),
+            ),
+            SizedBox(
+              width: 16.dp,
+            ),
+            Expanded(
+              child: CommonTextField(
+                label: 'Item Name',
+                controller: nameController,
+              ),
+            ),
+            SizedBox(width: 16.dp),
+            Expanded(
+              child: CommonTextField(
+                label: 'HSN Code',
+                controller: hsnController,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 12.dp,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: CommonTextField(
+                label: 'Size',
+                enabled: false,
+                controller: sizeController,
+              ),
+            ),
+            SizedBox(
+              width: 16.dp,
+            ),
+            Expanded(
+              child: CommonTextField(
+                label: 'Rate',
+                controller: rateController,
+              ),
+            ),
+            SizedBox(width: 16.dp),
+            Expanded(
+              child: CommonTextField(
+                label: 'Carat',
+                controller: caratController,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 12.dp,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: CommonTextField(
+                label: 'Available Quantity',
+                enabled: false,
+                controller: availableQuantController,
+              ),
+            ),
+            SizedBox(
+              width: 16.dp,
+            ),
+            Expanded(
+              child: CommonTextField(
+                label: 'Buy Quantity',
+                controller: quantityController,
+              ),
+            ),
+            SizedBox(width: 16.dp),
+            Expanded(
+              child: CommonTextField(
+                label: 'Amount',
+                controller: amountController,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _addNewItem() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: CommonTextField(
+                label: 'Item Id',
+                enabled: false,
+                controller: itemIdController,
+              ),
+            ),
+            SizedBox(
+              width: 16.dp,
+            ),
+            Expanded(
+              child: CommonTextField(
+                label: 'Item Name',
+                controller: nameController,
+              ),
+            ),
+            SizedBox(width: 16.dp),
+            Expanded(
+              child: CommonTextField(
+                label: 'HSN Code',
+                controller: hsnController,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 12.dp,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: CommonTextField(
+                label: 'Size',
+                enabled: false,
+                controller: sizeController,
+              ),
+            ),
+            SizedBox(
+              width: 16.dp,
+            ),
+            Expanded(
+              child: CommonTextField(
+                label: 'Item Rate',
+                controller: rateController,
+              ),
+            ),
+            SizedBox(width: 16.dp),
+            Expanded(
+              child: CommonTextField(
+                label: 'Item Carat',
+                controller: caratController,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 12.dp,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: CommonTextField(
+                label: 'Quantity',
+                controller: quantityController,
+              ),
+            ),
+            SizedBox(
+              width: 16.dp,
+            ),
+            Expanded(
+              child: CommonTextField(
+                label: 'Amount',
+                controller: amountController,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 12.dp,
+        ),
+        Expanded(
+          child: CommonTextField(
+            label: 'Description',
+            maxLines: 3,
+            controller: descriptionController,
+          ),
+        ),
+      ],
     );
   }
 }

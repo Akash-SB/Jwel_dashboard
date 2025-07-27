@@ -121,6 +121,70 @@ mixin _$UserDataStore on _UserDataStore, Store {
     });
   }
 
+  late final _$stockListAtom =
+      Atom(name: '_UserDataStore.stockList', context: context);
+
+  @override
+  ObservableList<StockItem> get stockList {
+    _$stockListAtom.reportRead();
+    return super.stockList;
+  }
+
+  @override
+  set stockList(ObservableList<StockItem> value) {
+    _$stockListAtom.reportWrite(value, super.stockList, () {
+      super.stockList = value;
+    });
+  }
+
+  late final _$salesListAtom =
+      Atom(name: '_UserDataStore.salesList', context: context);
+
+  @override
+  ObservableList<Sale> get salesList {
+    _$salesListAtom.reportRead();
+    return super.salesList;
+  }
+
+  @override
+  set salesList(ObservableList<Sale> value) {
+    _$salesListAtom.reportWrite(value, super.salesList, () {
+      super.salesList = value;
+    });
+  }
+
+  late final _$purchaseListAtom =
+      Atom(name: '_UserDataStore.purchaseList', context: context);
+
+  @override
+  ObservableList<Purchase> get purchaseList {
+    _$purchaseListAtom.reportRead();
+    return super.purchaseList;
+  }
+
+  @override
+  set purchaseList(ObservableList<Purchase> value) {
+    _$purchaseListAtom.reportWrite(value, super.purchaseList, () {
+      super.purchaseList = value;
+    });
+  }
+
+  late final _$partiesListAtom =
+      Atom(name: '_UserDataStore.partiesList', context: context);
+
+  @override
+  ObservableList<Party> get partiesList {
+    _$partiesListAtom.reportRead();
+    return super.partiesList;
+  }
+
+  @override
+  set partiesList(ObservableList<Party> value) {
+    _$partiesListAtom.reportWrite(value, super.partiesList, () {
+      super.partiesList = value;
+    });
+  }
+
   late final _$fetchCustomersAsyncAction =
       AsyncAction('_UserDataStore.fetchCustomers', context: context);
 
@@ -223,7 +287,11 @@ tabIndex: ${tabIndex},
 invoices: ${invoices},
 sixMonthTxnList: ${sixMonthTxnList},
 customers: ${customers},
-products: ${products}
+products: ${products},
+stockList: ${stockList},
+salesList: ${salesList},
+purchaseList: ${purchaseList},
+partiesList: ${partiesList}
     ''';
   }
 }

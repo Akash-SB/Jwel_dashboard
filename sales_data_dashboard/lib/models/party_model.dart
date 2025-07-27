@@ -1,5 +1,16 @@
 import 'firm_model.dart';
 
+enum PartyTypeEnum {
+  agent,
+  company;
+
+  String get name => this == PartyTypeEnum.agent ? "Agent" : "Company";
+
+  static PartyTypeEnum fromString(String value) {
+    return value == "Agent" ? PartyTypeEnum.agent : PartyTypeEnum.company;
+  }
+}
+
 class Party {
   final String id;
   final String name;
@@ -8,7 +19,7 @@ class Party {
   final String? gstNumber;
   final String partyType; // "company" or "agent"
   final bool synced;
-  final Firm firm;
+  final String firm;
 
   Party({
     required this.id,
@@ -30,7 +41,7 @@ class Party {
         'gstNumber': gstNumber,
         'partyType': partyType,
         'synced': synced ? 1 : 0,
-        'firm': firm.toShortString(),
+        'firm': firm,
       };
 
   factory Party.fromMap(Map<String, dynamic> map) => Party(
@@ -41,7 +52,7 @@ class Party {
         gstNumber: map['gstNumber'] ?? '',
         partyType: map['partyType'],
         synced: map['synced'] == 1,
-        firm: Firm.fromString(map['firm']),
+        firm: map['firm'] ?? Firm.sahajanand.name,
       );
 
   // Firebase
@@ -52,6 +63,7 @@ class Party {
         'mobileNumber': mobileNumber,
         'gstNumber': gstNumber,
         'partyType': partyType,
+        'synced': synced,
         'firm': firm,
       };
 }

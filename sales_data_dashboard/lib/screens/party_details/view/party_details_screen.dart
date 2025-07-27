@@ -2,53 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/models/party_model.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
-import 'package:sales_data_dashboard/screens/sales/store/sales_screen_store.dart';
-
+import 'package:sales_data_dashboard/screens/party_details/view/party_details_form_widget.dart';
+import '../../../models/firm_model.dart';
 import '../../../widgets/normal_button.dart';
 import '../../products/view/products_screen.dart';
-import 'sales_form_widget.dart';
+import '../store/party_details_screen_store.dart';
 
 final getIt = GetIt.instance;
 
-class SalesScreen extends StatefulWidget {
-  const SalesScreen({super.key});
+class PartyDetailsScreen extends StatefulWidget {
+  const PartyDetailsScreen({super.key});
 
   @override
-  State<SalesScreen> createState() => _SalesScreenState();
+  State<PartyDetailsScreen> createState() => _PartyDetailsScreenState();
 }
 
-class _SalesScreenState extends State<SalesScreen> {
-  late SalesScreenStore salesScreenStore;
+class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
+  late PartyDetailsStore partyDetailsStore;
 
   @override
   void initState() {
     super.initState();
-    if (!getIt.isRegistered<SalesScreenStore>()) {
-      getIt.registerFactory<SalesScreenStore>(() => SalesScreenStore());
+    if (!getIt.isRegistered<PartyDetailsStore>()) {
+      getIt.registerFactory<PartyDetailsStore>(() => PartyDetailsStore());
     }
-    salesScreenStore = getIt<SalesScreenStore>();
+    partyDetailsStore = getIt<PartyDetailsStore>();
+    partyDetailsStore.initDb();
   }
 
   @override
   Widget build(BuildContext context) {
     final List<TableColumn> columns = [
-      TableColumn(label: 'Date', key: 'date', isSortable: true),
-      TableColumn(label: 'Item Id', key: 'itemId', isSortable: true),
-      TableColumn(label: 'Pcs/Size', key: 'size'),
-      TableColumn(label: 'Carat', key: 'carat', isSortable: true),
-      TableColumn(label: 'Rate', key: 'rate', isSortable: true),
-      TableColumn(label: 'Amount', key: 'amount', isSortable: true),
-      TableColumn(label: 'Due Days', key: 'dueDays', isSortable: true),
-      TableColumn(
-        label: 'Payment Status',
-        key: 'paymentStatus',
-      ),
-      TableColumn(
-        label: 'Payment Option',
-        key: 'paymentOption',
-      ),
-      TableColumn(label: 'Description', key: 'description'),
+      TableColumn(label: 'Id', key: 'id'),
+      TableColumn(label: 'Name', key: 'name', isSortable: true),
+      TableColumn(label: 'Mobile Number', key: 'mobileNumber'),
+      TableColumn(label: 'GST Number', key: 'gstNumber'),
+      TableColumn(label: 'Party Type', key: 'partyType', isSortable: true),
+      TableColumn(label: 'Firm', key: 'firm', isSortable: true),
       TableColumn(label: 'Actions', key: 'actions', isAction: true),
     ];
     return Container(
@@ -61,7 +53,7 @@ class _SalesScreenState extends State<SalesScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Sales Management',
+                  'Party Details Management',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -72,8 +64,8 @@ class _SalesScreenState extends State<SalesScreen> {
                 ),
                 IntrinsicWidth(
                   child: NormalButton(
-                    text: 'Create New Entry',
-                    onPressed: () => _openSalesForm(context),
+                    text: 'Create New Customer',
+                    onPressed: () => _openPartyForm(context),
                   ),
                 ),
               ],
@@ -90,7 +82,7 @@ class _SalesScreenState extends State<SalesScreen> {
           SizedBox(height: 24.dp),
           Observer(builder: (context) {
             return Expanded(
-              child: salesScreenStore.sales.isEmpty
+              child: partyDetailsStore.partiesList.isEmpty
                   ? Center(
                       child: Column(
                         children: [
@@ -137,7 +129,7 @@ class _SalesScreenState extends State<SalesScreen> {
                                 label: InkWell(
                                   onTap: col.isSortable
                                       ? () =>
-                                          salesScreenStore.setSortKey(col.key)
+                                          partyDetailsStore.setSortKey(col.key)
                                       : null,
                                   child: Row(
                                     children: [
@@ -151,9 +143,9 @@ class _SalesScreenState extends State<SalesScreen> {
                                         ),
                                       ),
                                       if (col.isSortable &&
-                                          salesScreenStore.sortKey == col.key)
+                                          partyDetailsStore.sortKey == col.key)
                                         Icon(
-                                          salesScreenStore.sortAsc
+                                          partyDetailsStore.sortAsc
                                               ? Icons.arrow_upward
                                               : Icons.arrow_downward,
                                           size: 14.dp,
@@ -163,7 +155,7 @@ class _SalesScreenState extends State<SalesScreen> {
                                 ),
                               );
                             }).toList(),
-                            rows: salesScreenStore.paginatedData.map((row) {
+                            rows: partyDetailsStore.paginatedData.map((row) {
                               return DataRow(
                                 cells: columns.map((col) {
                                   if (col.isAction) {
@@ -209,19 +201,19 @@ class _SalesScreenState extends State<SalesScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: salesScreenStore.currentTablePage > 0
-                      ? () => salesScreenStore.setCurrentPageIndex(
-                          salesScreenStore.currentTablePage - 1)
+                  onPressed: partyDetailsStore.currentTablePage > 0
+                      ? () => partyDetailsStore.setCurrentPageIndex(
+                          partyDetailsStore.currentTablePage - 1)
                       : null,
                   icon: const Icon(Icons.chevron_left),
                 ),
                 Text(
-                    'Page ${salesScreenStore.currentTablePage + 1} of ${salesScreenStore.totalPages}'),
+                    'Page ${partyDetailsStore.currentTablePage + 1} of ${partyDetailsStore.totalPages}'),
                 IconButton(
-                  onPressed: salesScreenStore.currentTablePage <
-                          salesScreenStore.totalPages - 1
-                      ? () => salesScreenStore.setCurrentPageIndex(
-                          salesScreenStore.currentTablePage + 1)
+                  onPressed: partyDetailsStore.currentTablePage <
+                          partyDetailsStore.totalPages - 1
+                      ? () => partyDetailsStore.setCurrentPageIndex(
+                          partyDetailsStore.currentTablePage + 1)
                       : null,
                   icon: const Icon(Icons.chevron_right),
                 ),
@@ -233,7 +225,7 @@ class _SalesScreenState extends State<SalesScreen> {
     );
   }
 
-  void _openSalesForm(BuildContext context, [Sale? existingSale]) {
+  void _openPartyForm(BuildContext context, [Sale? existingSale]) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -243,7 +235,7 @@ class _SalesScreenState extends State<SalesScreen> {
           borderRadius: BorderRadius.circular(8.dp),
         ),
         title: Text(
-          existingSale != null ? 'Edit Sales' : 'Create Sales',
+          existingSale != null ? 'Edit Customer' : 'Create Customer',
           style: TextStyle(
             fontSize: 24.dp,
             fontWeight: FontWeight.w600,
@@ -253,15 +245,15 @@ class _SalesScreenState extends State<SalesScreen> {
           ),
         ),
         content: SingleChildScrollView(
-          child: SalesFormWidget(
-            salesScreenStore: salesScreenStore,
+          child: PartyDetailsFormWidget(
+            partyStore: partyDetailsStore,
           ),
         ),
       ),
     );
   }
 
-  void _confirmDelete(BuildContext context, Sale sale) {
+  void _confirmDelete(BuildContext context, Party party) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -280,7 +272,7 @@ class _SalesScreenState extends State<SalesScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Are you sure you want to delete invoice ${sale.id}?',
+              'Are you sure you want to delete invoice ${party.id}?',
               style: TextStyle(
                 fontSize: 14.dp,
                 fontWeight: FontWeight.w600,
@@ -329,14 +321,14 @@ class _SalesScreenState extends State<SalesScreen> {
                 ),
                 InkWell(
                   onTap: () {
-                    salesScreenStore.deleteSale(sale).then((final onValue) {
+                    partyDetailsStore.deleteParty(party).then((final onValue) {
                       // activityStore.addActivity(Activity(
                       //   id: invoice.invoiceId,
                       //   date: DateTime.parse(invoice.date),
                       //   title: 'Invoice data for ${invoice.custName} Deleted',
                       // ));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Invoice ${sale.id} deleted')),
+                        SnackBar(content: Text('Invoice ${party.id} deleted')),
                       );
                     });
 
@@ -378,26 +370,24 @@ class _SalesScreenState extends State<SalesScreen> {
     );
   }
 
-  String _getCellValue(Sale row, String key) {
+  String _getCellValue(Party party, String key) {
     switch (key) {
-      case 'date':
-        return row.createdAt.toIso8601String();
-      case 'itemId':
-        return row.stockDetails.itemId;
-      case 'size':
-        return row.stockDetails.size;
-      case 'rate':
-        return row.stockDetails.rate.toString();
-      case 'amount':
-        return row.stockDetails.amount.toString();
-      case 'description':
-        return row.description ?? '';
-      case 'dueDays':
-        return row.dueDays.toString();
-      case 'paymentOption':
-        return row.paymentOption.toString() ?? 'NA';
-      case 'paymentStatus':
-        return row.paymentStatus.toString();
+      case 'id':
+        return party.id;
+      case 'name':
+        return party.name;
+      case 'mobileNumber':
+        return party.mobileNumber;
+      case 'gstNumber':
+        return party.gstNumber ?? '';
+      case 'partyType':
+        return party.partyType == PartyTypeEnum.agent.name
+            ? 'Agent'
+            : 'Company';
+      case 'firm':
+        return party.firm == Firm.sahajanand.name
+            ? 'Sahajanand'
+            : 'Harikrishna Enterprise';
       default:
         return '';
     }

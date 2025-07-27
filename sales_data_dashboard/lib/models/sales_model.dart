@@ -13,8 +13,8 @@ class Sale {
   final String id;
   final Party partyDetails;
   final StockItem stockDetails;
-  final PaymentOption? paymentOption;
-  final PaymentStatus paymentStatus;
+  final String? paymentOption;
+  final String paymentStatus;
   final int dueDays;
   final String? description;
   final DateTime createdAt;
@@ -84,8 +84,8 @@ class Sale {
       'Item': stockDetails.itemId,
       'Qty': stockDetails.availableQuantity,
       'Amount': stockDetails.amount,
-      'Payment Option': paymentOption?.name,
-      'Status': paymentStatus.name,
+      'Payment Option': paymentOption,
+      'Status': paymentStatus,
       'Due Days': dueDays,
       'Created': createdAt.toIso8601String(),
       'Firm': firm.name,

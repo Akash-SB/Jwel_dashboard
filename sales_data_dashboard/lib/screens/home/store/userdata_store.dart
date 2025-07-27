@@ -2,14 +2,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/models/customer_model.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
+import 'package:sales_data_dashboard/models/party_model.dart';
+import 'package:sales_data_dashboard/models/purchase_model.dart';
+import 'package:sales_data_dashboard/models/stock_item.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../../../models/product_model.dart';
+import '../../../models/sales_model.dart';
 
 part 'userdata_store.g.dart';
 
 class UserDataStore = _UserDataStore with _$UserDataStore;
 
 abstract class _UserDataStore with Store {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final CollectionReference customersRef =
       FirebaseFirestore.instance.collection('customers');
 
@@ -18,6 +24,20 @@ abstract class _UserDataStore with Store {
 
   final CollectionReference productsRef =
       FirebaseFirestore.instance.collection('products');
+
+  final CollectionReference stockRefs =
+      FirebaseFirestore.instance.collection('stocks');
+
+  final CollectionReference partiesRefs =
+      FirebaseFirestore.instance.collection('parties');
+
+  final CollectionReference salesRefs =
+      FirebaseFirestore.instance.collection('sales');
+
+  final CollectionReference purchaseRefs =
+      FirebaseFirestore.instance.collection('purchases');
+
+  late Database db;
 
   @observable
   bool isLoading = false;
@@ -44,6 +64,18 @@ abstract class _UserDataStore with Store {
 
   @observable
   ObservableList<ProductModel> products = ObservableList.of([]);
+
+  @observable
+  ObservableList<StockItem> stockList = ObservableList.of([]);
+
+  @observable
+  ObservableList<Sale> salesList = ObservableList.of([]);
+
+  @observable
+  ObservableList<Purchase> purchaseList = ObservableList.of([]);
+
+  @observable
+  ObservableList<Party> partiesList = ObservableList.of([]);
 
   @action
   Future<void> fetchCustomers() async {

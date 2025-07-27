@@ -47,6 +47,38 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
     });
   }
 
+  late final _$stocksAtom =
+      Atom(name: '_SalesScreenStore.stocks', context: context);
+
+  @override
+  ObservableList<StockItem> get stocks {
+    _$stocksAtom.reportRead();
+    return super.stocks;
+  }
+
+  @override
+  set stocks(ObservableList<StockItem> value) {
+    _$stocksAtom.reportWrite(value, super.stocks, () {
+      super.stocks = value;
+    });
+  }
+
+  late final _$partiesListAtom =
+      Atom(name: '_SalesScreenStore.partiesList', context: context);
+
+  @override
+  ObservableList<Party> get partiesList {
+    _$partiesListAtom.reportRead();
+    return super.partiesList;
+  }
+
+  @override
+  set partiesList(ObservableList<Party> value) {
+    _$partiesListAtom.reportWrite(value, super.partiesList, () {
+      super.partiesList = value;
+    });
+  }
+
   late final _$sortKeyAtom =
       Atom(name: '_SalesScreenStore.sortKey', context: context);
 
@@ -92,6 +124,22 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   set sortAsc(bool value) {
     _$sortAscAtom.reportWrite(value, super.sortAsc, () {
       super.sortAsc = value;
+    });
+  }
+
+  late final _$customerTypeAtom =
+      Atom(name: '_SalesScreenStore.customerType', context: context);
+
+  @override
+  String get customerType {
+    _$customerTypeAtom.reportRead();
+    return super.customerType;
+  }
+
+  @override
+  set customerType(String value) {
+    _$customerTypeAtom.reportWrite(value, super.customerType, () {
+      super.customerType = value;
     });
   }
 
@@ -143,20 +191,20 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
     });
   }
 
-  late final _$initDbAsyncAction =
-      AsyncAction('_SalesScreenStore.initDb', context: context);
-
-  @override
-  Future<void> initDb() {
-    return _$initDbAsyncAction.run(() => super.initDb());
-  }
-
   late final _$addSaleAsyncAction =
       AsyncAction('_SalesScreenStore.addSale', context: context);
 
   @override
   Future<void> addSale(Sale sale) {
     return _$addSaleAsyncAction.run(() => super.addSale(sale));
+  }
+
+  late final _$addInStockAsyncAction =
+      AsyncAction('_SalesScreenStore.addInStock', context: context);
+
+  @override
+  Future<void> addInStock(StockItem product) {
+    return _$addInStockAsyncAction.run(() => super.addInStock(product));
   }
 
   late final _$deleteSaleAsyncAction =
@@ -179,6 +227,17 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
       ActionController(name: '_SalesScreenStore', context: context);
 
   @override
+  void setCustomerType(String type) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setCustomerType');
+    try {
+      return super.setCustomerType(type);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setCurrentPageIndex(int index) {
     final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
         name: '_SalesScreenStore.setCurrentPageIndex');
@@ -195,6 +254,39 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
         name: '_SalesScreenStore.setSearchText');
     try {
       return super.setSearchText(text);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSalesList(List<Sale> salesList) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setSalesList');
+    try {
+      return super.setSalesList(salesList);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setStockList(List<StockItem> stockList) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setStockList');
+    try {
+      return super.setStockList(stockList);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPartiesList(List<Party> partyList) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setPartiesList');
+    try {
+      return super.setPartiesList(partyList);
     } finally {
       _$_SalesScreenStoreActionController.endAction(_$actionInfo);
     }
@@ -226,9 +318,12 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   String toString() {
     return '''
 sales: ${sales},
+stocks: ${stocks},
+partiesList: ${partiesList},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},
+customerType: ${customerType},
 searchedText: ${searchedText},
 selectedRowCount: ${selectedRowCount},
 currentTablePage: ${currentTablePage},

@@ -2,6 +2,9 @@ import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../../models/party_model.dart';
+import '../../../models/stock_item.dart';
+
 part 'purchase_screen_store.g.dart';
 
 class PurchaseScreenStore = _PurchaseScreenStore with _$PurchaseScreenStore;
@@ -11,6 +14,9 @@ abstract class _PurchaseScreenStore with Store {
 
   @observable
   ObservableList<Purchase> purchaseList = ObservableList<Purchase>();
+
+  @observable
+  ObservableList<StockItem> stockList = ObservableList<StockItem>();
 
   @observable
   String? sortKey;
@@ -34,6 +40,9 @@ abstract class _PurchaseScreenStore with Store {
   void setCurrentPageIndex(final int index) {
     currentTablePage = index;
   }
+
+  @observable
+  ObservableList<Party> partiesList = ObservableList<Party>();
 
   @action
   void setSearchText(final String text) {
@@ -67,6 +76,20 @@ abstract class _PurchaseScreenStore with Store {
   firm TEXT
 );
         ''');
+        await db.execute('''
+        CREATE TABLE IF NOT EXISTS stock (
+  itemId TEXT PRIMARY KEY,
+  itemName TEXT,
+  size TEXT,
+  rate REAL,
+  carat REAL,
+  availableQuantity REAL,
+  amount REAL,
+  description TEXT,
+  synced INTEGER,
+  firm TEXT
+);
+        ''');
       },
     );
   }
@@ -76,6 +99,13 @@ abstract class _PurchaseScreenStore with Store {
     await db.insert('purchase', purchase.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     purchaseList.add(purchase);
+  }
+
+  @action
+  Future<void> addInStock(StockItem item) async {
+    await db.insert('stock', item.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    stockList.add(item);
   }
 
   @action
@@ -91,6 +121,12 @@ abstract class _PurchaseScreenStore with Store {
   }
 
   @action
+  Future<void> fetchStockItem() async {
+    final List<Map<String, dynamic>> maps = await db.query('stock');
+    stockList = ObservableList.of(maps.map((map) => StockItem.fromMap(map)));
+  }
+
+  @action
   void setSortKey(String? key) {
     if (sortKey == key) {
       sortAsc = !sortAsc;
@@ -99,6 +135,21 @@ abstract class _PurchaseScreenStore with Store {
       sortAsc = true;
     }
   }
+
+  // List<String> getListOfPartyNames() {
+  //   final List<String> list = [];
+  //   if (partiesList.isEmpty) {
+  //     return list;
+  //   } else {
+  //     for (int i = 0; i < partiesList.length; i++) {
+  //       if (partiesList[i].firm == selectedFirmType &&
+  //           partiesList[i].partyType == customerType) {
+  //         list.add(partiesList[i].name);
+  //       }
+  //     }
+  //     return list;
+  //   }
+  // }
 
   @action
   void calculateTotalPages() {

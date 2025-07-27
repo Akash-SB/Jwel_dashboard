@@ -1,7 +1,9 @@
-// sale_form.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/models/firm_model.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
+import 'package:sales_data_dashboard/screens/sales/store/sales_screen_store.dart';
 
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/common_textfield.dart';
@@ -10,7 +12,8 @@ import '../../../widgets/normal_button.dart';
 import '../../../widgets/searchable_textfield.dart';
 
 class SalesFormWidget extends StatefulWidget {
-  const SalesFormWidget({super.key});
+  const SalesFormWidget({super.key, required this.salesScreenStore});
+  final SalesScreenStore salesScreenStore;
 
   @override
   State<SalesFormWidget> createState() => _SalesFormWidgetState();
@@ -31,9 +34,6 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
 
-  String partySelection = 'agent';
-  String itemSelection = 'existing';
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -47,14 +47,6 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
               children: [
                 Row(
                   children: [
-                    const Expanded(
-                      child: CommonTextField(
-                        label: 'ID',
-                        initialValue: 'AUTO-12345',
-                        enabled: false,
-                      ),
-                    ),
-                    SizedBox(width: 16.dp),
                     Expanded(
                       child: TextFormField(
                         initialValue: DateTime.now().toString().split(' ')[0],
@@ -67,6 +59,22 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                         ),
                       ),
                     ),
+                    SizedBox(width: 16.dp),
+                    Observer(builder: (context) {
+                      return Expanded(
+                        child: CommonDropdown(
+                          label: 'Firm',
+                          value: widget.salesScreenStore.selectedFirmType,
+                          onChanged: (final value) {
+                            widget.salesScreenStore.setSelectedFirmType(value!);
+                          },
+                          options: [
+                            Firm.firmTypeToString(Firm.sahajanand),
+                            Firm.firmTypeToString(Firm.harikrishnaEnterprise),
+                          ],
+                        ),
+                      );
+                    }),
                   ],
                 ),
                 SizedBox(height: 24.dp),
@@ -81,55 +89,77 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                 SizedBox(
                   height: 12.dp,
                 ),
-                Row(
-                  children: [
-                    IntrinsicWidth(
-                      child: CustomRadioButton<String>(
-                        title: 'Agent',
-                        value: 'agent',
-                        groupValue: partySelection,
-                        onChanged: (value) =>
-                            setState(() => partySelection = value!),
+                Observer(builder: (context) {
+                  return Row(
+                    children: [
+                      IntrinsicWidth(
+                        child: CustomRadioButton<String>(
+                          title: 'Agent',
+                          value: 'agent',
+                          groupValue: widget.salesScreenStore.customerType,
+                          onChanged: (value) {
+                            setState(() {
+                              widget.salesScreenStore.setCustomerType(value!);
+                              partyTypeController.text = 'Agent';
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                    IntrinsicWidth(
-                      child: CustomRadioButton<String>(
-                        title: 'Company',
-                        value: 'company',
-                        groupValue: partySelection,
-                        onChanged: (value) =>
-                            setState(() => partySelection = value!),
+                      IntrinsicWidth(
+                        child: CustomRadioButton<String>(
+                          title: 'Company',
+                          value: 'company',
+                          groupValue: widget.salesScreenStore.customerType,
+                          onChanged: (value) {
+                            setState(() {
+                              widget.salesScreenStore.setCustomerType(value!);
+                              partyTypeController.text = 'company';
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  );
+                }),
                 SizedBox(
                   height: 12.dp,
                 ),
-                SearchableTextField<String>(
-                  label: 'Search by Party ID',
-                  options: const ['P-1001', 'P-1002', 'P-1003'],
-                  displayString: (s) => s,
-                  onSelect: (val) {
-                    // Simulate autofill
-                    nameController.text = 'John Doe';
-                    addressController.text = '123 Main Street';
-                    mobileController.text = '9876543210';
-                    gstController.text = '22ABCDE1234FZ1';
-                    partyTypeController.text = partySelection;
-                  },
-                ),
+                Observer(builder: (context) {
+                  return SearchableTextField<String>(
+                    label: 'Search by Party ID',
+                    options: widget.salesScreenStore.getListOfPartyNames(),
+                    displayString: (s) => s,
+                    onSelect: (val) {
+                      final party =
+                          widget.salesScreenStore.getSelectedParty(val);
+                      if (party != null) {
+                        widget.salesScreenStore.setSelectedParty(party);
+                        setState(() {
+                          nameController.text = party.name;
+                          addressController.text = party.address;
+                          mobileController.text = party.mobileNumber;
+                          gstController.text = party.gstNumber ?? '';
+                        });
+                      }
+                    },
+                  );
+                }),
                 Row(
                   children: [
                     Expanded(
-                        child: CommonTextField(
-                            label: 'Name', controller: nameController)),
+                      child: CommonTextField(
+                        label: 'Name',
+                        controller: nameController,
+                      ),
+                    ),
                     SizedBox(
                       width: 16.dp,
                     ),
                     Expanded(
                       child: CommonTextField(
-                          label: 'Address', controller: addressController),
+                        label: 'Address',
+                        controller: addressController,
+                      ),
                     ),
                   ],
                 ),
@@ -149,7 +179,10 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                     ),
                     Expanded(
                       child: CommonTextField(
-                          label: 'Party Type', controller: partyTypeController),
+                        enabled: false,
+                        label: 'Party Type',
+                        controller: partyTypeController,
+                      ),
                     ),
                   ],
                 ),
@@ -160,43 +193,20 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                       color: Color(0XFF111827),
                       fontWeight: FontWeight.w600,
                     )),
-                Row(
-                  children: [
-                    IntrinsicWidth(
-                      child: CustomRadioButton<String>(
-                        title: 'Existing Item',
-                        value: 'existing',
-                        groupValue: itemSelection,
-                        onChanged: (value) =>
-                            setState(() => itemSelection = value!),
-                      ),
-                    ),
-                    IntrinsicWidth(
-                      child: CustomRadioButton<String>(
-                        title: 'New Item',
-                        value: 'new',
-                        groupValue: itemSelection,
-                        onChanged: (value) =>
-                            setState(() => itemSelection = value!),
-                      ),
-                    ),
-                  ],
+                SearchableTextField<String>(
+                  label: 'Search by Item ID',
+                  options: const ['ITEM-01', 'ITEM-02', 'ITEM-03'],
+                  displayString: (s) => s,
+                  onSelect: (val) {
+                    itemNameController.text = 'Gold Ring';
+                    sizeController.text = 'M';
+                    rateController.text = '5000';
+                    caratController.text = '22';
+                    quantityController.text = '2';
+                    amountController.text = '10000';
+                    descriptionController.text = '22 Carat Gold Ring';
+                  },
                 ),
-                if (itemSelection == 'existing')
-                  SearchableTextField<String>(
-                    label: 'Search by Item ID',
-                    options: const ['ITEM-01', 'ITEM-02', 'ITEM-03'],
-                    displayString: (s) => s,
-                    onSelect: (val) {
-                      itemNameController.text = 'Gold Ring';
-                      sizeController.text = 'M';
-                      rateController.text = '5000';
-                      caratController.text = '22';
-                      quantityController.text = '2';
-                      amountController.text = '10000';
-                      descriptionController.text = '22 Carat Gold Ring';
-                    },
-                  ),
                 Row(
                   children: [
                     Expanded(
@@ -263,7 +273,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                       ),
                     ),
                     SizedBox(width: 16.dp),
-                    const Expanded(child: SizedBox.shrink()),
+                    const Expanded(child: SizedBox.shrink())
                   ],
                 ),
                 CommonTextField(

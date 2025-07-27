@@ -25,7 +25,6 @@ class _IndexScreenState extends State<IndexScreen> {
       GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
     }
     userDataStore = GetIt.I<UserDataStore>();
-
     _fetchData();
   }
 
@@ -100,7 +99,7 @@ class _IndexScreenState extends State<IndexScreen> {
                   Observer(builder: (context) {
                     return Expanded(
                       child: ListView.builder(
-                        itemCount: 6,
+                        itemCount: 7,
                         itemBuilder: (context, index) {
                           final icons = [
                             Icons.dashboard,
@@ -109,6 +108,7 @@ class _IndexScreenState extends State<IndexScreen> {
                             Icons.inventory_2,
                             Icons.satellite,
                             Icons.money,
+                            Icons.person_3,
                           ];
                           final labels = [
                             "Dashboard",
@@ -116,7 +116,8 @@ class _IndexScreenState extends State<IndexScreen> {
                             "Users",
                             "Products",
                             "Sales",
-                            "Purchase"
+                            "Purchase",
+                            "Party Details"
                           ];
                           return _sidebarItem(
                               icons[index], labels[index], index);
