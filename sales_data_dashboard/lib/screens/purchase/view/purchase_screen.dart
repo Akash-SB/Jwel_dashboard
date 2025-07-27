@@ -370,9 +370,9 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       case 'amount':
         return row.stockDetails.amount.toString();
       case 'description':
-        return row.description ?? '';
+        return row.description;
       case 'paymentOption':
-        return row.paymentOption.toString() ?? 'NA';
+        return row.paymentOption.toString();
       case 'paymentStatus':
         return row.paymentStatus.toString();
       default:
