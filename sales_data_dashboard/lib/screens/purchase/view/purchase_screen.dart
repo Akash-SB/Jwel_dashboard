@@ -306,7 +306,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                 InkWell(
                   onTap: () {
                     purchaseScreenStore
-                        .deletePurchase(purchase)
+                        .deletePurchase(purchase.id)
                         .then((final onValue) {
                       // activityStore.addActivity(Activity(
                       //   id: invoice.invoiceId,

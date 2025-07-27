@@ -79,6 +79,54 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
     });
   }
 
+  late final _$selectedPartyAtom =
+      Atom(name: '_SalesScreenStore.selectedParty', context: context);
+
+  @override
+  Observable<Party>? get selectedParty {
+    _$selectedPartyAtom.reportRead();
+    return super.selectedParty;
+  }
+
+  @override
+  set selectedParty(Observable<Party>? value) {
+    _$selectedPartyAtom.reportWrite(value, super.selectedParty, () {
+      super.selectedParty = value;
+    });
+  }
+
+  late final _$selectedItemAtom =
+      Atom(name: '_SalesScreenStore.selectedItem', context: context);
+
+  @override
+  Observable<StockItem>? get selectedItem {
+    _$selectedItemAtom.reportRead();
+    return super.selectedItem;
+  }
+
+  @override
+  set selectedItem(Observable<StockItem>? value) {
+    _$selectedItemAtom.reportWrite(value, super.selectedItem, () {
+      super.selectedItem = value;
+    });
+  }
+
+  late final _$selectedFirmTypeAtom =
+      Atom(name: '_SalesScreenStore.selectedFirmType', context: context);
+
+  @override
+  String get selectedFirmType {
+    _$selectedFirmTypeAtom.reportRead();
+    return super.selectedFirmType;
+  }
+
+  @override
+  set selectedFirmType(String value) {
+    _$selectedFirmTypeAtom.reportWrite(value, super.selectedFirmType, () {
+      super.selectedFirmType = value;
+    });
+  }
+
   late final _$sortKeyAtom =
       Atom(name: '_SalesScreenStore.sortKey', context: context);
 
@@ -191,12 +239,36 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
     });
   }
 
-  late final _$addSaleAsyncAction =
-      AsyncAction('_SalesScreenStore.addSale', context: context);
+  late final _$isLoadingAtom =
+      Atom(name: '_SalesScreenStore.isLoading', context: context);
 
   @override
-  Future<void> addSale(Sale sale) {
-    return _$addSaleAsyncAction.run(() => super.addSale(sale));
+  bool get isLoading {
+    _$isLoadingAtom.reportRead();
+    return super.isLoading;
+  }
+
+  @override
+  set isLoading(bool value) {
+    _$isLoadingAtom.reportWrite(value, super.isLoading, () {
+      super.isLoading = value;
+    });
+  }
+
+  late final _$errorMessageAtom =
+      Atom(name: '_SalesScreenStore.errorMessage', context: context);
+
+  @override
+  String? get errorMessage {
+    _$errorMessageAtom.reportRead();
+    return super.errorMessage;
+  }
+
+  @override
+  set errorMessage(String? value) {
+    _$errorMessageAtom.reportWrite(value, super.errorMessage, () {
+      super.errorMessage = value;
+    });
   }
 
   late final _$addInStockAsyncAction =
@@ -207,20 +279,36 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
     return _$addInStockAsyncAction.run(() => super.addInStock(product));
   }
 
-  late final _$deleteSaleAsyncAction =
-      AsyncAction('_SalesScreenStore.deleteSale', context: context);
-
-  @override
-  Future<void> deleteSale(Sale sale) {
-    return _$deleteSaleAsyncAction.run(() => super.deleteSale(sale));
-  }
-
   late final _$fetchSalesAsyncAction =
       AsyncAction('_SalesScreenStore.fetchSales', context: context);
 
   @override
   Future<void> fetchSales() {
     return _$fetchSalesAsyncAction.run(() => super.fetchSales());
+  }
+
+  late final _$addSaleAsyncAction =
+      AsyncAction('_SalesScreenStore.addSale', context: context);
+
+  @override
+  Future<void> addSale(Sale sale) {
+    return _$addSaleAsyncAction.run(() => super.addSale(sale));
+  }
+
+  late final _$updateSaleAsyncAction =
+      AsyncAction('_SalesScreenStore.updateSale', context: context);
+
+  @override
+  Future<void> updateSale(Sale sale) {
+    return _$updateSaleAsyncAction.run(() => super.updateSale(sale));
+  }
+
+  late final _$deleteSaleAsyncAction =
+      AsyncAction('_SalesScreenStore.deleteSale', context: context);
+
+  @override
+  Future<void> deleteSale(String id) {
+    return _$deleteSaleAsyncAction.run(() => super.deleteSale(id));
   }
 
   late final _$_SalesScreenStoreActionController =
@@ -232,6 +320,39 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
         name: '_SalesScreenStore.setCustomerType');
     try {
       return super.setCustomerType(type);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedParty(Party party) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setSelectedParty');
+    try {
+      return super.setSelectedParty(party);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedFirmType(String firm) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setSelectedFirmType');
+    try {
+      return super.setSelectedFirmType(firm);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedStock(StockItem stock) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setSelectedStock');
+    try {
+      return super.setSelectedStock(stock);
     } finally {
       _$_SalesScreenStoreActionController.endAction(_$actionInfo);
     }
@@ -320,6 +441,9 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
 sales: ${sales},
 stocks: ${stocks},
 partiesList: ${partiesList},
+selectedParty: ${selectedParty},
+selectedItem: ${selectedItem},
+selectedFirmType: ${selectedFirmType},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},
@@ -327,6 +451,8 @@ customerType: ${customerType},
 searchedText: ${searchedText},
 selectedRowCount: ${selectedRowCount},
 currentTablePage: ${currentTablePage},
+isLoading: ${isLoading},
+errorMessage: ${errorMessage},
 paginatedData: ${paginatedData},
 sortedData: ${sortedData},
 filteredData: ${filteredData}

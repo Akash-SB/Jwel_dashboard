@@ -173,15 +173,18 @@ class _SalesScreenState extends State<SalesScreen> {
                                           icon: Image.asset(
                                             'assets/icons/edit_icon.png',
                                           ),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            _openSalesForm(context, row);
+                                          },
                                           // _openForm(context, row),
                                         ),
                                         IconButton(
                                           icon: Image.asset(
                                             'assets/icons/delete_icon.png',
                                           ),
-                                          onPressed: () {},
-                                          // _confirmDelete(context, row),
+                                          onPressed: () {
+                                            _confirmDelete(context, row);
+                                          },
                                         ),
                                       ],
                                     ));
@@ -329,7 +332,7 @@ class _SalesScreenState extends State<SalesScreen> {
                 ),
                 InkWell(
                   onTap: () {
-                    salesScreenStore.deleteSale(sale).then((final onValue) {
+                    salesScreenStore.deleteSale(sale.id).then((final onValue) {
                       // activityStore.addActivity(Activity(
                       //   id: invoice.invoiceId,
                       //   date: DateTime.parse(invoice.date),
@@ -395,7 +398,7 @@ class _SalesScreenState extends State<SalesScreen> {
       case 'dueDays':
         return row.dueDays.toString();
       case 'paymentOption':
-        return row.paymentOption.toString() ?? 'NA';
+        return row.paymentOption.toString();
       case 'paymentStatus':
         return row.paymentStatus.toString();
       default:

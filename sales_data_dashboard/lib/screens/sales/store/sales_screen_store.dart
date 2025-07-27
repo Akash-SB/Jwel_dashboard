@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
 import 'package:sqflite/sqflite.dart';
@@ -147,29 +148,10 @@ abstract class _SalesScreenStore with Store {
   }
 
   @action
-  Future<void> addSale(Sale sale) async {
-    await db.insert('sales', sale.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    sales.add(sale);
-  }
-
-  @action
   Future<void> addInStock(StockItem product) async {
     await db.insert('stock', product.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     stocks.add(product);
-  }
-
-  @action
-  Future<void> deleteSale(Sale sale) async {
-    await db.delete('sales', where: 'id = ?', whereArgs: [sale.id]);
-    sales.remove(sale);
-  }
-
-  @action
-  Future<void> fetchSales() async {
-    final List<Map<String, dynamic>> maps = await db.query('sales');
-    sales = ObservableList.of(maps.map((map) => Sale.fromMap(map)));
   }
 
   @action
@@ -217,5 +199,70 @@ abstract class _SalesScreenStore with Store {
           .toList();
     }
     return filtered;
+  }
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  /// Loading state
+  @observable
+  bool isLoading = false;
+
+  /// Error state
+  @observable
+  String? errorMessage;
+
+  /// Firestore collection
+  CollectionReference get _collection => _firestore.collection('sales');
+
+  @action
+  Future<void> fetchSales() async {
+    isLoading = true;
+    errorMessage = null;
+    try {
+      final querySnapshot = await _collection.get();
+      final fetched = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Sale.fromMap(data);
+      }).toList();
+
+      sales = ObservableList<Sale>.of(fetched);
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  @action
+  Future<void> addSale(Sale sale) async {
+    try {
+      await _collection.doc(sale.id).set(sale.toMap());
+      sales.add(sale);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
+  Future<void> updateSale(Sale sale) async {
+    try {
+      await _collection.doc(sale.id).update(sale.toMap());
+      final index = sales.indexWhere((s) => s.id == sale.id);
+      if (index != -1) {
+        sales[index] = sale;
+      }
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
+  Future<void> deleteSale(String id) async {
+    try {
+      await _collection.doc(id).delete();
+      sales.removeWhere((s) => s.id == id);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
   }
 }

@@ -47,6 +47,22 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     });
   }
 
+  late final _$stockListAtom =
+      Atom(name: '_PurchaseScreenStore.stockList', context: context);
+
+  @override
+  ObservableList<StockItem> get stockList {
+    _$stockListAtom.reportRead();
+    return super.stockList;
+  }
+
+  @override
+  set stockList(ObservableList<StockItem> value) {
+    _$stockListAtom.reportWrite(value, super.stockList, () {
+      super.stockList = value;
+    });
+  }
+
   late final _$sortKeyAtom =
       Atom(name: '_PurchaseScreenStore.sortKey', context: context);
 
@@ -143,12 +159,100 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     });
   }
 
+  late final _$partiesListAtom =
+      Atom(name: '_PurchaseScreenStore.partiesList', context: context);
+
+  @override
+  ObservableList<Party> get partiesList {
+    _$partiesListAtom.reportRead();
+    return super.partiesList;
+  }
+
+  @override
+  set partiesList(ObservableList<Party> value) {
+    _$partiesListAtom.reportWrite(value, super.partiesList, () {
+      super.partiesList = value;
+    });
+  }
+
+  late final _$purchasesAtom =
+      Atom(name: '_PurchaseScreenStore.purchases', context: context);
+
+  @override
+  ObservableList<Purchase> get purchases {
+    _$purchasesAtom.reportRead();
+    return super.purchases;
+  }
+
+  @override
+  set purchases(ObservableList<Purchase> value) {
+    _$purchasesAtom.reportWrite(value, super.purchases, () {
+      super.purchases = value;
+    });
+  }
+
+  late final _$isLoadingAtom =
+      Atom(name: '_PurchaseScreenStore.isLoading', context: context);
+
+  @override
+  bool get isLoading {
+    _$isLoadingAtom.reportRead();
+    return super.isLoading;
+  }
+
+  @override
+  set isLoading(bool value) {
+    _$isLoadingAtom.reportWrite(value, super.isLoading, () {
+      super.isLoading = value;
+    });
+  }
+
+  late final _$errorMessageAtom =
+      Atom(name: '_PurchaseScreenStore.errorMessage', context: context);
+
+  @override
+  String? get errorMessage {
+    _$errorMessageAtom.reportRead();
+    return super.errorMessage;
+  }
+
+  @override
+  set errorMessage(String? value) {
+    _$errorMessageAtom.reportWrite(value, super.errorMessage, () {
+      super.errorMessage = value;
+    });
+  }
+
   late final _$initDbAsyncAction =
       AsyncAction('_PurchaseScreenStore.initDb', context: context);
 
   @override
   Future<void> initDb() {
     return _$initDbAsyncAction.run(() => super.initDb());
+  }
+
+  late final _$addInStockAsyncAction =
+      AsyncAction('_PurchaseScreenStore.addInStock', context: context);
+
+  @override
+  Future<void> addInStock(StockItem item) {
+    return _$addInStockAsyncAction.run(() => super.addInStock(item));
+  }
+
+  late final _$fetchStockItemAsyncAction =
+      AsyncAction('_PurchaseScreenStore.fetchStockItem', context: context);
+
+  @override
+  Future<void> fetchStockItem() {
+    return _$fetchStockItemAsyncAction.run(() => super.fetchStockItem());
+  }
+
+  late final _$fetchPurchasesAsyncAction =
+      AsyncAction('_PurchaseScreenStore.fetchPurchases', context: context);
+
+  @override
+  Future<void> fetchPurchases() {
+    return _$fetchPurchasesAsyncAction.run(() => super.fetchPurchases());
   }
 
   late final _$addPurchaseAsyncAction =
@@ -159,20 +263,21 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     return _$addPurchaseAsyncAction.run(() => super.addPurchase(purchase));
   }
 
+  late final _$updatePurchaseAsyncAction =
+      AsyncAction('_PurchaseScreenStore.updatePurchase', context: context);
+
+  @override
+  Future<void> updatePurchase(Purchase purchase) {
+    return _$updatePurchaseAsyncAction
+        .run(() => super.updatePurchase(purchase));
+  }
+
   late final _$deletePurchaseAsyncAction =
       AsyncAction('_PurchaseScreenStore.deletePurchase', context: context);
 
   @override
-  Future<void> deletePurchase(Purchase sale) {
-    return _$deletePurchaseAsyncAction.run(() => super.deletePurchase(sale));
-  }
-
-  late final _$fetchPurchasesAsyncAction =
-      AsyncAction('_PurchaseScreenStore.fetchPurchases', context: context);
-
-  @override
-  Future<void> fetchPurchases() {
-    return _$fetchPurchasesAsyncAction.run(() => super.fetchPurchases());
+  Future<void> deletePurchase(String id) {
+    return _$deletePurchaseAsyncAction.run(() => super.deletePurchase(id));
   }
 
   late final _$_PurchaseScreenStoreActionController =
@@ -226,12 +331,17 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
   String toString() {
     return '''
 purchaseList: ${purchaseList},
+stockList: ${stockList},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},
 searchedText: ${searchedText},
 selectedRowCount: ${selectedRowCount},
 currentTablePage: ${currentTablePage},
+partiesList: ${partiesList},
+purchases: ${purchases},
+isLoading: ${isLoading},
+errorMessage: ${errorMessage},
 paginatedData: ${paginatedData},
 sortedData: ${sortedData},
 filteredData: ${filteredData}

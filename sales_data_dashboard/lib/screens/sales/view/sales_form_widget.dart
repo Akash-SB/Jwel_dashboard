@@ -5,6 +5,7 @@ import 'package:sales_data_dashboard/models/firm_model.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
 import 'package:sales_data_dashboard/screens/sales/store/sales_screen_store.dart';
 
+import '../../../models/party_model.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/common_textfield.dart';
 import '../../../widgets/custom_radio_button.dart';
@@ -298,7 +299,39 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                     IntrinsicWidth(
                       child: NormalButton(
                         text: 'Create Sale',
-                        onPressed: () {},
+                        onPressed: () {
+                          final sale = Sale(
+                            id: DateTime.now()
+                                .millisecondsSinceEpoch
+                                .toString(),
+                            partyDetails: Party(
+                              name: nameController.text,
+                              address: addressController.text,
+                              mobileNumber: mobileController.text,
+                              gstNumber: gstController.text.isEmpty
+                                  ? null
+                                  : gstController.text,
+                              partyType: widget.salesScreenStore.customerType,
+                              id: '${DateTime.now().millisecondsSinceEpoch}',
+                              firm:
+                                  '${widget.salesScreenStore.selectedFirmType}',
+                            ),
+                            stockDetails:
+                                widget.salesScreenStore.selectedItem!.value,
+                            paymentOption: 'cash',
+                            paymentStatus: PaymentStatus.unpaid.name,
+                            dueDays: 0,
+                            description: descriptionController.text,
+                            createdAt: DateTime.now(),
+                            firm: widget.salesScreenStore.selectedFirmType ==
+                                    Firm.sahajanand
+                                ? Firm.sahajanand
+                                : Firm.harikrishnaEnterprise,
+                          );
+                          widget.salesScreenStore.addSale(sale).then((_) {
+                            Navigator.pop(context);
+                          });
+                        },
                       ),
                     ),
                   ],

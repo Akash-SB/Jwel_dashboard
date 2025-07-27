@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sqflite/sqflite.dart';
@@ -95,29 +96,10 @@ abstract class _PurchaseScreenStore with Store {
   }
 
   @action
-  Future<void> addPurchase(Purchase purchase) async {
-    await db.insert('purchase', purchase.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    purchaseList.add(purchase);
-  }
-
-  @action
   Future<void> addInStock(StockItem item) async {
     await db.insert('stock', item.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     stockList.add(item);
-  }
-
-  @action
-  Future<void> deletePurchase(Purchase sale) async {
-    await db.delete('purchase', where: 'id = ?', whereArgs: [sale.id]);
-    purchaseList.remove(sale);
-  }
-
-  @action
-  Future<void> fetchPurchases() async {
-    final List<Map<String, dynamic>> maps = await db.query('purchase');
-    purchaseList = ObservableList.of(maps.map((map) => Purchase.fromMap(map)));
   }
 
   @action
@@ -186,5 +168,71 @@ abstract class _PurchaseScreenStore with Store {
           .toList();
     }
     return filtered;
+  }
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  /// Collection reference in Firestore
+  CollectionReference get _collection => _firestore.collection('purchases');
+
+  /// Reactive list of purchases
+  @observable
+  ObservableList<Purchase> purchases = ObservableList<Purchase>();
+
+  @observable
+  bool isLoading = false;
+
+  @observable
+  String? errorMessage;
+
+  @action
+  Future<void> fetchPurchases() async {
+    isLoading = true;
+    errorMessage = null;
+    try {
+      final snapshot = await _collection.get();
+      final fetched = snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Purchase.fromMap(data);
+      }).toList();
+      purchases = ObservableList.of(fetched);
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  @action
+  Future<void> addPurchase(Purchase purchase) async {
+    try {
+      await _collection.doc(purchase.id).set(purchase.toMap());
+      purchases.add(purchase);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
+  Future<void> updatePurchase(Purchase purchase) async {
+    try {
+      await _collection.doc(purchase.id).update(purchase.toMap());
+      final index = purchases.indexWhere((p) => p.id == purchase.id);
+      if (index != -1) {
+        purchases[index] = purchase;
+      }
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
+  Future<void> deletePurchase(String id) async {
+    try {
+      await _collection.doc(id).delete();
+      purchases.removeWhere((p) => p.id == id);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
   }
 }
