@@ -50,11 +50,13 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
           children: [
             Row(
               children: [
-                const Expanded(
-                  child: CommonTextField(
-                    label: 'ID',
-                    initialValue: 'AUTO-12345',
-                    enabled: false,
+                Expanded(
+                  child: CommonDropdown(
+                    label: 'Firm',
+                    options: [
+                      Firm.firmTypeToString(Firm.sahajanand),
+                      Firm.firmTypeToString(Firm.harikrishnaEnterprise),
+                    ],
                   ),
                 ),
                 SizedBox(width: 16.dp),
@@ -70,6 +72,10 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                     ),
                   ),
                 ),
+                SizedBox(width: 16.dp),
+                const Expanded(
+                  child: SizedBox.shrink(),
+                )
               ],
             ),
             SizedBox(height: 24.dp),
@@ -167,7 +173,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                     value: 'existing',
                     groupValue: itemSelection,
                     onChanged: (value) =>
-                        setState(() => itemSelection = value!),
+                        setState(() => itemSelection = 'existing'),
                   ),
                 ),
                 IntrinsicWidth(
@@ -175,16 +181,12 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                     title: 'New Item',
                     value: 'new',
                     groupValue: itemSelection,
-                    onChanged: (value) =>
-                        setState(() => itemSelection = value!),
+                    onChanged: (value) => setState(() => itemSelection = 'new'),
                   ),
                 ),
               ],
             ),
-            // if (itemSelection == 'existing')
-            _existingItem(),
-            // else
-            // Expanded(child: _addNewItem()),
+            if (itemSelection == 'existing') _existingItem() else _addNewItem(),
             SizedBox(height: 24.dp),
             const Text('Other Information',
                 style: TextStyle(
@@ -216,15 +218,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                   ),
                 ),
                 SizedBox(width: 16.dp),
-                Expanded(
-                  child: CommonDropdown(
-                    label: 'Firm',
-                    options: [
-                      Firm.firmTypeToString(Firm.sahajanand),
-                      Firm.firmTypeToString(Firm.harikrishnaEnterprise),
-                    ],
-                  ),
-                ),
+                const Expanded(child: SizedBox.shrink())
               ],
             ),
             CommonTextField(
@@ -277,9 +271,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
             descriptionController.text = '22 Carat Gold Ring';
           },
         ),
-        SizedBox(
-          height: 12.dp,
-        ),
         Row(
           children: [
             Expanded(
@@ -307,15 +298,11 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
             ),
           ],
         ),
-        SizedBox(
-          height: 12.dp,
-        ),
         Row(
           children: [
             Expanded(
               child: CommonTextField(
                 label: 'Size',
-                enabled: false,
                 controller: sizeController,
               ),
             ),
@@ -336,9 +323,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
               ),
             ),
           ],
-        ),
-        SizedBox(
-          height: 12.dp,
         ),
         Row(
           children: [
@@ -401,15 +385,11 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
             ),
           ],
         ),
-        SizedBox(
-          height: 12.dp,
-        ),
         Row(
           children: [
             Expanded(
               child: CommonTextField(
                 label: 'Size',
-                enabled: false,
                 controller: sizeController,
               ),
             ),
@@ -431,9 +411,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
             ),
           ],
         ),
-        SizedBox(
-          height: 12.dp,
-        ),
         Row(
           children: [
             Expanded(
@@ -453,15 +430,10 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
             ),
           ],
         ),
-        SizedBox(
-          height: 12.dp,
-        ),
-        Expanded(
-          child: CommonTextField(
-            label: 'Description',
-            maxLines: 3,
-            controller: descriptionController,
-          ),
+        CommonTextField(
+          label: 'Description',
+          maxLines: 3,
+          controller: descriptionController,
         ),
       ],
     );
