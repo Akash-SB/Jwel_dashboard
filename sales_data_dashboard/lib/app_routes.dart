@@ -5,6 +5,7 @@ import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
 import 'package:sales_data_dashboard/screens/party_details/view/party_details_screen.dart';
 import 'package:sales_data_dashboard/screens/purchase/view/purchase_screen.dart';
 import 'package:sales_data_dashboard/screens/sales/view/sales_screen.dart';
+import 'package:sales_data_dashboard/screens/stock_management/view/stock_management_screen.dart';
 import 'package:sales_data_dashboard/screens/user_management/users_screen.dart';
 import 'screens/products/view/products_screen.dart';
 
@@ -17,6 +18,7 @@ class AppRoutes {
   static const String sales = '/sales';
   static const String purchase = '/purchase';
   static const String partyDetails = '/partyDetails';
+  static const String stockMgmt = '/stockMgmt';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final selectedRoute = switch (settings.name) {
@@ -28,6 +30,7 @@ class AppRoutes {
       sales => const SalesScreen(),
       purchase => const PurchaseScreen(),
       partyDetails => const PartyDetailsScreen(),
+      stockMgmt => const StockManagementScreen(),
       _ => const DashboardSccreen()
     };
 
@@ -48,5 +51,6 @@ class AppRoutes {
     sales,
     purchase,
     partyDetails,
+    stockMgmt,
   ];
 }

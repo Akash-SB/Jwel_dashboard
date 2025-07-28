@@ -8,11 +8,13 @@ class CommonTextField extends StatelessWidget {
   final String? initialValue;
   final bool enabled;
   final int maxLines;
+  final void Function(String)? onChanged;
 
   const CommonTextField({
     super.key,
     required this.label,
     this.controller,
+    this.onChanged,
     this.validator,
     this.initialValue,
     this.enabled = true,
@@ -29,6 +31,7 @@ class CommonTextField extends StatelessWidget {
         initialValue: controller == null ? initialValue : null,
         enabled: enabled,
         maxLines: maxLines,
+        onChanged: onChanged,
         style: const TextStyle(fontSize: 14),
         decoration: InputDecoration(
           labelText: label,
