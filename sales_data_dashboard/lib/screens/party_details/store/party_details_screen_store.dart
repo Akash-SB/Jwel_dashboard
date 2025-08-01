@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 
 import '../../../models/party_model.dart';
 
@@ -8,7 +10,15 @@ part 'party_details_screen_store.g.dart';
 class PartyDetailsStore = _PartyDetailsStore with _$PartyDetailsStore;
 
 abstract class _PartyDetailsStore with Store {
-  late Database db;
+  _PartyDetailsStore({
+    required this.userDataStore,
+  });
+
+  final UserDataStore userDataStore;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  CollectionReference get _collection => _firestore.collection('PartyDetails');
+
+  late final searchcontroller = TextEditingController();
 
   @observable
   ObservableList<Party> partiesList = ObservableList<Party>();
@@ -21,6 +31,105 @@ abstract class _PartyDetailsStore with Store {
 
   @observable
   bool sortAsc = true;
+
+  @observable
+  Observable<Party>? selectedParty;
+
+  @action
+  void setSelectedParty(Party? party) {
+    selectedParty = party != null ? Observable<Party>(party) : null;
+  }
+
+  @observable
+  Observable<bool> showPartyInfo = Observable<bool>(false);
+
+  @action
+  void togglePartyInfo(bool value) {
+    runInAction(() {
+      showPartyInfo.value = value;
+    });
+  }
+
+  @action
+  void setPartiesList(List<Party> partyList) {
+    partiesList = ObservableList.of(partyList);
+  }
+
+  @action
+  Future<void> addPartyDetails(Party party) async {
+    try {
+      await _collection.doc(party.id).set(party.toMap());
+      userDataStore.partiesList.add(party);
+      partiesList.add(party);
+    } catch (e) {
+      print('Error adding party: $e');
+    }
+  }
+
+  @action
+  Future<void> updatePartyDetails(Party party) async {
+    try {
+      await _collection.doc(party.id).update(party.toMap());
+      final index = partiesList.indexWhere((s) => s.id == party.id);
+      final indexUserData =
+          userDataStore.partiesList.indexWhere((s) => s.id == party.id);
+
+      if (index != -1) {
+        partiesList[index] = party;
+      }
+      if (indexUserData != -1) {
+        userDataStore.partiesList[indexUserData] = party;
+      }
+    } catch (e) {
+      print('Error updating party: $e');
+    }
+  }
+
+  @action
+  Future<void> deletePartyDetails(String id) async {
+    try {
+      await _collection.doc(id).delete();
+      partiesList.removeWhere((s) => s.id == id);
+      userDataStore.partiesList.removeWhere((s) => s.id == id);
+    } catch (e) {
+      print('Error deleting party: $e');
+    }
+  }
+
+  @action
+  void setSearchText(final String text) {
+    searchedText = text;
+  }
+
+  @observable
+  bool isFilterApplied = false;
+
+  @observable
+  String selectedFormPartyType = 'Agent';
+
+  @observable
+  String selectedFormFirmType = 'Sahajanand Jewellers';
+
+  @action
+  void setSelectedFormPartyType(String value) {
+    selectedFormPartyType = value;
+  }
+
+  @action
+  void setSelectedFormFirmType(String value) {
+    selectedFormFirmType = value;
+  }
+
+  @action
+  String setPartyId(String itemName, String partyType) {
+    if (partyType == 'Agent') {
+      return 'A-$itemName';
+    } else if (partyType == 'Company') {
+      return 'C-$itemName';
+    } else {
+      return 'A-$itemName';
+    }
+  }
 
   @observable
   String searchedText = '';
@@ -36,14 +145,28 @@ abstract class _PartyDetailsStore with Store {
     currentTablePage = index;
   }
 
+  @observable
+  String selectedFilterFirm = 'Sahajanand Jewellers';
+
+  @observable
+  String selectedFilterPartyType = 'Agent';
+
   @action
-  void setSearchText(final String text) {
-    searchedText = text;
+  void setSelectedFilterPartyType(String value) {
+    selectedFilterPartyType = value;
   }
 
   @action
-  void setPartiesList(final List<Party> partyList) {
-    partiesList = ObservableList.of(partyList);
+  void setSelectedFilterFirm(String firm) {
+    selectedFilterFirm = firm;
+  }
+
+  @action
+  void isFiltersApplied() {
+    isFilterApplied = searchedText.isNotEmpty ||
+        selectedFilterFirm != 'Sahajanand Jewellers ' ||
+        selectedFilterPartyType != 'Agent' ||
+        sortKey != null;
   }
 
   @computed
@@ -55,19 +178,6 @@ abstract class _PartyDetailsStore with Store {
   }
 
   @action
-  Future<void> deleteParty(Party sale) async {
-    await db.delete('parties', where: 'id = ?', whereArgs: [sale.id]);
-    partiesList.remove(sale);
-  }
-
-  @action
-  Future<void> addParty(Party sale) async {
-    await db.insert('parties', sale.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    partiesList.add(sale);
-  }
-
-  @action
   void setSortKey(String? key) {
     if (sortKey == key) {
       sortAsc = !sortAsc;
@@ -75,24 +185,6 @@ abstract class _PartyDetailsStore with Store {
       sortKey = key;
       sortAsc = true;
     }
-  }
-
-  @action
-  Future<void> initDb() async {
-    db = await openDatabase('jewellery.db', version: 1,
-        onCreate: (Database db, int version) async {
-      await db.execute('''
-        CREATE TABLE parties (
-          id TEXT PRIMARY KEY,
-          name TEXT,
-          address TEXT,
-          mobileNumber TEXT,
-          gstNumber TEXT,
-          partyType TEXT,
-          firm TEXT
-        )
-      ''');
-    });
   }
 
   @action
@@ -123,12 +215,25 @@ abstract class _PartyDetailsStore with Store {
   @computed
   List<Party> get filteredData {
     List<Party> filtered = partiesList.toList();
-    if (searchedText.isNotEmpty) {
-      filtered = filtered
-          .where((item) => item.toMap().values.any((v) =>
-              v.toString().toLowerCase().contains(searchedText.toLowerCase())))
-          .toList();
-    }
-    return filtered;
+    return filtered.where((party) {
+      final matchesSearch = searchedText.toLowerCase();
+      final searchItem = party.id.toLowerCase().contains(matchesSearch) ||
+          party.name.toLowerCase().contains(matchesSearch) ||
+          party.mobileNumber.toLowerCase().contains(matchesSearch);
+      final matchesFirm = party.firm == selectedFilterFirm;
+      final matchesPartyType = party.partyType == selectedFilterPartyType;
+      return searchItem && matchesFirm && matchesPartyType;
+    }).toList();
+  }
+
+  @action
+  void clearAllFilters() {
+    searchcontroller.text = '';
+    setSelectedFilterFirm('Sahajanand Jewellers');
+    setSelectedFilterPartyType('Agent');
+    sortKey = null;
+    setSearchText('');
+    setCurrentPageIndex(0);
+    isFilterApplied = false;
   }
 }

@@ -7,6 +7,8 @@ import 'package:sales_data_dashboard/theme.dart';
 
 import 'store/userdata_store.dart';
 
+final getIt = GetIt.instance;
+
 class IndexScreen extends StatefulWidget {
   const IndexScreen({super.key});
 
@@ -21,11 +23,17 @@ class _IndexScreenState extends State<IndexScreen> {
   @override
   void initState() {
     super.initState();
-    if (!GetIt.I.isRegistered<UserDataStore>()) {
-      GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
+    if (!getIt.isRegistered<UserDataStore>(
+      instanceName: 'UserDataStore',
+    )) {
+      getIt.registerSingleton<UserDataStore>(UserDataStore(),
+          instanceName: 'UserDataStore');
     }
-    userDataStore = GetIt.I<UserDataStore>();
+    userDataStore = getIt<UserDataStore>(
+      instanceName: 'UserDataStore',
+    );
     _fetchData();
+    userDataStore.getAllData();
   }
 
   Future<void> _fetchData() async {

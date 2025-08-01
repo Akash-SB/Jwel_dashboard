@@ -209,6 +209,22 @@ mixin _$UserDataStore on _UserDataStore, Store {
     return _$fetchInvoicesAsyncAction.run(() => super.fetchInvoices());
   }
 
+  late final _$fetchStockListAsyncAction =
+      AsyncAction('_UserDataStore.fetchStockList', context: context);
+
+  @override
+  Future<void> fetchStockList() {
+    return _$fetchStockListAsyncAction.run(() => super.fetchStockList());
+  }
+
+  late final _$fetchPartyListAsyncAction =
+      AsyncAction('_UserDataStore.fetchPartyList', context: context);
+
+  @override
+  Future<void> fetchPartyList() {
+    return _$fetchPartyListAsyncAction.run(() => super.fetchPartyList());
+  }
+
   late final _$_UserDataStoreActionController =
       ActionController(name: '_UserDataStore', context: context);
 
@@ -218,6 +234,17 @@ mixin _$UserDataStore on _UserDataStore, Store {
         name: '_UserDataStore.setTab');
     try {
       return super.setTab(index);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void getAllData() {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.getAllData');
+    try {
+      return super.getAllData();
     } finally {
       _$_UserDataStoreActionController.endAction(_$actionInfo);
     }

@@ -63,6 +63,38 @@ mixin _$StockStore on _StockStore, Store {
     });
   }
 
+  late final _$showItemInfoAtom =
+      Atom(name: '_StockStore.showItemInfo', context: context);
+
+  @override
+  Observable<bool> get showItemInfo {
+    _$showItemInfoAtom.reportRead();
+    return super.showItemInfo;
+  }
+
+  @override
+  set showItemInfo(Observable<bool> value) {
+    _$showItemInfoAtom.reportWrite(value, super.showItemInfo, () {
+      super.showItemInfo = value;
+    });
+  }
+
+  late final _$isFilterAppliedAtom =
+      Atom(name: '_StockStore.isFilterApplied', context: context);
+
+  @override
+  bool get isFilterApplied {
+    _$isFilterAppliedAtom.reportRead();
+    return super.isFilterApplied;
+  }
+
+  @override
+  set isFilterApplied(bool value) {
+    _$isFilterAppliedAtom.reportWrite(value, super.isFilterApplied, () {
+      super.isFilterApplied = value;
+    });
+  }
+
   late final _$sortKeyAtom =
       Atom(name: '_StockStore.sortKey', context: context);
 
@@ -159,6 +191,22 @@ mixin _$StockStore on _StockStore, Store {
     });
   }
 
+  late final _$selectedFirmAtom =
+      Atom(name: '_StockStore.selectedFirm', context: context);
+
+  @override
+  String get selectedFirm {
+    _$selectedFirmAtom.reportRead();
+    return super.selectedFirm;
+  }
+
+  @override
+  set selectedFirm(String value) {
+    _$selectedFirmAtom.reportWrite(value, super.selectedFirm, () {
+      super.selectedFirm = value;
+    });
+  }
+
   late final _$isLoadingAtom =
       Atom(name: '_StockStore.isLoading', context: context);
 
@@ -191,14 +239,6 @@ mixin _$StockStore on _StockStore, Store {
     });
   }
 
-  late final _$fetchStockListAsyncAction =
-      AsyncAction('_StockStore.fetchStockList', context: context);
-
-  @override
-  Future<void> fetchStockList() {
-    return _$fetchStockListAsyncAction.run(() => super.fetchStockList());
-  }
-
   late final _$addStockItemAsyncAction =
       AsyncAction('_StockStore.addStockItem', context: context);
 
@@ -227,11 +267,22 @@ mixin _$StockStore on _StockStore, Store {
       ActionController(name: '_StockStore', context: context);
 
   @override
-  void setCurrentPageIndex(int index) {
+  void setStockItemList(List<StockItem> stockList) {
     final _$actionInfo = _$_StockStoreActionController.startAction(
-        name: '_StockStore.setCurrentPageIndex');
+        name: '_StockStore.setStockItemList');
     try {
-      return super.setCurrentPageIndex(index);
+      return super.setStockItemList(stockList);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedProduct(StockItem? stock) {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.setSelectedProduct');
+    try {
+      return super.setSelectedProduct(stock);
     } finally {
       _$_StockStoreActionController.endAction(_$actionInfo);
     }
@@ -249,11 +300,44 @@ mixin _$StockStore on _StockStore, Store {
   }
 
   @override
+  void setSelectedFirm(String firm) {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.setSelectedFirm');
+    try {
+      return super.setSelectedFirm(firm);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setCurrentPageIndex(int index) {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.setCurrentPageIndex');
+    try {
+      return super.setCurrentPageIndex(index);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSortKey(String? key) {
     final _$actionInfo = _$_StockStoreActionController.startAction(
         name: '_StockStore.setSortKey');
     try {
       return super.setSortKey(key);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void isFiltersApplied() {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.isFiltersApplied');
+    try {
+      return super.isFiltersApplied();
     } finally {
       _$_StockStoreActionController.endAction(_$actionInfo);
     }
@@ -271,16 +355,30 @@ mixin _$StockStore on _StockStore, Store {
   }
 
   @override
+  void clearAllFilters() {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.clearAllFilters');
+    try {
+      return super.clearAllFilters();
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 stockItemList: ${stockItemList},
 selectedStockItem: ${selectedStockItem},
+showItemInfo: ${showItemInfo},
+isFilterApplied: ${isFilterApplied},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},
 searchedText: ${searchedText},
 selectedRowCount: ${selectedRowCount},
 currentTablePage: ${currentTablePage},
+selectedFirm: ${selectedFirm},
 isLoading: ${isLoading},
 errorMessage: ${errorMessage},
 paginatedData: ${paginatedData},

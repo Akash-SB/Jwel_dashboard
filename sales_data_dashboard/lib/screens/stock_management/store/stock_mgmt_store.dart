@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import '../../../models/stock_item.dart';
 
 part 'stock_mgmt_store.g.dart';
@@ -7,11 +9,44 @@ part 'stock_mgmt_store.g.dart';
 class StockStore = _StockStore with _$StockStore;
 
 abstract class _StockStore with Store {
+  _StockStore({
+    required this.userDataStore,
+  });
+  final UserDataStore userDataStore;
+  late final searchcontroller = TextEditingController();
+
   @observable
   ObservableList<StockItem> stockItemList = ObservableList<StockItem>();
 
   @observable
   Observable<StockItem>? selectedStockItem;
+
+  @observable
+  Observable<bool> showItemInfo = Observable<bool>(false);
+
+  void toggleItemInfo(final bool value) {
+    runInAction(() {
+      showItemInfo.value = value;
+    });
+  }
+
+  @action
+  void setStockItemList(List<StockItem> stockList) {
+    stockItemList = ObservableList.of(stockList);
+  }
+
+  @action
+  void setSelectedProduct(StockItem? stock) {
+    selectedStockItem = stock != null ? Observable<StockItem>(stock) : null;
+  }
+
+  @action
+  void setSearchText(final String text) {
+    searchedText = text;
+  }
+
+  @observable
+  bool isFilterApplied = false;
 
   @observable
   String? sortKey;
@@ -31,14 +66,17 @@ abstract class _StockStore with Store {
   @observable
   int currentTablePage = 0;
 
+  @observable
+  String selectedFirm = 'Sahajanand Jewellers';
+
   @action
-  void setCurrentPageIndex(final int index) {
-    currentTablePage = index;
+  void setSelectedFirm(String firm) {
+    selectedFirm = firm;
   }
 
   @action
-  void setSearchText(final String text) {
-    searchedText = text;
+  void setCurrentPageIndex(final int index) {
+    currentTablePage = index;
   }
 
   @computed
@@ -57,6 +95,13 @@ abstract class _StockStore with Store {
       sortKey = key;
       sortAsc = true;
     }
+  }
+
+  @action
+  void isFiltersApplied() {
+    isFilterApplied = searchedText.isNotEmpty ||
+        selectedFirm != 'Sahajanand Jewellers' ||
+        sortKey != null;
   }
 
   @action
@@ -87,13 +132,15 @@ abstract class _StockStore with Store {
   @computed
   List<StockItem> get filteredData {
     List<StockItem> filtered = stockItemList.toList();
-    if (searchedText.isNotEmpty) {
-      filtered = filtered
-          .where((item) => item.toMap().values.any((v) =>
-              v.toString().toLowerCase().contains(searchedText.toLowerCase())))
-          .toList();
-    }
-    return filtered;
+    return filtered.where((item) {
+      final query = searchedText.toLowerCase();
+      final searchedItem = item.itemId.toLowerCase().contains(query) ||
+          item.hsnCode.toLowerCase().contains(query) ||
+          item.carat.toString().contains(query) ||
+          item.amount.toString().contains(query);
+      final firmMatch = item.firm == selectedFirm;
+      return searchedItem && firmMatch;
+    }).toList();
   }
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -110,29 +157,11 @@ abstract class _StockStore with Store {
   CollectionReference get _collection => _firestore.collection('StockItems');
 
   @action
-  Future<void> fetchStockList() async {
-    isLoading = true;
-    errorMessage = null;
-    try {
-      final querySnapshot = await _collection.get();
-      final fetched = querySnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        return StockItem.fromMap(data);
-      }).toList();
-
-      stockItemList = ObservableList<StockItem>.of(fetched);
-    } catch (e) {
-      errorMessage = e.toString();
-    } finally {
-      isLoading = false;
-    }
-  }
-
-  @action
   Future<void> addStockItem(StockItem stock) async {
     try {
       await _collection.doc(stock.itemId).set(stock.toMap());
       stockItemList.add(stock);
+      userDataStore.stockList.add(stock);
     } catch (e) {
       errorMessage = e.toString();
     }
@@ -143,8 +172,13 @@ abstract class _StockStore with Store {
     try {
       await _collection.doc(stock.itemId).update(stock.toMap());
       final index = stockItemList.indexWhere((s) => s.itemId == stock.itemId);
+      final indexUserData =
+          userDataStore.stockList.indexWhere((s) => s.itemId == stock.itemId);
       if (index != -1) {
         stockItemList[index] = stock;
+      }
+      if (indexUserData != -1) {
+        userDataStore.stockList[indexUserData] = stock;
       }
     } catch (e) {
       errorMessage = e.toString();
@@ -156,8 +190,19 @@ abstract class _StockStore with Store {
     try {
       await _collection.doc(id).delete();
       stockItemList.removeWhere((s) => s.itemId == id);
+      userDataStore.stockList.removeWhere((s) => s.itemId == id);
     } catch (e) {
       errorMessage = e.toString();
     }
+  }
+
+  @action
+  void clearAllFilters() {
+    searchcontroller.text = '';
+    setSelectedFirm('Sahajanand Jewellers');
+    sortKey = null;
+    setSearchText('');
+    setCurrentPageIndex(0);
+    isFilterApplied = false;
   }
 }

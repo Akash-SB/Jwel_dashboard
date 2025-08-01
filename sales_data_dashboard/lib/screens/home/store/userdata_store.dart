@@ -25,11 +25,11 @@ abstract class _UserDataStore with Store {
   final CollectionReference productsRef =
       FirebaseFirestore.instance.collection('products');
 
-  final CollectionReference stockRefs =
-      FirebaseFirestore.instance.collection('stocks');
+  final CollectionReference stockItemRefs =
+      FirebaseFirestore.instance.collection('StockItems');
 
   final CollectionReference partiesRefs =
-      FirebaseFirestore.instance.collection('parties');
+      FirebaseFirestore.instance.collection('PartyDetails');
 
   final CollectionReference salesRefs =
       FirebaseFirestore.instance.collection('sales');
@@ -137,6 +137,44 @@ abstract class _UserDataStore with Store {
     } finally {
       isLoading = false;
     }
+  }
+
+  @action
+  Future<void> fetchStockList() async {
+    try {
+      final querySnapshot = await stockItemRefs.get();
+      final fetched = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return StockItem.fromMap(data);
+      }).toList();
+
+      stockList = ObservableList<StockItem>.of(fetched);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
+  Future<void> fetchPartyList() async {
+    try {
+      final querySnapshot = await partiesRefs.get();
+      final fetched = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Party.fromMap(data);
+      }).toList();
+      partiesList = ObservableList<Party>.of(fetched);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
+  void getAllData() {
+    isLoading = true;
+    errorMessage = null;
+    fetchStockList();
+    fetchPartyList();
+    isLoading = false;
   }
 
   @action
