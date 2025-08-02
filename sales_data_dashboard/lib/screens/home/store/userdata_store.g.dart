@@ -225,12 +225,28 @@ mixin _$UserDataStore on _UserDataStore, Store {
     return _$fetchPartyListAsyncAction.run(() => super.fetchPartyList());
   }
 
+  late final _$fetchSalesListAsyncAction =
+      AsyncAction('_UserDataStore.fetchSalesList', context: context);
+
+  @override
+  Future<void> fetchSalesList() {
+    return _$fetchSalesListAsyncAction.run(() => super.fetchSalesList());
+  }
+
   late final _$fetchPurchaseListAsyncAction =
       AsyncAction('_UserDataStore.fetchPurchaseList', context: context);
 
   @override
   Future<void> fetchPurchaseList() {
     return _$fetchPurchaseListAsyncAction.run(() => super.fetchPurchaseList());
+  }
+
+  late final _$getAllDataAsyncAction =
+      AsyncAction('_UserDataStore.getAllData', context: context);
+
+  @override
+  Future<void> getAllData() {
+    return _$getAllDataAsyncAction.run(() => super.getAllData());
   }
 
   late final _$_UserDataStoreActionController =
@@ -242,17 +258,6 @@ mixin _$UserDataStore on _UserDataStore, Store {
         name: '_UserDataStore.setTab');
     try {
       return super.setTab(index);
-    } finally {
-      _$_UserDataStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void getAllData() {
-    final _$actionInfo = _$_UserDataStoreActionController.startAction(
-        name: '_UserDataStore.getAllData');
-    try {
-      return super.getAllData();
     } finally {
       _$_UserDataStoreActionController.endAction(_$actionInfo);
     }
@@ -308,6 +313,50 @@ mixin _$UserDataStore on _UserDataStore, Store {
         name: '_UserDataStore.setProducts');
     try {
       return super.setProducts(productList);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setStockList(List<StockItem> stockItems) {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.setStockList');
+    try {
+      return super.setStockList(stockItems);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPartiesList(List<Party> partyList) {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.setPartiesList');
+    try {
+      return super.setPartiesList(partyList);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSalesList(List<Sale> sales) {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.setSalesList');
+    try {
+      return super.setSalesList(sales);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPurchaseList(List<Purchase> purchases) {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.setPurchaseList');
+    try {
+      return super.setPurchaseList(purchases);
     } finally {
       _$_UserDataStoreActionController.endAction(_$actionInfo);
     }

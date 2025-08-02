@@ -169,6 +169,20 @@ abstract class _UserDataStore with Store {
   }
 
   @action
+  Future<void> fetchSalesList() async {
+    try {
+      final querySnapshot = await salesRefs.get();
+      final fetched = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Sale.fromMap(data);
+      }).toList();
+      salesList = ObservableList<Sale>.of(fetched);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
   Future<void> fetchPurchaseList() async {
     try {
       final querySnapshot = await purchaseRefs.get();
@@ -183,12 +197,18 @@ abstract class _UserDataStore with Store {
   }
 
   @action
-  void getAllData() {
+  Future<void> getAllData() async {
     isLoading = true;
     errorMessage = null;
-    fetchStockList();
-    fetchPartyList();
-    fetchPurchaseList();
+    await Future.wait([
+      fetchStockList(),
+      fetchPartyList(),
+      fetchSalesList(),
+      fetchPurchaseList(),
+      fetchCustomers(),
+      fetchProducts(),
+      fetchInvoices(),
+    ]);
     isLoading = false;
   }
 
@@ -221,5 +241,25 @@ abstract class _UserDataStore with Store {
   @action
   void setProducts(List<ProductModel> productList) {
     products = ObservableList.of(productList);
+  }
+
+  @action
+  void setStockList(List<StockItem> stockItems) {
+    stockList = ObservableList.of(stockItems);
+  }
+
+  @action
+  void setPartiesList(List<Party> partyList) {
+    partiesList = ObservableList.of(partyList);
+  }
+
+  @action
+  void setSalesList(List<Sale> sales) {
+    salesList = ObservableList.of(sales);
+  }
+
+  @action
+  void setPurchaseList(List<Purchase> purchases) {
+    purchaseList = ObservableList.of(purchases);
   }
 }

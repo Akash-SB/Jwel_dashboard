@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobx/mobx.dart';
+import 'package:sales_data_dashboard/models/firm_model.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../../models/sales_model.dart';
@@ -28,7 +29,7 @@ abstract class _SalesScreenStore with Store {
   Observable<StockItem>? selectedItem;
 
   @observable
-  String selectedFirmType = 'Sahajanand';
+  String selectedFirmType = Firm.sahajanand.name;
 
   @observable
   String? sortKey;
@@ -58,7 +59,7 @@ abstract class _SalesScreenStore with Store {
 
   @action
   void setSelectedParty(final Party party) {
-    selectedParty!.value = party;
+    selectedParty = Observable(party);
   }
 
   @action
@@ -111,7 +112,7 @@ abstract class _SalesScreenStore with Store {
 
   @action
   void setSelectedStock(final StockItem stock) {
-    selectedItem!.value = stock;
+    selectedItem = Observable(stock);
   }
 
   @action

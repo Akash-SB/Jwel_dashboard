@@ -18,7 +18,6 @@ class Sale {
   final int dueDays;
   final String? description;
   final DateTime createdAt;
-  final bool synced;
   final Firm firm;
 
   Sale({
@@ -27,11 +26,10 @@ class Sale {
     required this.stockDetails,
     required this.paymentOption,
     required this.paymentStatus,
-    required this.dueDays,
+    this.dueDays = 60,
     this.description,
     required this.createdAt,
     required this.firm,
-    this.synced = false,
   });
 
   Map<String, dynamic> toMap() => {
@@ -43,7 +41,6 @@ class Sale {
         'dueDays': dueDays,
         'description': description,
         'createdAt': createdAt.toIso8601String(),
-        'synced': synced ? 1 : 0,
         'firm': Firm.firmTypeToString(firm),
       };
 
@@ -53,10 +50,9 @@ class Sale {
         stockDetails: StockItem.fromMap(jsonDecode(map['stock'])),
         paymentOption: map['paymentOption'],
         paymentStatus: map['paymentStatus'],
-        dueDays: map['dueDate'],
+        dueDays: map['dueDays'] as int,
         description: map['description'],
         createdAt: DateTime.parse(map['createdAt']),
-        synced: map['synced'] == 1,
         firm: Firm.fromString(map['firm']),
       );
 
