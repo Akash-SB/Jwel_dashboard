@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 
 import '../../../models/party_model.dart';
 import '../../../models/stock_item.dart';
@@ -11,13 +11,120 @@ part 'purchase_screen_store.g.dart';
 class PurchaseScreenStore = _PurchaseScreenStore with _$PurchaseScreenStore;
 
 abstract class _PurchaseScreenStore with Store {
-  late Database db;
+  _PurchaseScreenStore({
+    required this.userDataStore,
+  });
+
+  final UserDataStore userDataStore;
 
   @observable
   ObservableList<Purchase> purchaseList = ObservableList<Purchase>();
 
   @observable
   ObservableList<StockItem> stockList = ObservableList<StockItem>();
+
+  @observable
+  String selectedPartyType = 'agent';
+
+  @observable
+  String? selectedPaymentType;
+
+  @observable
+  String selectedPaymentStatus = 'unpaid';
+
+  @observable
+  StockItem? selectedStockItem;
+
+  @action
+  void setSelectedStockItem(StockItem? item) {
+    selectedStockItem = item;
+  }
+
+  @action
+  void setSelectedPaymentType(String? type) {
+    selectedPaymentType = type;
+  }
+
+  @action
+  void setSelectedPaymentStatus(String? status) {
+    selectedPaymentStatus = status ?? 'unpaid';
+  }
+
+  @observable
+  String selectedFirmType = 'Sahajanand Jewellers';
+
+  @observable
+  String itemSelectionType = 'existing';
+
+  @observable
+  Party? selectedParty;
+
+  @action
+  void setselectedParty(Party? party) {
+    selectedParty = party;
+  }
+
+  @action
+  Future<void> addPartyDetails(Party party) async {
+    try {
+      await _collection.doc(party.id).set(party.toMap());
+      userDataStore.partiesList.add(party);
+      partiesList.add(party);
+    } catch (e) {
+      print('Error adding party: $e');
+    }
+  }
+
+  @action
+  void setItemSelectionType(String type) {
+    itemSelectionType = type;
+  }
+
+  @action
+  void setSelectedFirm(String firm) {
+    selectedFirmType = firm;
+  }
+
+  @action
+  void setSelectedPartyType(String type) {
+    selectedPartyType = type;
+  }
+
+  @action
+  List<String> getPartyIds() {
+    return partiesList
+        .where((party) =>
+            party.partyType.toLowerCase() == selectedPartyType.toLowerCase())
+        .map((party) => party.id)
+        .toList();
+  }
+
+  @action
+  Party? getPartyById(String partyId) {
+    return partiesList.firstWhere(
+      (party) => party.id == partyId,
+    );
+  }
+
+  @action
+  void setPurchaseList(List<Purchase> list) {
+    purchaseList = ObservableList<Purchase>.of(list);
+  }
+
+  @action
+  void setStockList(List<StockItem> list) {
+    stockList = ObservableList<StockItem>.of(list);
+  }
+
+  List<String> getStockListNames() {
+    return stockList.map((item) => item.itemId).toList();
+  }
+
+  StockItem? getStockItemById(String itemId) {
+    return stockList.firstWhere(
+      (item) => item.itemId == itemId,
+    );
+  }
 
   @observable
   String? sortKey;
@@ -59,56 +166,6 @@ abstract class _PurchaseScreenStore with Store {
   }
 
   @action
-  Future<void> initDb() async {
-    db = await openDatabase(
-      'jewellery.db',
-      version: 1,
-      onCreate: (db, version) async {
-        await db.execute('''
-         CREATE TABLE IF NOT EXISTS purchase (
-  id TEXT PRIMARY KEY,
-  partyDetails TEXT,
-  stockDetails TEXT,
-  paymentOption TEXT,
-  paymentStatus TEXT,
-  description TEXT,
-  createdAt TEXT,
-  synced INTEGER,
-  firm TEXT
-);
-        ''');
-        await db.execute('''
-        CREATE TABLE IF NOT EXISTS stock (
-  itemId TEXT PRIMARY KEY,
-  itemName TEXT,
-  size TEXT,
-  rate REAL,
-  carat REAL,
-  availableQuantity REAL,
-  amount REAL,
-  description TEXT,
-  synced INTEGER,
-  firm TEXT
-);
-        ''');
-      },
-    );
-  }
-
-  @action
-  Future<void> addInStock(StockItem item) async {
-    await db.insert('stock', item.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    stockList.add(item);
-  }
-
-  @action
-  Future<void> fetchStockItem() async {
-    final List<Map<String, dynamic>> maps = await db.query('stock');
-    stockList = ObservableList.of(maps.map((map) => StockItem.fromMap(map)));
-  }
-
-  @action
   void setSortKey(String? key) {
     if (sortKey == key) {
       sortAsc = !sortAsc;
@@ -117,21 +174,6 @@ abstract class _PurchaseScreenStore with Store {
       sortAsc = true;
     }
   }
-
-  // List<String> getListOfPartyNames() {
-  //   final List<String> list = [];
-  //   if (partiesList.isEmpty) {
-  //     return list;
-  //   } else {
-  //     for (int i = 0; i < partiesList.length; i++) {
-  //       if (partiesList[i].firm == selectedFirmType &&
-  //           partiesList[i].partyType == customerType) {
-  //         list.add(partiesList[i].name);
-  //       }
-  //     }
-  //     return list;
-  //   }
-  // }
 
   @action
   void calculateTotalPages() {
@@ -186,28 +228,22 @@ abstract class _PurchaseScreenStore with Store {
   String? errorMessage;
 
   @action
-  Future<void> fetchPurchases() async {
-    isLoading = true;
-    errorMessage = null;
-    try {
-      final snapshot = await _collection.get();
-      final fetched = snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        return Purchase.fromMap(data);
-      }).toList();
-      purchases = ObservableList.of(fetched);
-    } catch (e) {
-      errorMessage = e.toString();
-    } finally {
-      isLoading = false;
-    }
-  }
-
-  @action
   Future<void> addPurchase(Purchase purchase) async {
     try {
       await _collection.doc(purchase.id).set(purchase.toMap());
       purchases.add(purchase);
+      userDataStore.purchaseList.add(purchase);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
+  Future<void> addStockItem(StockItem stock) async {
+    try {
+      await _collection.doc(stock.itemId).set(stock.toMap());
+      stockList.add(stock);
+      userDataStore.stockList.add(stock);
     } catch (e) {
       errorMessage = e.toString();
     }
@@ -218,8 +254,13 @@ abstract class _PurchaseScreenStore with Store {
     try {
       await _collection.doc(purchase.id).update(purchase.toMap());
       final index = purchases.indexWhere((p) => p.id == purchase.id);
+      final userIndex =
+          userDataStore.purchaseList.indexWhere((p) => p.id == purchase.id);
       if (index != -1) {
         purchases[index] = purchase;
+      }
+      if (userIndex != -1) {
+        userDataStore.purchaseList[userIndex] = purchase;
       }
     } catch (e) {
       errorMessage = e.toString();
@@ -231,6 +272,7 @@ abstract class _PurchaseScreenStore with Store {
     try {
       await _collection.doc(id).delete();
       purchases.removeWhere((p) => p.id == id);
+      userDataStore.purchaseList.removeWhere((p) => p.id == id);
     } catch (e) {
       errorMessage = e.toString();
     }

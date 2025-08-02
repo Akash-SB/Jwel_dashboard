@@ -6,6 +6,7 @@ import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/screens/purchase/view/purchase_form_widget.dart';
 
 import '../../../widgets/normal_button.dart';
+import '../../home/store/userdata_store.dart';
 import '../../products/view/products_screen.dart';
 import '../store/purchase_screen_store.dart';
 
@@ -20,14 +21,28 @@ class PurchaseScreen extends StatefulWidget {
 
 class _PurchaseScreenState extends State<PurchaseScreen> {
   late PurchaseScreenStore purchaseScreenStore;
+  late UserDataStore userDataStore;
 
   @override
   void initState() {
     super.initState();
+    if (!getIt.isRegistered<UserDataStore>(
+      instanceName: 'UserDataStore',
+    )) {
+      getIt.registerSingleton<UserDataStore>(UserDataStore(),
+          instanceName: 'UserDataStore');
+    }
+    userDataStore = getIt<UserDataStore>(
+      instanceName: 'UserDataStore',
+    );
     if (!getIt.isRegistered<PurchaseScreenStore>()) {
-      getIt.registerFactory<PurchaseScreenStore>(() => PurchaseScreenStore());
+      getIt.registerFactory<PurchaseScreenStore>(() => PurchaseScreenStore(
+            userDataStore: userDataStore,
+          ));
     }
     purchaseScreenStore = getIt<PurchaseScreenStore>();
+    purchaseScreenStore.setPurchaseList(userDataStore.purchaseList);
+    purchaseScreenStore.setStockList(userDataStore.stockList);
   }
 
   @override
@@ -230,8 +245,11 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
             ),
           ),
         ),
-        content: const SingleChildScrollView(
-          child: PurchaseFormWidget(),
+        content: SingleChildScrollView(
+          child: PurchaseFormWidget(
+            purchaseStore: purchaseScreenStore,
+            existingPurchase: existingPurchase,
+          ),
         ),
       ),
     );
@@ -245,7 +263,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
           borderRadius: BorderRadius.circular(8.dp),
         ),
         title: Text(
-          'Delete Invoice',
+          'Delete Purchase Entry',
           style: TextStyle(
             fontSize: 20.dp,
             fontWeight: FontWeight.bold,
@@ -256,7 +274,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Are you sure you want to delete invoice ${purchase.id}?',
+              'Are you sure you want to delete purchase entry with id  ${purchase.id}?',
               style: TextStyle(
                 fontSize: 14.dp,
                 fontWeight: FontWeight.w600,
@@ -308,18 +326,12 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                     purchaseScreenStore
                         .deletePurchase(purchase.id)
                         .then((final onValue) {
-                      // activityStore.addActivity(Activity(
-                      //   id: invoice.invoiceId,
-                      //   date: DateTime.parse(invoice.date),
-                      //   title: 'Invoice data for ${invoice.custName} Deleted',
-                      // ));
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content: Text('Invoice ${purchase.id} deleted')),
                       );
                     });
 
-                    setState(() {});
                     Navigator.pop(ctx);
                   },
                   splashColor: Colors.transparent,

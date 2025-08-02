@@ -63,6 +63,119 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     });
   }
 
+  late final _$selectedPartyTypeAtom =
+      Atom(name: '_PurchaseScreenStore.selectedPartyType', context: context);
+
+  @override
+  String get selectedPartyType {
+    _$selectedPartyTypeAtom.reportRead();
+    return super.selectedPartyType;
+  }
+
+  @override
+  set selectedPartyType(String value) {
+    _$selectedPartyTypeAtom.reportWrite(value, super.selectedPartyType, () {
+      super.selectedPartyType = value;
+    });
+  }
+
+  late final _$selectedPaymentTypeAtom =
+      Atom(name: '_PurchaseScreenStore.selectedPaymentType', context: context);
+
+  @override
+  String? get selectedPaymentType {
+    _$selectedPaymentTypeAtom.reportRead();
+    return super.selectedPaymentType;
+  }
+
+  @override
+  set selectedPaymentType(String? value) {
+    _$selectedPaymentTypeAtom.reportWrite(value, super.selectedPaymentType, () {
+      super.selectedPaymentType = value;
+    });
+  }
+
+  late final _$selectedPaymentStatusAtom = Atom(
+      name: '_PurchaseScreenStore.selectedPaymentStatus', context: context);
+
+  @override
+  String get selectedPaymentStatus {
+    _$selectedPaymentStatusAtom.reportRead();
+    return super.selectedPaymentStatus;
+  }
+
+  @override
+  set selectedPaymentStatus(String value) {
+    _$selectedPaymentStatusAtom.reportWrite(value, super.selectedPaymentStatus,
+        () {
+      super.selectedPaymentStatus = value;
+    });
+  }
+
+  late final _$selectedStockItemAtom =
+      Atom(name: '_PurchaseScreenStore.selectedStockItem', context: context);
+
+  @override
+  StockItem? get selectedStockItem {
+    _$selectedStockItemAtom.reportRead();
+    return super.selectedStockItem;
+  }
+
+  @override
+  set selectedStockItem(StockItem? value) {
+    _$selectedStockItemAtom.reportWrite(value, super.selectedStockItem, () {
+      super.selectedStockItem = value;
+    });
+  }
+
+  late final _$selectedFirmTypeAtom =
+      Atom(name: '_PurchaseScreenStore.selectedFirmType', context: context);
+
+  @override
+  String get selectedFirmType {
+    _$selectedFirmTypeAtom.reportRead();
+    return super.selectedFirmType;
+  }
+
+  @override
+  set selectedFirmType(String value) {
+    _$selectedFirmTypeAtom.reportWrite(value, super.selectedFirmType, () {
+      super.selectedFirmType = value;
+    });
+  }
+
+  late final _$itemSelectionTypeAtom =
+      Atom(name: '_PurchaseScreenStore.itemSelectionType', context: context);
+
+  @override
+  String get itemSelectionType {
+    _$itemSelectionTypeAtom.reportRead();
+    return super.itemSelectionType;
+  }
+
+  @override
+  set itemSelectionType(String value) {
+    _$itemSelectionTypeAtom.reportWrite(value, super.itemSelectionType, () {
+      super.itemSelectionType = value;
+    });
+  }
+
+  late final _$selectedPartyAtom =
+      Atom(name: '_PurchaseScreenStore.selectedParty', context: context);
+
+  @override
+  Party? get selectedParty {
+    _$selectedPartyAtom.reportRead();
+    return super.selectedParty;
+  }
+
+  @override
+  set selectedParty(Party? value) {
+    _$selectedPartyAtom.reportWrite(value, super.selectedParty, () {
+      super.selectedParty = value;
+    });
+  }
+
   late final _$sortKeyAtom =
       Atom(name: '_PurchaseScreenStore.sortKey', context: context);
 
@@ -223,36 +336,12 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     });
   }
 
-  late final _$initDbAsyncAction =
-      AsyncAction('_PurchaseScreenStore.initDb', context: context);
+  late final _$addPartyDetailsAsyncAction =
+      AsyncAction('_PurchaseScreenStore.addPartyDetails', context: context);
 
   @override
-  Future<void> initDb() {
-    return _$initDbAsyncAction.run(() => super.initDb());
-  }
-
-  late final _$addInStockAsyncAction =
-      AsyncAction('_PurchaseScreenStore.addInStock', context: context);
-
-  @override
-  Future<void> addInStock(StockItem item) {
-    return _$addInStockAsyncAction.run(() => super.addInStock(item));
-  }
-
-  late final _$fetchStockItemAsyncAction =
-      AsyncAction('_PurchaseScreenStore.fetchStockItem', context: context);
-
-  @override
-  Future<void> fetchStockItem() {
-    return _$fetchStockItemAsyncAction.run(() => super.fetchStockItem());
-  }
-
-  late final _$fetchPurchasesAsyncAction =
-      AsyncAction('_PurchaseScreenStore.fetchPurchases', context: context);
-
-  @override
-  Future<void> fetchPurchases() {
-    return _$fetchPurchasesAsyncAction.run(() => super.fetchPurchases());
+  Future<void> addPartyDetails(Party party) {
+    return _$addPartyDetailsAsyncAction.run(() => super.addPartyDetails(party));
   }
 
   late final _$addPurchaseAsyncAction =
@@ -261,6 +350,14 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
   @override
   Future<void> addPurchase(Purchase purchase) {
     return _$addPurchaseAsyncAction.run(() => super.addPurchase(purchase));
+  }
+
+  late final _$addStockItemAsyncAction =
+      AsyncAction('_PurchaseScreenStore.addStockItem', context: context);
+
+  @override
+  Future<void> addStockItem(StockItem stock) {
+    return _$addStockItemAsyncAction.run(() => super.addStockItem(stock));
   }
 
   late final _$updatePurchaseAsyncAction =
@@ -282,6 +379,127 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
 
   late final _$_PurchaseScreenStoreActionController =
       ActionController(name: '_PurchaseScreenStore', context: context);
+
+  @override
+  void setSelectedStockItem(StockItem? item) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setSelectedStockItem');
+    try {
+      return super.setSelectedStockItem(item);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedPaymentType(String? type) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setSelectedPaymentType');
+    try {
+      return super.setSelectedPaymentType(type);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedPaymentStatus(String? status) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setSelectedPaymentStatus');
+    try {
+      return super.setSelectedPaymentStatus(status);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setselectedParty(Party? party) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setselectedParty');
+    try {
+      return super.setselectedParty(party);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setItemSelectionType(String type) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setItemSelectionType');
+    try {
+      return super.setItemSelectionType(type);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedFirm(String firm) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setSelectedFirm');
+    try {
+      return super.setSelectedFirm(firm);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedPartyType(String type) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setSelectedPartyType');
+    try {
+      return super.setSelectedPartyType(type);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  List<String> getPartyIds() {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.getPartyIds');
+    try {
+      return super.getPartyIds();
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  Party? getPartyById(String partyId) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.getPartyById');
+    try {
+      return super.getPartyById(partyId);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPurchaseList(List<Purchase> list) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setPurchaseList');
+    try {
+      return super.setPurchaseList(list);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setStockList(List<StockItem> list) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setStockList');
+    try {
+      return super.setStockList(list);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setCurrentPageIndex(int index) {
@@ -332,6 +550,13 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     return '''
 purchaseList: ${purchaseList},
 stockList: ${stockList},
+selectedPartyType: ${selectedPartyType},
+selectedPaymentType: ${selectedPaymentType},
+selectedPaymentStatus: ${selectedPaymentStatus},
+selectedStockItem: ${selectedStockItem},
+selectedFirmType: ${selectedFirmType},
+itemSelectionType: ${itemSelectionType},
+selectedParty: ${selectedParty},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},

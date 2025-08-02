@@ -169,11 +169,26 @@ abstract class _UserDataStore with Store {
   }
 
   @action
+  Future<void> fetchPurchaseList() async {
+    try {
+      final querySnapshot = await purchaseRefs.get();
+      final fetched = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Purchase.fromMap(data);
+      }).toList();
+      purchaseList = ObservableList<Purchase>.of(fetched);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
   void getAllData() {
     isLoading = true;
     errorMessage = null;
     fetchStockList();
     fetchPartyList();
+    fetchPurchaseList();
     isLoading = false;
   }
 

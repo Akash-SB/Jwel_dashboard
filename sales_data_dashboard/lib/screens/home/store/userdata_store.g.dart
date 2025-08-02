@@ -225,6 +225,14 @@ mixin _$UserDataStore on _UserDataStore, Store {
     return _$fetchPartyListAsyncAction.run(() => super.fetchPartyList());
   }
 
+  late final _$fetchPurchaseListAsyncAction =
+      AsyncAction('_UserDataStore.fetchPurchaseList', context: context);
+
+  @override
+  Future<void> fetchPurchaseList() {
+    return _$fetchPurchaseListAsyncAction.run(() => super.fetchPurchaseList());
+  }
+
   late final _$_UserDataStoreActionController =
       ActionController(name: '_UserDataStore', context: context);
 
