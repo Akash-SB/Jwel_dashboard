@@ -3,18 +3,34 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/firm_model.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
+import 'package:sales_data_dashboard/models/stock_item.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/sales/store/sales_screen_store.dart';
 
+import '../../../models/activity_model.dart';
 import '../../../models/party_model.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/common_textfield.dart';
 import '../../../widgets/custom_radio_button.dart';
 import '../../../widgets/normal_button.dart';
 import '../../../widgets/searchable_textfield.dart';
+import '../../dashboard/store/activity_store.dart';
 
 class SalesFormWidget extends StatefulWidget {
-  const SalesFormWidget({super.key, required this.salesScreenStore});
+  SalesFormWidget(
+      {super.key,
+      required this.salesScreenStore,
+      required this.partyList,
+      required this.stockItemList,
+      this.existingSale,
+      required this.activityStore,
+      required this.userDataStore});
   final SalesScreenStore salesScreenStore;
+  final List<Party>? partyList;
+  final List<StockItem>? stockItemList;
+  final Sale? existingSale;
+  final ActivityStore activityStore;
+  final UserDataStore userDataStore;
 
   @override
   State<SalesFormWidget> createState() => _SalesFormWidgetState();
@@ -26,6 +42,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController gstController = TextEditingController();
   final TextEditingController partyTypeController = TextEditingController();
+  final TextEditingController hsnCodeController = TextEditingController();
   final TextEditingController itemNameController = TextEditingController();
   final TextEditingController sizeController = TextEditingController();
   final TextEditingController rateController = TextEditingController();
@@ -34,6 +51,40 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
   final TextEditingController amountController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
+  final TextEditingController dueDaysController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.existingSale != null) {
+      final sale = widget.existingSale!;
+      nameController.text = sale.partyDetails.name;
+      addressController.text = sale.partyDetails.address;
+      mobileController.text = sale.partyDetails.mobileNumber;
+      gstController.text = sale.partyDetails.gstNumber ?? '';
+      partyTypeController.text = sale.partyDetails.partyType;
+      itemNameController.text = sale.stockDetails.itemName;
+      hsnCodeController.text = sale.stockDetails.hsnCode;
+      itemNameController.text = sale.stockDetails.itemId;
+      sizeController.text = sale.stockDetails.size;
+      rateController.text = sale.stockDetails.rate.toString();
+      caratController.text = sale.stockDetails.carat.toString();
+      quantityController.text = sale.stockDetails.amount.toString();
+      amountController.text = sale.stockDetails.amount.toString();
+      descriptionController.text = sale.description ?? '';
+      dueDaysController.text = sale.dueDays.toString();
+      noteController.text = sale.description ?? '';
+      widget.salesScreenStore.setSelectedFirmType(sale.firm.name);
+    }
+  }
+
+  void setAmount() {
+    if (quantityController.text.isNotEmpty && rateController.text.isNotEmpty) {
+      final quantity = double.tryParse(quantityController.text) ?? 0.0;
+      final rate = double.tryParse(rateController.text) ?? 0.0;
+      amountController.text = (quantity * rate).toStringAsFixed(2);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +121,8 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                             widget.salesScreenStore.setSelectedFirmType(value!);
                           },
                           options: [
-                            Firm.firmTypeToString(Firm.sahajanand),
-                            Firm.firmTypeToString(Firm.harikrishnaEnterprise),
+                            Firm.sahajanand.name,
+                            Firm.harikrishnaEnterprise.name,
                           ],
                         ),
                       );
@@ -125,26 +176,51 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                 SizedBox(
                   height: 12.dp,
                 ),
-                Observer(builder: (context) {
-                  return SearchableTextField<String>(
-                    label: 'Search by Party ID',
-                    options: widget.salesScreenStore.getListOfPartyNames(),
-                    displayString: (s) => s,
-                    onSelect: (val) {
-                      final party =
-                          widget.salesScreenStore.getSelectedParty(val);
-                      if (party != null) {
+                if (widget.partyList != null && widget.partyList!.isNotEmpty)
+                  Observer(builder: (context) {
+                    return SearchableTextField<String>(
+                      label: 'Search by Party ID',
+                      options: widget.partyList!
+                          .where((party) =>
+                              party.firm ==
+                                  widget.salesScreenStore.selectedFirmType &&
+                              party.partyType.toLowerCase() ==
+                                  widget.salesScreenStore.customerType
+                                      .toLowerCase())
+                          .map((e) => e.name)
+                          .toList(),
+                      displayString: (s) => s,
+                      onSelect: (val) {
+                        final party = widget.partyList!.firstWhere(
+                            (element) => element.name == val,
+                            orElse: () => Party(
+                                  id: '',
+                                  name: '',
+                                  address: '',
+                                  mobileNumber: '',
+                                  gstNumber: null,
+                                  partyType:
+                                      widget.salesScreenStore.customerType,
+                                  firm:
+                                      widget.salesScreenStore.selectedFirmType,
+                                ));
+                        nameController.text = party.name;
+                        addressController.text = party.address;
+                        mobileController.text = party.mobileNumber;
+                        gstController.text = party.gstNumber ?? '';
+                        partyTypeController.text = party.partyType;
                         widget.salesScreenStore.setSelectedParty(party);
-                        setState(() {
-                          nameController.text = party.name;
-                          addressController.text = party.address;
-                          mobileController.text = party.mobileNumber;
-                          gstController.text = party.gstNumber ?? '';
-                        });
-                      }
-                    },
-                  );
-                }),
+                      },
+                    );
+                  })
+                else
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'No Party data available. Please add Party first.',
+                      style: TextStyle(color: Colors.red.shade700),
+                    ),
+                  ),
                 Row(
                   children: [
                     Expanded(
@@ -194,20 +270,38 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                       color: Color(0XFF111827),
                       fontWeight: FontWeight.w600,
                     )),
-                SearchableTextField<String>(
-                  label: 'Search by Item ID',
-                  options: const ['ITEM-01', 'ITEM-02', 'ITEM-03'],
-                  displayString: (s) => s,
-                  onSelect: (val) {
-                    itemNameController.text = 'Gold Ring';
-                    sizeController.text = 'M';
-                    rateController.text = '5000';
-                    caratController.text = '22';
-                    quantityController.text = '2';
-                    amountController.text = '10000';
-                    descriptionController.text = '22 Carat Gold Ring';
-                  },
-                ),
+                if (widget.stockItemList != null &&
+                    widget.stockItemList!.isNotEmpty)
+                  Observer(builder: (context) {
+                    return SearchableTextField<String>(
+                      label: 'Search by Item ID',
+                      options:
+                          widget.stockItemList?.map((e) => e.itemId).toList() ??
+                              [],
+                      displayString: (s) => s,
+                      onSelect: (val) {
+                        final item = widget.stockItemList
+                            ?.firstWhere((element) => element.itemId == val);
+                        itemNameController.text = item?.itemName ?? '';
+                        sizeController.text = item?.size ?? '';
+                        rateController.text = item?.rate.toString() ?? '';
+                        caratController.text = item?.carat.toString() ?? '';
+                        descriptionController.text = item?.description ?? '';
+                        hsnCodeController.text = item?.hsnCode ?? '';
+                        quantityController.text =
+                            item?.availableQuantity.toString() ?? '';
+                        setAmount();
+                      },
+                    );
+                  })
+                else
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'No Stock Item data available. Please add Stock Item first.',
+                      style: TextStyle(color: Colors.red.shade700),
+                    ),
+                  ),
                 Row(
                   children: [
                     Expanded(
@@ -220,8 +314,12 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                             label: 'Size', controller: sizeController)),
                     SizedBox(width: 16.dp),
                     Expanded(
-                        child: CommonTextField(
-                            label: 'Rate', controller: rateController)),
+                      child: CommonTextField(
+                        label: 'Rate',
+                        controller: rateController,
+                        onChanged: (p0) => setAmount(),
+                      ),
+                    ),
                   ],
                 ),
                 Row(
@@ -232,11 +330,17 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                     SizedBox(width: 16.dp),
                     Expanded(
                         child: CommonTextField(
-                            label: 'Quantity', controller: quantityController)),
+                      label: 'Quantity',
+                      controller: quantityController,
+                      onChanged: (p0) => setAmount(),
+                    )),
                     SizedBox(width: 16.dp),
                     Expanded(
                         child: CommonTextField(
-                            label: 'Amount', controller: amountController)),
+                      label: 'Amount',
+                      controller: amountController,
+                      onChanged: (p0) => setAmount(),
+                    )),
                   ],
                 ),
                 CommonTextField(
@@ -274,7 +378,9 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                       ),
                     ),
                     SizedBox(width: 16.dp),
-                    const Expanded(child: SizedBox.shrink())
+                    Expanded(
+                        child: CommonTextField(
+                            label: 'Due Days', controller: dueDaysController)),
                   ],
                 ),
                 CommonTextField(
@@ -316,11 +422,31 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                               firm:
                                   '${widget.salesScreenStore.selectedFirmType}',
                             ),
-                            stockDetails:
-                                widget.salesScreenStore.selectedItem!.value,
+                            stockDetails: StockItem(
+                              itemId: itemNameController.text,
+                              itemName: itemNameController.text,
+                              hsnCode: hsnCodeController.text,
+                              size: sizeController.text,
+                              rate: rateController.text.isEmpty
+                                  ? 0.0
+                                  : double.parse(rateController.text),
+                              carat: caratController.text.isEmpty
+                                  ? 0.0
+                                  : double.parse(caratController.text),
+                              amount: amountController.text.isEmpty
+                                  ? 0.0
+                                  : double.parse(amountController.text),
+                              availableQuantity: quantityController.text.isEmpty
+                                  ? 0.0
+                                  : double.parse(quantityController.text),
+                              description: descriptionController.text,
+                              firm: widget.salesScreenStore.selectedFirmType,
+                            ),
                             paymentOption: 'cash',
                             paymentStatus: PaymentStatus.unpaid.name,
-                            dueDays: 0,
+                            dueDays: dueDaysController.text.isEmpty
+                                ? 60
+                                : int.parse(dueDaysController.text),
                             description: descriptionController.text,
                             createdAt: DateTime.now(),
                             firm: widget.salesScreenStore.selectedFirmType ==
@@ -328,9 +454,33 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                 ? Firm.sahajanand
                                 : Firm.harikrishnaEnterprise,
                           );
-                          widget.salesScreenStore.addSale(sale).then((_) {
+
+                          widget.salesScreenStore
+                              .addSale(sale)
+                              .then((final onValue) {
+                            widget.userDataStore.setSalesList(
+                                [...widget.userDataStore.salesList, sale]);
                             Navigator.pop(context);
-                          });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Sales Data ${sale.id} added')),
+                            );
+                            widget.activityStore.addActivity(Activity(
+                              id: sale.id,
+                              date: DateTime.parse(sale.createdAt.toString()),
+                              title:
+                                  'Sales Data for ${sale.partyDetails.name} Created',
+                              amount: sale.stockDetails.amount,
+                            ));
+                          }).onError(
+                            (error, stackTrace) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Something went wrong while creating Sales data')),
+                              );
+                            },
+                          );
                         },
                       ),
                     ),

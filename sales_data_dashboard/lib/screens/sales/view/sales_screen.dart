@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/models/activity_model.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
+import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/sales/store/sales_screen_store.dart';
 
 import '../../../widgets/normal_button.dart';
@@ -20,14 +23,40 @@ class SalesScreen extends StatefulWidget {
 
 class _SalesScreenState extends State<SalesScreen> {
   late SalesScreenStore salesScreenStore;
+  late UserDataStore userDataStore;
+  late ActivityStore activityStore;
 
   @override
   void initState() {
-    super.initState();
     if (!getIt.isRegistered<SalesScreenStore>()) {
       getIt.registerFactory<SalesScreenStore>(() => SalesScreenStore());
     }
+
+    if (!getIt.isRegistered<UserDataStore>(
+      instanceName: 'UserDataStore',
+    )) {
+      getIt.registerSingleton<UserDataStore>(UserDataStore(),
+          instanceName: 'UserDataStore');
+    }
+    userDataStore = getIt<UserDataStore>(
+      instanceName: 'UserDataStore',
+    );
+
+    if (!getIt.isRegistered<ActivityStore>()) {
+      getIt.registerSingleton<ActivityStore>(ActivityStore());
+    }
+
     salesScreenStore = getIt<SalesScreenStore>();
+
+    activityStore = getIt<ActivityStore>();
+
+    if (userDataStore.salesList.isEmpty) {
+      salesScreenStore.fetchSales();
+      userDataStore.setSalesList(salesScreenStore.sales);
+    } else {
+      salesScreenStore.setSalesList(userDataStore.salesList);
+    }
+    super.initState();
   }
 
   @override
@@ -258,6 +287,11 @@ class _SalesScreenState extends State<SalesScreen> {
         content: SingleChildScrollView(
           child: SalesFormWidget(
             salesScreenStore: salesScreenStore,
+            existingSale: existingSale,
+            partyList: userDataStore.partiesList,
+            stockItemList: userDataStore.stockList,
+            activityStore: activityStore,
+            userDataStore: userDataStore,
           ),
         ),
       ),
@@ -272,7 +306,7 @@ class _SalesScreenState extends State<SalesScreen> {
           borderRadius: BorderRadius.circular(8.dp),
         ),
         title: Text(
-          'Delete Invoice',
+          'Delete Sales Data',
           style: TextStyle(
             fontSize: 20.dp,
             fontWeight: FontWeight.bold,
@@ -283,7 +317,7 @@ class _SalesScreenState extends State<SalesScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Are you sure you want to delete invoice ${sale.id}?',
+              'Are you sure you want to delete Sale data for ${sale.id}?',
               style: TextStyle(
                 fontSize: 14.dp,
                 fontWeight: FontWeight.w600,
@@ -333,16 +367,16 @@ class _SalesScreenState extends State<SalesScreen> {
                 InkWell(
                   onTap: () {
                     salesScreenStore.deleteSale(sale.id).then((final onValue) {
-                      // activityStore.addActivity(Activity(
-                      //   id: invoice.invoiceId,
-                      //   date: DateTime.parse(invoice.date),
-                      //   title: 'Invoice data for ${invoice.custName} Deleted',
-                      // ));
+                      activityStore.addActivity(Activity(
+                        id: sale.id,
+                        date: DateTime.now(),
+                        title: 'Sales data for ${sale.id} Deleted',
+                      ));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Invoice ${sale.id} deleted')),
+                        SnackBar(
+                            content: Text('Sales data for ${sale.id} deleted')),
                       );
                     });
-
                     setState(() {});
                     Navigator.pop(ctx);
                   },
@@ -389,6 +423,8 @@ class _SalesScreenState extends State<SalesScreen> {
         return row.stockDetails.itemId;
       case 'size':
         return row.stockDetails.size;
+      case 'carat':
+        return row.stockDetails.carat.toString();
       case 'rate':
         return row.stockDetails.rate.toString();
       case 'amount':

@@ -18,7 +18,6 @@ class Party {
   final String mobileNumber;
   final String? gstNumber;
   final String partyType; // "company" or "agent"
-  final bool synced;
   final String firm;
 
   Party({
@@ -28,7 +27,6 @@ class Party {
     required this.mobileNumber,
     this.gstNumber,
     required this.partyType,
-    this.synced = false,
     required this.firm,
   });
 
@@ -40,7 +38,6 @@ class Party {
         'mobileNumber': mobileNumber,
         'gstNumber': gstNumber,
         'partyType': partyType,
-        'synced': synced ? 1 : 0,
         'firm': firm,
       };
 
@@ -51,7 +48,6 @@ class Party {
         mobileNumber: map['mobileNumber'],
         gstNumber: map['gstNumber'] ?? '',
         partyType: map['partyType'],
-        synced: map['synced'] == 1,
         firm: map['firm'] ?? Firm.sahajanand.name,
       );
 
@@ -63,7 +59,6 @@ class Party {
         'mobileNumber': mobileNumber,
         'gstNumber': gstNumber,
         'partyType': partyType,
-        'synced': synced,
         'firm': firm,
       };
 }

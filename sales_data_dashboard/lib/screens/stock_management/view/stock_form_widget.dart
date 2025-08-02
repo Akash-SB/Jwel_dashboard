@@ -53,8 +53,8 @@ class _StockFormWidgetState extends State<StockFormWidget> {
       caratController.text = stockItem.carat.toString();
       quantController.text = stockItem.availableQuantity.toString();
       amountController.text = stockItem.amount.toString();
-      descController.text = stockItem.description ?? '';
-      selectedFirm = stockItem.firm ?? 'Sahajanand';
+      descController.text = stockItem.description;
+      selectedFirm = stockItem.firm;
     }
   }
 

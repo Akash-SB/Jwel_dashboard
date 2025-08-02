@@ -10,7 +10,6 @@ class StockItem {
   final double availableQuantity;
   final double amount;
   final String description;
-  final bool synced;
   final String firm;
 
   StockItem({
@@ -24,7 +23,6 @@ class StockItem {
     required this.availableQuantity,
     required this.description,
     required this.firm,
-    this.synced = false,
   });
 
   Map<String, dynamic> toMap() => {
@@ -37,7 +35,6 @@ class StockItem {
         'amount': amount,
         'availableQuantity': availableQuantity,
         'description': description,
-        'synced': synced ? 1 : 0,
         'firm': firm,
       };
 
@@ -51,7 +48,6 @@ class StockItem {
         amount: map['amount'],
         availableQuantity: map['availableQuantity'],
         description: map['description'],
-        synced: map['synced'] == 1,
         firm: map['firm'] ?? Firm.sahajanand.name,
       );
 
@@ -63,7 +59,6 @@ class StockItem {
         'carat': carat,
         'amount': amount,
         'hsnCode': hsnCode,
-        'synced': synced,
         'availableQuantity': availableQuantity,
         'description': description,
         'firm': firm
