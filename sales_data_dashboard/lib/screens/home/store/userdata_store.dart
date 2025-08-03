@@ -57,7 +57,10 @@ abstract class _UserDataStore with Store {
   ObservableList<InvoiceModel> invoices = ObservableList.of([]);
 
   @observable
-  ObservableList<InvoiceModel> sixMonthTxnList = ObservableList.of([]);
+  ObservableList<Sale> sixMonthSalesList = ObservableList.of([]);
+
+  @observable
+  ObservableList<Purchase> sixMonthPurchaseList = ObservableList.of([]);
 
   @observable
   ObservableList<CustomerModel> customers = ObservableList.of([]);
@@ -203,29 +206,40 @@ abstract class _UserDataStore with Store {
     await Future.wait([
       fetchStockList(),
       fetchPartyList(),
-      fetchSalesList(),
-      fetchPurchaseList(),
       fetchCustomers(),
       fetchProducts(),
       fetchInvoices(),
+      fetchPurchaseList(),
+      fetchSalesList(),
     ]);
     isLoading = false;
+    getLastSixMonthsTxns(salesList, purchaseList);
   }
 
   @action
-  void getLastSixMonthsTxns(List<InvoiceModel> allInvoices) {
+  void getLastSixMonthsTxns(List<Sale> allSales, List<Purchase> allPurchase) {
     final now = DateTime.now();
     final sixMonthsAgo = DateTime(now.year, now.month - 6, now.day);
 
-    setSixMonthTxn(ObservableList.of(allInvoices.where((invoice) {
-      final invoiceDate = DateTime.parse(invoice.date);
-      return invoiceDate.isAfter(sixMonthsAgo);
+    setSixMonthSales(ObservableList.of(allSales.where((sale) {
+      final salesDate = sale.createdAt;
+      return salesDate.isAfter(sixMonthsAgo);
+    })));
+
+    setSixMonthPurchase(ObservableList.of(allPurchase.where((purchase) {
+      final purchaseDate = purchase.createdAt;
+      return purchaseDate.isAfter(sixMonthsAgo);
     })));
   }
 
   @action
-  void setSixMonthTxn(List<InvoiceModel> invoiceList) {
-    sixMonthTxnList = ObservableList.of(invoiceList);
+  void setSixMonthSales(List<Sale> salesList) {
+    sixMonthSalesList = ObservableList.of(salesList);
+  }
+
+  @action
+  void setSixMonthPurchase(List<Purchase> purchaseList) {
+    sixMonthPurchaseList = ObservableList.of(purchaseList);
   }
 
   @action

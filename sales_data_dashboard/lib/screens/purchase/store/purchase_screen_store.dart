@@ -153,6 +153,11 @@ abstract class _PurchaseScreenStore with Store {
   ObservableList<Party> partiesList = ObservableList<Party>();
 
   @action
+  void setPartiesList(List<Party> list) {
+    partiesList = ObservableList<Party>.of(list);
+  }
+
+  @action
   void setSearchText(final String text) {
     searchedText = text;
   }
@@ -244,6 +249,19 @@ abstract class _PurchaseScreenStore with Store {
       await _collection.doc(stock.itemId).set(stock.toMap());
       stockList.add(stock);
       userDataStore.stockList.add(stock);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
+  Future<void> updateStockItem(StockItem stock) async {
+    try {
+      await _collection.doc(stock.itemId).update(stock.toMap());
+      final index = stockList.indexWhere((s) => s.itemId == stock.itemId);
+      if (index != -1) {
+        stockList[index] = stock;
+      }
     } catch (e) {
       errorMessage = e.toString();
     }

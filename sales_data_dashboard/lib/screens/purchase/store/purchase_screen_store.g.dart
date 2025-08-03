@@ -360,6 +360,14 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     return _$addStockItemAsyncAction.run(() => super.addStockItem(stock));
   }
 
+  late final _$updateStockItemAsyncAction =
+      AsyncAction('_PurchaseScreenStore.updateStockItem', context: context);
+
+  @override
+  Future<void> updateStockItem(StockItem stock) {
+    return _$updateStockItemAsyncAction.run(() => super.updateStockItem(stock));
+  }
+
   late final _$updatePurchaseAsyncAction =
       AsyncAction('_PurchaseScreenStore.updatePurchase', context: context);
 
@@ -507,6 +515,17 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
         name: '_PurchaseScreenStore.setCurrentPageIndex');
     try {
       return super.setCurrentPageIndex(index);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPartiesList(List<Party> list) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setPartiesList');
+    try {
+      return super.setPartiesList(list);
     } finally {
       _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
     }

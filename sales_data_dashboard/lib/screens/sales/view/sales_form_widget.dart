@@ -465,13 +465,6 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                               SnackBar(
                                   content: Text('Sales Data ${sale.id} added')),
                             );
-                            widget.activityStore.addActivity(Activity(
-                              id: sale.id,
-                              date: DateTime.parse(sale.createdAt.toString()),
-                              title:
-                                  'Sales Data for ${sale.partyDetails.name} Created',
-                              amount: sale.stockDetails.amount,
-                            ));
                           }).onError(
                             (error, stackTrace) {
                               ScaffoldMessenger.of(context).showSnackBar(

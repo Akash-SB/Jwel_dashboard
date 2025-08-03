@@ -4,10 +4,9 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
-import 'package:sales_data_dashboard/models/invoice_model.dart';
+import 'package:sales_data_dashboard/models/purchase_model.dart';
+import 'package:sales_data_dashboard/models/sales_model.dart';
 import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
-
-import '../../models/app_enum.dart';
 import '../../models/invoice_notification_model.dart';
 import '../../services/notification_checker_services.dart';
 import '../../services/notification_db_services.dart';
@@ -35,27 +34,19 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
       GetIt.I.registerSingleton<ActivityStore>(ActivityStore());
     }
 
-    if (!GetIt.I.isRegistered<UserDataStore>()) {
-      GetIt.I.registerSingleton<UserDataStore>(UserDataStore());
+    if (!getIt.isRegistered<UserDataStore>(
+      instanceName: 'UserDataStore',
+    )) {
+      getIt.registerSingleton<UserDataStore>(UserDataStore(),
+          instanceName: 'UserDataStore');
     }
-    userDataStore = GetIt.I<UserDataStore>();
+    userDataStore = getIt<UserDataStore>(
+      instanceName: 'UserDataStore',
+    );
     activityStore = GetIt.I<ActivityStore>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationCheckerService.checkInvoicesForToday(activityStore.invoices);
-      getActivityList();
     });
-  }
-
-  Future getActivityList() async {
-    await activityStore.loadActivities().then((final onValue) {}).onError(
-      (error, stackTrace) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text(activityStore.errorMessage ?? 'Something went wrong')),
-        );
-      },
-    );
   }
 
   @override
@@ -303,8 +294,9 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Observer(builder: (context) {
-                      final monthlyData =
-                          getMonthlyTotals(userDataStore.sixMonthTxnList);
+                      final monthlyData = getMonthlyTotals(
+                          userDataStore.sixMonthSalesList,
+                          userDataStore.sixMonthPurchaseList);
 
                       return Flexible(
                         flex: 2,
@@ -316,82 +308,17 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                         ),
                       );
                     }),
-                    SizedBox(
-                      width: 4.dp,
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 4.dp,
-                          horizontal: 8.dp,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: const Color(0xFFF3F4F6),
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(
-                              8.dp,
-                            ),
-                          ),
-                        ),
-                        child: Observer(builder: (context) {
-                          final activities = activityStore.activities;
-                          return ListView.separated(
-                            itemCount: activities.length,
-                            separatorBuilder: (context, index) => const Divider(
-                              color: Color(
-                                0xFFF3F4F6,
-                              ),
-                            ),
-                            itemBuilder: (context, index) {
-                              final activity = activities[index];
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      DateFormat('yyyy-MM-dd')
-                                          .format(activity.date),
-                                      style: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontSize: 12),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(activity.title,
-                                        style: const TextStyle(fontSize: 14)),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      activity.amount != null &&
-                                              activity.amount != 0
-                                          ? "${activity.amount! >= 0 ? "+" : "-"}\₹${activity.amount!.abs().toStringAsFixed(2)}"
-                                          : "-",
-                                      style: TextStyle(
-                                        color: activity.amount == null
-                                            ? Colors.orange
-                                            : activity.amount! >= 0
-                                                ? Colors.green
-                                                : Colors.deepOrange,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        }),
-                      ),
-                    ),
                   ],
                 ),
               ),
               SizedBox(height: 20.dp),
-              Observer(
-                  builder: (context) =>
-                      buildSummaryCards(userDataStore.sixMonthTxnList)),
+              Observer(builder: (context) {
+                return (userDataStore.sixMonthPurchaseList.isNotEmpty ||
+                        userDataStore.sixMonthSalesList.isNotEmpty)
+                    ? buildSummaryCards(userDataStore.sixMonthSalesList,
+                        userDataStore.sixMonthPurchaseList)
+                    : SizedBox.shrink();
+              }),
             ],
           ),
         ),
@@ -399,14 +326,12 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
     );
   }
 
-  Widget buildSummaryCards(List<InvoiceModel> transactions) {
-    final totalSales = transactions
-        .where((t) => t.transactionType == TransactionTypeEnum.sell)
-        .fold(0.0, (prev, e) => prev + e.parsedAmount);
+  Widget buildSummaryCards(List<Sale> salesList, List<Purchase> purchaseList) {
+    final totalSales =
+        salesList.fold(0.0, (prev, e) => prev + e.stockDetails.amount);
 
-    final totalPurchase = transactions
-        .where((t) => t.transactionType == TransactionTypeEnum.purchase)
-        .fold(0.0, (prev, e) => prev + e.parsedAmount);
+    final totalPurchase =
+        purchaseList.fold(0.0, (prev, e) => prev + e.stockDetails.amount);
 
     final net = totalSales - totalPurchase;
 
@@ -517,7 +442,7 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
   }
 
   Map<String, Map<String, double>> getMonthlyTotals(
-      List<InvoiceModel> transactions) {
+      List<Sale> salesList, List<Purchase> purchaseList) {
     final now = DateTime.now();
     final result = <String, Map<String, double>>{};
 
@@ -527,16 +452,23 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
       result[key] = {"sell": 0.0, "purchase": 0.0};
     }
 
-    for (var tx in transactions) {
-      final date = DateTime.tryParse(tx.date);
-      if (date == null) continue;
+    for (var tx in salesList) {
+      final date = tx.createdAt;
 
       final key = "${date.month.toString().padLeft(2, '0')}/${date.year}";
       if (result.containsKey(key)) {
-        final type = tx.transactionType == TransactionTypeEnum.sell
-            ? "sell"
-            : "purchase";
-        result[key]![type] = result[key]![type]! + tx.parsedAmount;
+        final type = "sell";
+        result[key]![type] = result[key]![type]! + tx.stockDetails.amount;
+      }
+    }
+
+    for (var tx in purchaseList) {
+      final date = tx.createdAt;
+
+      final key = "${date.month.toString().padLeft(2, '0')}/${date.year}";
+      if (result.containsKey(key)) {
+        final type = "purchase";
+        result[key]![type] = result[key]![type]! + tx.stockDetails.amount;
       }
     }
 

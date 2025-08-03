@@ -43,6 +43,8 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     purchaseScreenStore = getIt<PurchaseScreenStore>();
     purchaseScreenStore.setPurchaseList(userDataStore.purchaseList);
     purchaseScreenStore.setStockList(userDataStore.stockList);
+    purchaseScreenStore.setPartiesList(userDataStore.partiesList);
+    purchaseScreenStore.setCurrentPageIndex(0);
   }
 
   @override
@@ -54,7 +56,6 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       TableColumn(label: 'Carat', key: 'carat', isSortable: true),
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
-      TableColumn(label: 'Due Days', key: 'dueDays', isSortable: true),
       TableColumn(
         label: 'Payment Status',
         key: 'paymentStatus',
@@ -166,15 +167,17 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                     icon: Image.asset(
                                       'assets/icons/edit_icon.png',
                                     ),
-                                    onPressed: () {},
-                                    // _openForm(context, row),
+                                    onPressed: () {
+                                      _openPurchaseForm(context, row);
+                                    },
                                   ),
                                   IconButton(
                                     icon: Image.asset(
                                       'assets/icons/delete_icon.png',
                                     ),
-                                    onPressed: () {},
-                                    // _confirmDelete(context, row),
+                                    onPressed: () {
+                                      _confirmDelete(context, row);
+                                    },
                                   ),
                                 ],
                               ));

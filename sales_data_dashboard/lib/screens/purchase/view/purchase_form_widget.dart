@@ -79,6 +79,21 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
     }
   }
 
+  void setAmount() {
+    if (quantityController.text.isNotEmpty && rateController.text.isNotEmpty) {
+      final quantity = double.tryParse(quantityController.text) ?? 0.0;
+      final rate = double.tryParse(rateController.text) ?? 0.0;
+      amountController.text = (quantity * rate).toStringAsFixed(2);
+    } else {
+      amountController.text = '';
+    }
+  }
+
+  void _setItemId(final String itemName, final String size) {
+    final id = '$itemName-$size';
+    itemIdController.text = id;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -151,8 +166,10 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                         title: 'Agent',
                         value: 'agent',
                         groupValue: widget.purchaseStore.selectedPartyType,
-                        onChanged: (value) =>
-                            widget.purchaseStore.setSelectedPartyType(value!),
+                        onChanged: (value) {
+                          widget.purchaseStore.setSelectedPartyType(value!);
+                          widget.purchaseStore.getPartyIds();
+                        },
                       ),
                     ),
                     IntrinsicWidth(
@@ -183,6 +200,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                       mobileController.text = partyDetails.mobileNumber;
                       gstController.text = partyDetails.gstNumber ?? '';
                       firmTypeController.text = partyDetails.firm;
+                      setAmount();
                     }
                   },
                 );
@@ -270,6 +288,8 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                           onChanged: (value) {
                             widget.purchaseStore.setItemSelectionType(value!);
                             if (value == 'existing') {
+                              itemIdController.clear();
+                              nameController.clear();
                               itemNameController.clear();
                               sizeController.clear();
                               rateController.clear();
@@ -288,6 +308,8 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                           onChanged: (final value) {
                             widget.purchaseStore.setItemSelectionType(value!);
                             if (value == 'newItem') {
+                              itemIdController.clear();
+                              nameController.clear();
                               itemNameController.clear();
                               sizeController.clear();
                               rateController.clear();
@@ -304,11 +326,16 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
               SizedBox(height: 12.dp),
               // Show either existing item form or new item form based on selection
 
-              if (widget.purchaseStore.itemSelectionType.toLowerCase() ==
-                  'existing')
-                _existingItem()
-              else
-                _addNewItem(),
+              Observer(
+                builder: (context) {
+                  if (widget.purchaseStore.itemSelectionType.toLowerCase() ==
+                      'existing') {
+                    return _existingItem();
+                  } else {
+                    return _addNewItem();
+                  }
+                },
+              ),
               SizedBox(height: 24.dp),
               const Text('Other Information',
                   style: TextStyle(
@@ -382,6 +409,27 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                 'existing') {
                               selectedItem =
                                   widget.purchaseStore.selectedStockItem!;
+                              final updatedItem = StockItem(
+                                amount:
+                                    double.tryParse(amountController.text) ??
+                                        0.0,
+                                description: descriptionController.text,
+                                firm: firmTypeController.text,
+                                itemId: selectedItem.itemId,
+                                itemName: itemNameController.text,
+                                size: sizeController.text,
+                                rate:
+                                    double.tryParse(rateController.text) ?? 0.0,
+                                carat: double.tryParse(caratController.text) ??
+                                    0.0,
+                                availableQuantity: (selectedItem
+                                            .availableQuantity ??
+                                        0) +
+                                    (double.tryParse(quantityController.text) ??
+                                        0.0),
+                                hsnCode: hsnController.text,
+                              );
+                              widget.purchaseStore.updateStockItem(updatedItem);
                             } else {
                               selectedItem = StockItem(
                                 itemId: itemIdController.text,
@@ -411,7 +459,9 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                               ),
                               firm: widget.purchaseStore.selectedFirmType,
                               description: descriptionController.text,
-                              id: '',
+                              id: DateTime.now()
+                                  .millisecondsSinceEpoch
+                                  .toString(),
                               partyDetails: partyDetails!,
                               stockDetails: selectedItem,
                               paymentStatus:
@@ -495,12 +545,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 child: CommonTextField(
                   label: 'HSN Code',
                   controller: hsnController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter an HSN code';
-                    }
-                    return null;
-                  },
                 ),
               ),
             ],
@@ -520,6 +564,13 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 child: CommonTextField(
                   label: 'Rate',
                   controller: rateController,
+                  onChanged: (p0) => setAmount(),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a rate';
+                    }
+                    return null;
+                  },
                 ),
               ),
               SizedBox(width: 16.dp),
@@ -531,33 +582,50 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
               ),
             ],
           ),
-          Row(
-            children: [
-              Expanded(
-                child: CommonTextField(
-                  label: 'Available Quantity',
-                  enabled: false,
-                  controller: availableQuantController,
+          Observer(builder: (context) {
+            return Row(
+              children: [
+                Expanded(
+                  child: CommonTextField(
+                    label: 'Available Quantity',
+                    enabled: false,
+                    controller: availableQuantController,
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: 16.dp,
-              ),
-              Expanded(
-                child: CommonTextField(
-                  label: 'Buy Quantity',
-                  controller: quantityController,
+                SizedBox(
+                  width: 16.dp,
                 ),
-              ),
-              SizedBox(width: 16.dp),
-              Expanded(
-                child: CommonTextField(
-                  label: 'Amount',
-                  controller: amountController,
+                Expanded(
+                  child: CommonTextField(
+                    label: 'Buy Quantity',
+                    controller: quantityController,
+                    onChanged: (p0) => setAmount(),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a quantity';
+                      }
+
+                      return null;
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
+                SizedBox(width: 16.dp),
+                Expanded(
+                  child: CommonTextField(
+                    label: 'Amount',
+                    controller: amountController,
+                    validator: (value) {
+                      if ((rateController.text.isEmpty ||
+                          quantityController.text.isEmpty)) {
+                        return 'Please enter both rate and quantity';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            );
+          }),
         ],
       );
     });
@@ -589,6 +657,9 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 child: CommonTextField(
                   label: 'Item Name',
                   controller: nameController,
+                  onChanged: (p0) {
+                    _setItemId(p0, sizeController.text);
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter an item name';
@@ -602,12 +673,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 child: CommonTextField(
                   label: 'HSN Code',
                   controller: hsnController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter an HSN code';
-                    }
-                    return null;
-                  },
                 ),
               ),
             ],
@@ -618,6 +683,15 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 child: CommonTextField(
                   label: 'Size',
                   controller: sizeController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a size';
+                    }
+                    return null;
+                  },
+                  onChanged: (p0) {
+                    _setItemId(itemNameController.text, p0);
+                  },
                 ),
               ),
               SizedBox(

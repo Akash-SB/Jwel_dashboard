@@ -73,19 +73,36 @@ mixin _$UserDataStore on _UserDataStore, Store {
     });
   }
 
-  late final _$sixMonthTxnListAtom =
-      Atom(name: '_UserDataStore.sixMonthTxnList', context: context);
+  late final _$sixMonthSalesListAtom =
+      Atom(name: '_UserDataStore.sixMonthSalesList', context: context);
 
   @override
-  ObservableList<InvoiceModel> get sixMonthTxnList {
-    _$sixMonthTxnListAtom.reportRead();
-    return super.sixMonthTxnList;
+  ObservableList<Sale> get sixMonthSalesList {
+    _$sixMonthSalesListAtom.reportRead();
+    return super.sixMonthSalesList;
   }
 
   @override
-  set sixMonthTxnList(ObservableList<InvoiceModel> value) {
-    _$sixMonthTxnListAtom.reportWrite(value, super.sixMonthTxnList, () {
-      super.sixMonthTxnList = value;
+  set sixMonthSalesList(ObservableList<Sale> value) {
+    _$sixMonthSalesListAtom.reportWrite(value, super.sixMonthSalesList, () {
+      super.sixMonthSalesList = value;
+    });
+  }
+
+  late final _$sixMonthPurchaseListAtom =
+      Atom(name: '_UserDataStore.sixMonthPurchaseList', context: context);
+
+  @override
+  ObservableList<Purchase> get sixMonthPurchaseList {
+    _$sixMonthPurchaseListAtom.reportRead();
+    return super.sixMonthPurchaseList;
+  }
+
+  @override
+  set sixMonthPurchaseList(ObservableList<Purchase> value) {
+    _$sixMonthPurchaseListAtom.reportWrite(value, super.sixMonthPurchaseList,
+        () {
+      super.sixMonthPurchaseList = value;
     });
   }
 
@@ -264,22 +281,33 @@ mixin _$UserDataStore on _UserDataStore, Store {
   }
 
   @override
-  void getLastSixMonthsTxns(List<InvoiceModel> allInvoices) {
+  void getLastSixMonthsTxns(List<Sale> allSales, List<Purchase> allPurchase) {
     final _$actionInfo = _$_UserDataStoreActionController.startAction(
         name: '_UserDataStore.getLastSixMonthsTxns');
     try {
-      return super.getLastSixMonthsTxns(allInvoices);
+      return super.getLastSixMonthsTxns(allSales, allPurchase);
     } finally {
       _$_UserDataStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void setSixMonthTxn(List<InvoiceModel> invoiceList) {
+  void setSixMonthSales(List<Sale> salesList) {
     final _$actionInfo = _$_UserDataStoreActionController.startAction(
-        name: '_UserDataStore.setSixMonthTxn');
+        name: '_UserDataStore.setSixMonthSales');
     try {
-      return super.setSixMonthTxn(invoiceList);
+      return super.setSixMonthSales(salesList);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSixMonthPurchase(List<Purchase> purchaseList) {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.setSixMonthPurchase');
+    try {
+      return super.setSixMonthPurchase(purchaseList);
     } finally {
       _$_UserDataStoreActionController.endAction(_$actionInfo);
     }
@@ -369,7 +397,8 @@ isLoading: ${isLoading},
 errorMessage: ${errorMessage},
 tabIndex: ${tabIndex},
 invoices: ${invoices},
-sixMonthTxnList: ${sixMonthTxnList},
+sixMonthSalesList: ${sixMonthSalesList},
+sixMonthPurchaseList: ${sixMonthPurchaseList},
 customers: ${customers},
 products: ${products},
 stockList: ${stockList},
