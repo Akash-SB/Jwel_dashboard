@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
+import 'package:sales_data_dashboard/models/app_enum.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 
 import '../../../models/party_model.dart';
@@ -34,6 +35,14 @@ abstract class _PartyDetailsStore with Store {
 
   @observable
   Observable<Party>? selectedParty;
+
+  @observable
+  TransactionTypeEnum selectedFilterTransactionType = TransactionTypeEnum.sell;
+
+  @action
+  void setSelectedFilterTransactionType(TransactionTypeEnum value) {
+    selectedFilterTransactionType = value;
+  }
 
   @action
   void setSelectedParty(Party? party) {
