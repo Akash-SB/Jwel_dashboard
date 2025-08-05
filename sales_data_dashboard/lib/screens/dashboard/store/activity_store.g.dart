@@ -41,6 +41,22 @@ mixin _$ActivityStore on _ActivityStore, Store {
     });
   }
 
+  late final _$notificationsAtom =
+      Atom(name: '_ActivityStore.notifications', context: context);
+
+  @override
+  ObservableList<InvoiceNotificationModel> get notifications {
+    _$notificationsAtom.reportRead();
+    return super.notifications;
+  }
+
+  @override
+  set notifications(ObservableList<InvoiceNotificationModel> value) {
+    _$notificationsAtom.reportWrite(value, super.notifications, () {
+      super.notifications = value;
+    });
+  }
+
   late final _$isLoadingAtom =
       Atom(name: '_ActivityStore.isLoading', context: context);
 
@@ -73,30 +89,6 @@ mixin _$ActivityStore on _ActivityStore, Store {
     });
   }
 
-  late final _$loadActivitiesAsyncAction =
-      AsyncAction('_ActivityStore.loadActivities', context: context);
-
-  @override
-  Future<void> loadActivities() {
-    return _$loadActivitiesAsyncAction.run(() => super.loadActivities());
-  }
-
-  late final _$addActivityAsyncAction =
-      AsyncAction('_ActivityStore.addActivity', context: context);
-
-  @override
-  Future<void> addActivity(Activity activity) {
-    return _$addActivityAsyncAction.run(() => super.addActivity(activity));
-  }
-
-  late final _$deleteActivityAsyncAction =
-      AsyncAction('_ActivityStore.deleteActivity', context: context);
-
-  @override
-  Future<void> deleteActivity(String id) {
-    return _$deleteActivityAsyncAction.run(() => super.deleteActivity(id));
-  }
-
   late final _$fetchInvoicesAsyncAction =
       AsyncAction('_ActivityStore.fetchInvoices', context: context);
 
@@ -107,6 +99,17 @@ mixin _$ActivityStore on _ActivityStore, Store {
 
   late final _$_ActivityStoreActionController =
       ActionController(name: '_ActivityStore', context: context);
+
+  @override
+  void setnotificationList(List<InvoiceNotificationModel> list) {
+    final _$actionInfo = _$_ActivityStoreActionController.startAction(
+        name: '_ActivityStore.setnotificationList');
+    try {
+      return super.setnotificationList(list);
+    } finally {
+      _$_ActivityStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setInvoices(List<InvoiceModel> invoices) {
@@ -124,6 +127,7 @@ mixin _$ActivityStore on _ActivityStore, Store {
     return '''
 invoices: ${invoices},
 activities: ${activities},
+notifications: ${notifications},
 isLoading: ${isLoading},
 errorMessage: ${errorMessage}
     ''';

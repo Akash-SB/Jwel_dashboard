@@ -202,12 +202,46 @@ mixin _$UserDataStore on _UserDataStore, Store {
     });
   }
 
+  late final _$notfListAtom =
+      Atom(name: '_UserDataStore.notfList', context: context);
+
+  @override
+  ObservableList<InvoiceNotificationModel> get notfList {
+    _$notfListAtom.reportRead();
+    return super.notfList;
+  }
+
+  @override
+  set notfList(ObservableList<InvoiceNotificationModel> value) {
+    _$notfListAtom.reportWrite(value, super.notfList, () {
+      super.notfList = value;
+    });
+  }
+
   late final _$fetchCustomersAsyncAction =
       AsyncAction('_UserDataStore.fetchCustomers', context: context);
 
   @override
   Future<void> fetchCustomers() {
     return _$fetchCustomersAsyncAction.run(() => super.fetchCustomers());
+  }
+
+  late final _$setNotificationListAsyncAction =
+      AsyncAction('_UserDataStore.setNotificationList', context: context);
+
+  @override
+  Future<void> setNotificationList(List<Sale> salesList) {
+    return _$setNotificationListAsyncAction
+        .run(() => super.setNotificationList(salesList));
+  }
+
+  late final _$setNotificationAsPaidAsyncAction =
+      AsyncAction('_UserDataStore.setNotificationAsPaid', context: context);
+
+  @override
+  Future<void> setNotificationAsPaid(String id, List<Sale> salesList) {
+    return _$setNotificationAsPaidAsyncAction
+        .run(() => super.setNotificationAsPaid(id, salesList));
   }
 
   late final _$fetchProductsAsyncAction =
@@ -404,7 +438,8 @@ products: ${products},
 stockList: ${stockList},
 salesList: ${salesList},
 purchaseList: ${purchaseList},
-partiesList: ${partiesList}
+partiesList: ${partiesList},
+notfList: ${notfList}
     ''';
   }
 }
