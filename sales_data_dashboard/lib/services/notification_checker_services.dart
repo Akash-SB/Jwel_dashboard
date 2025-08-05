@@ -1,24 +1,20 @@
 import 'package:sales_data_dashboard/models/invoice_notification_model.dart';
-import '../models/invoice_model.dart';
+import 'package:sales_data_dashboard/models/sales_model.dart';
 import 'firebase_services.dart';
 import 'notification_db_services.dart';
 import 'notification_service.dart';
 
 class NotificationCheckerService {
-  static Future<void> checkInvoicesForToday(List<InvoiceModel> invoices) async {
+  static Future<void> checkInvoicesForToday(List<Sale> salesList) async {
     final today = DateTime.now();
 
-    for (final invoice in invoices) {
-      if (invoice.interestDays != null) {
-        final invoiceDate = DateTime.parse(invoice.date);
-        final dueDate = invoiceDate.add(Duration(
-          days: int.tryParse(invoice.interestDays ?? '') ?? 0,
-        ));
+    for (final sales in salesList) {
+        final salesDate = sales.createdAt;
+        final dueDate = salesDate.add(Duration(days: sales.dueDays));
         final daysLeft = dueDate.difference(today).inDays;
-
-        if (daysLeft == 3 || daysLeft == 0) {
+        if (daysLeft == 0) {
           final notificationId =
-              '${invoice.invoiceId}_${today.toIso8601String().substring(0, 10)}';
+              '${sales.id}_${today.toIso8601String().substring(0, 10)}';
 
           // Check if this was already notified today
           final alreadyExists =
@@ -31,14 +27,11 @@ class NotificationCheckerService {
 
           final notif = InvoiceNotificationModel(
             id: notificationId,
-            invoiceId: invoice.invoiceId,
-            userId: invoice.custName,
+            salesId: sales.id,
+            userId: sales.partyDetails.id,
             message: message,
             notifyDate: today,
           );
-
-          // Save to SQLite
-          await NotificationDBService.saveNotification(notif);
 
           // Save to Firebase
           await FirebaseService.saveNotification(notif);
@@ -50,7 +43,6 @@ class NotificationCheckerService {
             body: message,
           );
         }
-      }
     }
   }
 }

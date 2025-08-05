@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/models/customer_model.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
+import 'package:sales_data_dashboard/models/invoice_notification_model.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/stock_item.dart';
@@ -18,6 +19,9 @@ abstract class _UserDataStore with Store {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final CollectionReference customersRef =
       FirebaseFirestore.instance.collection('customers');
+
+  final CollectionReference notificationRef =
+      FirebaseFirestore.instance.collection('notifications');
 
   final CollectionReference invoicesRef =
       FirebaseFirestore.instance.collection('invoices');
@@ -80,6 +84,9 @@ abstract class _UserDataStore with Store {
   @observable
   ObservableList<Party> partiesList = ObservableList.of([]);
 
+  @observable
+  ObservableList<InvoiceNotificationModel> notfList = ObservableList.of([]);
+
   @action
   Future<void> fetchCustomers() async {
     isLoading = true;
@@ -98,6 +105,98 @@ abstract class _UserDataStore with Store {
       errorMessage = e.toString();
     } finally {
       isLoading = false;
+    }
+  }
+
+  @action
+  Future<void> setNotificationList(final List<Sale> salesList) async {
+    try {
+      // Fetch existing notifications from Firestore
+      final snapshot = await notificationRef.get();
+      final existingNotifications = snapshot.docs
+          .map((doc) => InvoiceNotificationModel.fromMap({
+                ...doc.data() as Map<String, dynamic>,
+                'id': doc.id,
+              }))
+          .toList();
+
+      // Helper to check if notification already exists for a sale
+      bool notificationExists(String saleId) {
+        return existingNotifications.any((notif) => notif.salesId == saleId);
+      }
+
+      final today = DateTime.now();
+
+      for (final sale in salesList) {
+        final dueDate = sale.createdAt.add(Duration(days: sale.dueDays ?? 0));
+        final isDueToday = dueDate.year == today.year &&
+            dueDate.month == today.month &&
+            dueDate.day == today.day;
+
+        if (isDueToday && !notificationExists(sale.id)) {
+          // Create notification model
+          final notif = InvoiceNotificationModel(
+            id: sale.id + today.toIso8601String().substring(0, 10),
+            salesId: sale.id,
+            userId: sale.partyDetails.id,
+            message: 'Invoice due today for ${sale.partyDetails.name}',
+            notifyDate: today,
+            isPaid: sale.paymentStatus == 'paid',
+            isShown: false,
+          );
+
+          // Add to Firestore
+          await notificationRef.add(notif.toMap());
+
+          // Optionally add to local list
+          notfList.add(notif);
+        }
+      }
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
+  Future<void> setNotificationAsPaid(String id, List<Sale> salesList) async {
+    final index = notfList.indexWhere((notif) => notif.id == id);
+    if (index != -1) {
+      // Find the sale related to this notification
+      final saleIndex =
+          salesList.indexWhere((sale) => sale.id == notfList[index].salesId);
+      // Update notification: mark as paid and shown
+      notfList[index] = InvoiceNotificationModel(
+        id: notfList[index].id,
+        salesId: notfList[index].salesId,
+        userId: notfList[index].userId,
+        message: notfList[index].message,
+        notifyDate: notfList[index].notifyDate,
+        isPaid: true,
+        isShown: true,
+      );
+      // Optionally update the sale's payment status if found
+      if (saleIndex != -1) {
+        salesList[saleIndex] = Sale(
+          id: salesList[saleIndex].id,
+          partyDetails: salesList[saleIndex].partyDetails,
+          createdAt: salesList[saleIndex].createdAt,
+          dueDays: salesList[saleIndex].dueDays,
+          paymentStatus: 'paid',
+          firm: salesList[saleIndex].firm,
+          paymentOption: salesList[saleIndex].paymentOption,
+          stockDetails: salesList[saleIndex].stockDetails,
+          description: salesList[saleIndex].description,
+        );
+      }
+      // Update the notification in Firestore
+      await notificationRef.doc(id).update({
+        'isPaid': true,
+        'isShown': true,
+      });
+
+      await salesRefs
+          .doc(notfList[index].salesId)
+          .update({'paymentStatus': 'paid'});
     }
   }
 
@@ -211,6 +310,7 @@ abstract class _UserDataStore with Store {
       fetchInvoices(),
       fetchPurchaseList(),
       fetchSalesList(),
+      setNotificationList(salesList),
     ]);
     isLoading = false;
     getLastSixMonthsTxns(salesList, purchaseList);

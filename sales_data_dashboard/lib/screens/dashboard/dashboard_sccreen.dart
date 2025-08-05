@@ -25,8 +25,6 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
   late UserDataStore userDataStore;
   late ActivityStore activityStore;
 
-  List<InvoiceNotificationModel> notf = [];
-
   @override
   void initState() {
     super.initState();
@@ -44,9 +42,7 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
       instanceName: 'UserDataStore',
     );
     activityStore = GetIt.I<ActivityStore>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      NotificationCheckerService.checkInvoicesForToday(activityStore.invoices);
-    });
+    activityStore.setnotificationList(userDataStore.notfList);
   }
 
   @override
@@ -75,8 +71,7 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
               hoverColor: Colors.white,
               highlightColor: Colors.white,
               focusColor: Colors.white,
-              onTap: () async {
-                notf = await NotificationDBService.getAllNotifications();
+              onTap: () {
                 Scaffold.of(context).openEndDrawer();
               },
               child: Container(
@@ -148,17 +143,15 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                   padding: EdgeInsets.all(18.dp),
                   color: const Color.fromARGB(255, 239, 240, 241),
                   child: ListView.builder(
-                    itemCount: notf.length,
+                    itemCount: activityStore.notifications.length,
                     itemBuilder: (ctx, index) {
-                      final notif = notf[index];
+                      final notif = activityStore.notifications[index];
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           InkWell(
                             onTap: () async {
-                              await NotificationDBService.markAsRead(notif.id);
-                              Navigator.pop(context);
-                              // Optionally refresh UI
+                              
                             },
                             child: Container(
                               padding: EdgeInsets.all(
@@ -194,7 +187,7 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                                           ),
                                         ),
                                       ),
-                                      notif.isRead
+                                      notif.isPaid
                                           ? Icon(
                                               Icons.check_circle,
                                               color: Colors.green,
@@ -221,7 +214,7 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                                     height: 2.dp,
                                   ),
                                   Text(
-                                    'Invoice : ${notif.invoiceId}',
+                                    'Invoice : ${notif.salesId}',
                                     softWrap: true,
                                     overflow: TextOverflow.fade,
                                     maxLines: 1,

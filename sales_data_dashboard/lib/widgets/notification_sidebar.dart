@@ -29,7 +29,7 @@ class NotificationSidebar extends StatelessWidget {
                 return ListTile(
                   title: Text(notif.message),
                   subtitle: Text(notif.notifyDate.toLocal().toString()),
-                  trailing: notif.isRead
+                  trailing: notif.isPaid
                       ? Icon(Icons.check_circle, color: Colors.green)
                       : Icon(Icons.circle, color: Colors.grey),
                   onTap: () async {
