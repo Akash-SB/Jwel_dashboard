@@ -229,13 +229,13 @@ class ShowPartyInfoWidget extends StatelessWidget {
                     TransactionTypeEnum.sell)
                 ? userDataStore.salesList
                     .where((sale) =>
-                        '${sale.partyDetails.name.toLowerCase()}' ==
+                        sale.partyDetails.name.toLowerCase() ==
                         partyDetailsStore.selectedParty?.value.name
                             .toLowerCase())
                     .toList()
                 : userDataStore.purchaseList
                     .where((purchase) =>
-                        '${purchase.partyDetails.name.toLowerCase()}' ==
+                        purchase.partyDetails.name.toLowerCase() ==
                         partyDetailsStore.selectedParty?.value.name
                             .toLowerCase())
                     .toList();

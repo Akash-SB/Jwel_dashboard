@@ -413,11 +413,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   SnackBar(
                       content: Text('Invoice ${invoiceData.invoiceId} added')),
                 );
-                activityStore.addActivity(Activity(
-                    id: invoiceData.invoiceId,
-                    date: DateTime.parse(invoiceData.date),
-                    title: 'Invoice for ${invoiceData.custName} Created',
-                    amount: invoiceData.parsedAmount));
               }).onError(
                 (error, stackTrace) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -507,11 +502,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     invoiceStore
                         .deleteInvoice(invoice.invoiceId)
                         .then((final onValue) {
-                      activityStore.addActivity(Activity(
-                        id: invoice.invoiceId,
-                        date: DateTime.parse(invoice.date),
-                        title: 'Invoice data for ${invoice.custName} Deleted',
-                      ));
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content:

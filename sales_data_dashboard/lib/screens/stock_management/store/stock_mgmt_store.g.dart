@@ -63,6 +63,23 @@ mixin _$StockStore on _StockStore, Store {
     });
   }
 
+  late final _$selectedFilterTransactionTypeAtom =
+      Atom(name: '_StockStore.selectedFilterTransactionType', context: context);
+
+  @override
+  TransactionTypeEnum get selectedFilterTransactionType {
+    _$selectedFilterTransactionTypeAtom.reportRead();
+    return super.selectedFilterTransactionType;
+  }
+
+  @override
+  set selectedFilterTransactionType(TransactionTypeEnum value) {
+    _$selectedFilterTransactionTypeAtom
+        .reportWrite(value, super.selectedFilterTransactionType, () {
+      super.selectedFilterTransactionType = value;
+    });
+  }
+
   late final _$showItemInfoAtom =
       Atom(name: '_StockStore.showItemInfo', context: context);
 
@@ -267,6 +284,17 @@ mixin _$StockStore on _StockStore, Store {
       ActionController(name: '_StockStore', context: context);
 
   @override
+  void setSelectedFilterTransactionType(TransactionTypeEnum value) {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.setSelectedFilterTransactionType');
+    try {
+      return super.setSelectedFilterTransactionType(value);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setStockItemList(List<StockItem> stockList) {
     final _$actionInfo = _$_StockStoreActionController.startAction(
         name: '_StockStore.setStockItemList');
@@ -370,6 +398,7 @@ mixin _$StockStore on _StockStore, Store {
     return '''
 stockItemList: ${stockItemList},
 selectedStockItem: ${selectedStockItem},
+selectedFilterTransactionType: ${selectedFilterTransactionType},
 showItemInfo: ${showItemInfo},
 isFilterApplied: ${isFilterApplied},
 sortKey: ${sortKey},

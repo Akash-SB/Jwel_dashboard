@@ -9,7 +9,6 @@ import 'package:sales_data_dashboard/screens/user_management/store/customer_stor
 import 'package:sales_data_dashboard/screens/user_management/user_form.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 
-import '../../models/activity_model.dart';
 import '../../models/customer_model.dart';
 import '../../widgets/custom_image_button.dart';
 import '../../widgets/filter_dropdown_button.dart';
@@ -392,12 +391,6 @@ class _UsersScreenState extends State<UsersScreen> {
                       content: Text(
                           'User ${customerData.custName} ${customer?.id != null ? 'updated' : 'added'}')),
                 );
-                activityStore.addActivity(Activity(
-                  id: customerData.id ?? '',
-                  date: DateTime.now(),
-                  title:
-                      '${customerData.custName} data ${customer?.id != null ? 'updated' : 'added'}',
-                ));
               },
             ),
           ),
@@ -479,11 +472,7 @@ class _UsersScreenState extends State<UsersScreen> {
                         .then((final onValue) {
                       customerStore.fetchCustomers();
                       userDataStore.setCustomers(customerStore.customers);
-                      activityStore.addActivity(Activity(
-                        id: customer.id ?? '',
-                        date: DateTime.now(),
-                        title: '${customer.custName} data deleted',
-                      ));
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content: Text('User ${customer.custName} deleted')),
@@ -491,7 +480,7 @@ class _UsersScreenState extends State<UsersScreen> {
                     }).onError(
                       (error, stackTrace) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                               content: Text(
                                   'Something went wrong while deleting user')),
                         );

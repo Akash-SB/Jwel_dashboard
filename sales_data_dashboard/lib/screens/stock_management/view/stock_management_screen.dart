@@ -76,6 +76,7 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
       return stockStore.showItemInfo.value
           ? ItemInfoScreen(
               stockStore: stockStore,
+              userDataStore: userDataStore,
             )
           : Container(
               color: Colors.white,

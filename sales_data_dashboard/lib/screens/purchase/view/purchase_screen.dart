@@ -4,7 +4,12 @@ import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/screens/purchase/view/purchase_form_widget.dart';
+import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
+import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 
+import '../../../models/app_enum.dart';
+import '../../../models/firm_model.dart';
+import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/normal_button.dart';
 import '../../home/store/userdata_store.dart';
 import '../../products/view/products_screen.dart';
@@ -56,6 +61,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       TableColumn(label: 'Carat', key: 'carat', isSortable: true),
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
+      TableColumn(label: 'Firm', key: 'firmType', isSortable: true),
       TableColumn(
         label: 'Payment Status',
         key: 'paymentStatus',
@@ -104,6 +110,117 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
             ),
           ),
           SizedBox(height: 24.dp),
+          Observer(builder: (context) {
+            return SizedBox(
+              child: Row(
+                children: [
+                  IntrinsicWidth(
+                    child: CommonDropdown(
+                      label: 'Firm Type',
+                      value: Firm.sahajanand.name,
+                      // partyDetailsStore.selectedFilterFirm,
+                      onChanged: (p0) {
+                        // partyDetailsStore.setSelectedFilterFirm(p0!);
+                        // partyDetailsStore.isFiltersApplied();
+                      },
+                      options: [
+                        Firm.sahajanand.name,
+                        Firm.harikrishnaEnterprise.name
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  IntrinsicWidth(
+                    child: CommonDropdown(
+                      label: 'Payment Status',
+                      value: 'All',
+                      onChanged: (p0) {
+                        // partyDetailsStore.setSelectedFilterPartyType(p0!);
+                        // partyDetailsStore.isFiltersApplied();
+                      },
+                      options: [
+                        'All',
+                        PaymentStatusEnum.paid.name,
+                        PaymentStatusEnum.unpaid.name,
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  SizedBox(
+                    width: 300.dp,
+                    child: CustomSearchBar(
+                      controller: TextEditingController(),
+                      // controller: partyDetailsStore.searchcontroller,
+                      onChanged: (final value) {
+                        // partyDetailsStore.setSearchText(value);
+                        // partyDetailsStore.isFiltersApplied();
+                        // partyDetailsStore.calculateTotalPages();
+                      },
+                      hintText: 'Search By Name, Mobile Number, GST Number',
+                    ),
+                  ),
+                  const Spacer(),
+                  CustomImageButton(
+                    imagePath: 'assets/icons/pdf_icon.png',
+                    text: 'PDF',
+                    borderColor: const Color(0xffE5E7EB),
+                    buttonColor: Colors.white,
+                    onClicked: () {},
+                    // onClicked: widget.onExportPDF,
+                  ),
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  CustomImageButton(
+                    imagePath: 'assets/icons/excel_icon.png',
+                    text: 'Excel',
+                    borderColor: const Color(0xffE5E7EB),
+                    buttonColor: Colors.white,
+                    onClicked: () {},
+                    // onClicked: widget.onExportPDF,
+                  ),
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  Container(
+                    height: 30.dp,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: false
+                              // partyDetailsStore.isFilterApplied
+                              ? Colors.red
+                              : Colors.grey,
+                        )),
+                    child: IconButton(
+                      splashColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      focusColor: Colors.transparent,
+                      padding: EdgeInsets.zero,
+                      icon: Image.asset(
+                        'assets/icons/cross_icon.png',
+                        color: false
+                            // partyDetailsStore.isFilterApplied
+                            ? Colors.red
+                            : Colors.grey,
+                        width: 30.dp,
+                        height: 30.dp,
+                      ),
+                      tooltip: 'Clear All Filters', onPressed: () {},
+                      // onPressed: partyDetailsStore.clearAllFilters,
+                      // onPressed: _clearAllFilters,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+          SizedBox(height: 12.dp),
           Observer(builder: (context) {
             return Expanded(
               child: SingleChildScrollView(
@@ -384,6 +501,11 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
         return row.stockDetails.rate.toString();
       case 'amount':
         return row.stockDetails.amount.toString();
+      case 'firmType':
+        return row.firm;
+      // == Firm.sahajanand
+      // ? Firm.sahajanand.name
+      // : Firm.harikrishnaEnterprise.name;
       case 'description':
         return row.description;
       case 'paymentOption':

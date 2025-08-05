@@ -353,12 +353,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       content: Text(
                           'Product ${productData.prodName} ${product?.id != null ? 'updated' : 'added'}')),
                 );
-                activityStore.addActivity(Activity(
-                  id: productData.id,
-                  date: DateTime.now(),
-                  title:
-                      'Product ${productData.prodName} ${product?.id != null ? 'updated' : 'added'}',
-                ));
               },
             ),
           ),
@@ -442,11 +436,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         .then((final onValue) {
                       productStore.fetchProducts();
                       userDataStore.setProducts(productStore.products);
-                      activityStore.addActivity(Activity(
-                        id: product.id,
-                        date: DateTime.now(),
-                        title: 'Product ${product.prodName} Deleted',
-                      ));
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content:

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
+import '../../../models/app_enum.dart';
 import '../../../models/stock_item.dart';
 
 part 'stock_mgmt_store.g.dart';
@@ -20,6 +21,15 @@ abstract class _StockStore with Store {
 
   @observable
   Observable<StockItem>? selectedStockItem;
+
+  @observable
+  TransactionTypeEnum selectedFilterTransactionType = TransactionTypeEnum.sell;
+  
+
+  @action
+  void setSelectedFilterTransactionType(TransactionTypeEnum value) {
+    selectedFilterTransactionType = value;
+  }
 
   @observable
   Observable<bool> showItemInfo = Observable<bool>(false);
