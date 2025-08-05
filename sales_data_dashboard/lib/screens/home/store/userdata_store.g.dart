@@ -252,6 +252,15 @@ mixin _$UserDataStore on _UserDataStore, Store {
     return _$getAllDataAsyncAction.run(() => super.getAllData());
   }
 
+  late final _$updateSalesStatusAsyncAction =
+      AsyncAction('_UserDataStore.updateSalesStatus', context: context);
+
+  @override
+  Future<void> updateSalesStatus(String salesId) {
+    return _$updateSalesStatusAsyncAction
+        .run(() => super.updateSalesStatus(salesId));
+  }
+
   late final _$_UserDataStoreActionController =
       ActionController(name: '_UserDataStore', context: context);
 
@@ -261,6 +270,17 @@ mixin _$UserDataStore on _UserDataStore, Store {
         name: '_UserDataStore.setTab');
     try {
       return super.setTab(index);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void fillNotificationList(List<InvoiceNotificationModel> list) {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.fillNotificationList');
+    try {
+      return super.fillNotificationList(list);
     } finally {
       _$_UserDataStoreActionController.endAction(_$actionInfo);
     }

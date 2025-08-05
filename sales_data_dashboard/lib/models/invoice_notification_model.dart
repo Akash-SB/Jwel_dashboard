@@ -4,8 +4,8 @@ class InvoiceNotificationModel {
   final String userId;
   final String message;
   final DateTime notifyDate;
-  final bool isPaid;
-  final bool isShown; // For local UI state
+  bool isPaid;
+  bool isShown; // For local UI state
 
   InvoiceNotificationModel({
     required this.id,

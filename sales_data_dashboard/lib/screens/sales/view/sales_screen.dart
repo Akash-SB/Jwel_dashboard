@@ -47,7 +47,7 @@ class _SalesScreenState extends State<SalesScreen> {
     );
 
     if (!getIt.isRegistered<DashboardStore>()) {
-      getIt.registerSingleton<DashboardStore>(DashboardStore());
+      getIt.registerSingleton<DashboardStore>(DashboardStore(userDataStore));
     }
 
     salesScreenStore = getIt<SalesScreenStore>();

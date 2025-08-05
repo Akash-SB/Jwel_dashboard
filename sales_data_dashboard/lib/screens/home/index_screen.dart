@@ -5,6 +5,8 @@ import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/app_routes.dart';
 import 'package:sales_data_dashboard/theme.dart';
 
+import '../../models/invoice_notification_model.dart';
+import '../../services/notification_service.dart';
 import 'store/userdata_store.dart';
 
 final getIt = GetIt.instance;
@@ -35,8 +37,25 @@ class _IndexScreenState extends State<IndexScreen> {
     _fetchData();
   }
 
+  Future<void> showNotification(
+      final List<InvoiceNotificationModel> notfList) async {
+    for (final notif in notfList) {
+      if (notif.isShown == false) {
+        final id = int.tryParse(notif.id.toString()) ?? 0;
+        final title = notif.message;
+        final body = 'Invoice ID: ${notif.salesId}';
+
+        await NotificationService.showNotification(
+            id: id, title: title, body: body);
+      }
+    }
+    // After showing notifications, update the list with the updated notfList
+    userDataStore.updateNotifcations(notfList);
+  }
+
   Future<void> _fetchData() async {
     await userDataStore.getAllData();
+    await showNotification(userDataStore.notfList);
   }
 
   @override
@@ -102,7 +121,7 @@ class _IndexScreenState extends State<IndexScreen> {
                   Observer(builder: (context) {
                     return Expanded(
                       child: ListView.builder(
-                        itemCount: 8,
+                        itemCount: 6,
                         itemBuilder: (context, index) {
                           final icons = [
                             Icons.dashboard,

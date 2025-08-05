@@ -4,12 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest_all.dart' as tzdata;
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
-
   static Future<void> initialize() async {
+    // Initialize time zone data
+    tzdata.initializeTimeZones();
+    tz.setLocalLocation(
+        tz.getLocation('Asia/Kolkata')); // Set to your local timezone
+
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();
     const linuxInit =
