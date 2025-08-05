@@ -20,7 +20,7 @@ class AppRoutes {
     final selectedRoute = switch (settings.name) {
       index => const IndexScreen(),
       dashboard => const DashboardSccreen(),
-      // invoices => const InvoiceScreen(),
+      invoices => const InvoiceScreen(),
       sales => const SalesScreen(),
       purchase => const PurchaseScreen(),
       partyDetails => const PartyDetailsScreen(),
