@@ -111,6 +111,24 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
     });
   }
 
+  late final _$selectedFilterTransactionTypeAtom = Atom(
+      name: '_PartyDetailsStore.selectedFilterTransactionType',
+      context: context);
+
+  @override
+  TransactionTypeEnum get selectedFilterTransactionType {
+    _$selectedFilterTransactionTypeAtom.reportRead();
+    return super.selectedFilterTransactionType;
+  }
+
+  @override
+  set selectedFilterTransactionType(TransactionTypeEnum value) {
+    _$selectedFilterTransactionTypeAtom
+        .reportWrite(value, super.selectedFilterTransactionType, () {
+      super.selectedFilterTransactionType = value;
+    });
+  }
+
   late final _$showPartyInfoAtom =
       Atom(name: '_PartyDetailsStore.showPartyInfo', context: context);
 
@@ -288,6 +306,17 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
       ActionController(name: '_PartyDetailsStore', context: context);
 
   @override
+  void setSelectedFilterTransactionType(TransactionTypeEnum value) {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.setSelectedFilterTransactionType');
+    try {
+      return super.setSelectedFilterTransactionType(value);
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedParty(Party? party) {
     final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
         name: '_PartyDetailsStore.setSelectedParty');
@@ -449,6 +478,7 @@ sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},
 selectedParty: ${selectedParty},
+selectedFilterTransactionType: ${selectedFilterTransactionType},
 showPartyInfo: ${showPartyInfo},
 isFilterApplied: ${isFilterApplied},
 selectedFormPartyType: ${selectedFormPartyType},

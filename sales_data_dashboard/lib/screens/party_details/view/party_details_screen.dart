@@ -63,6 +63,7 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
       return partyDetailsStore.showPartyInfo.value
           ? ShowPartyInfoWidget(
               partyDetailsStore: partyDetailsStore,
+              userDataStore: userDataStore,
             )
           : Container(
               color: Colors.white,
