@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobx/mobx.dart';
-import 'package:sales_data_dashboard/models/customer_model.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/models/invoice_notification_model.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
@@ -8,7 +7,6 @@ import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/stock_item.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../../models/product_model.dart';
 import '../../../models/sales_model.dart';
 
 part 'userdata_store.g.dart';
@@ -17,17 +15,12 @@ class UserDataStore = _UserDataStore with _$UserDataStore;
 
 abstract class _UserDataStore with Store {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final CollectionReference customersRef =
-      FirebaseFirestore.instance.collection('customers');
 
   final CollectionReference notificationRef =
       FirebaseFirestore.instance.collection('notifications');
 
   final CollectionReference invoicesRef =
       FirebaseFirestore.instance.collection('invoices');
-
-  final CollectionReference productsRef =
-      FirebaseFirestore.instance.collection('products');
 
   final CollectionReference stockItemRefs =
       FirebaseFirestore.instance.collection('StockItems');
@@ -67,12 +60,6 @@ abstract class _UserDataStore with Store {
   ObservableList<Purchase> sixMonthPurchaseList = ObservableList.of([]);
 
   @observable
-  ObservableList<CustomerModel> customers = ObservableList.of([]);
-
-  @observable
-  ObservableList<ProductModel> products = ObservableList.of([]);
-
-  @observable
   ObservableList<StockItem> stockList = ObservableList.of([]);
 
   @observable
@@ -86,27 +73,6 @@ abstract class _UserDataStore with Store {
 
   @observable
   ObservableList<InvoiceNotificationModel> notfList = ObservableList.of([]);
-
-  @action
-  Future<void> fetchCustomers() async {
-    isLoading = true;
-    errorMessage = null;
-    try {
-      final snapshot = await customersRef.get();
-      customers = ObservableList.of(
-        snapshot.docs.map(
-          (doc) => CustomerModel.fromMap({
-            ...doc.data() as Map<String, dynamic>,
-            'id': doc.id,
-          }),
-        ),
-      );
-    } catch (e) {
-      errorMessage = e.toString();
-    } finally {
-      isLoading = false;
-    }
-  }
 
   @action
   Future<void> setNotificationList(final List<Sale> salesList) async {
@@ -201,26 +167,6 @@ abstract class _UserDataStore with Store {
   }
 
   @action
-  Future<void> fetchProducts() async {
-    isLoading = true;
-    errorMessage = null;
-    try {
-      final snapshot = await productsRef.get();
-      products = ObservableList.of(
-        snapshot.docs.map(
-          (doc) => ProductModel.fromMap({
-            ...doc.data() as Map<String, dynamic>,
-          }, id: doc.id),
-        ),
-      );
-    } catch (e) {
-      errorMessage = e.toString();
-    } finally {
-      isLoading = false;
-    }
-  }
-
-  @action
   Future<void> fetchInvoices() async {
     isLoading = true;
     errorMessage = null;
@@ -304,12 +250,10 @@ abstract class _UserDataStore with Store {
     errorMessage = null;
     await Future.wait([
       fetchStockList(),
-      fetchPartyList(),
-      fetchCustomers(),
-      fetchProducts(),
-      fetchInvoices(),
-      fetchPurchaseList(),
       fetchSalesList(),
+      fetchPurchaseList(),
+      fetchPartyList(),
+      fetchInvoices(),
       setNotificationList(salesList),
     ]);
     isLoading = false;
@@ -345,16 +289,6 @@ abstract class _UserDataStore with Store {
   @action
   void setInvoices(List<InvoiceModel> invoiceList) {
     invoices = ObservableList.of(invoiceList);
-  }
-
-  @action
-  void setCustomers(List<CustomerModel> customerList) {
-    customers = ObservableList.of(customerList);
-  }
-
-  @action
-  void setProducts(List<ProductModel> productList) {
-    products = ObservableList.of(productList);
   }
 
   @action

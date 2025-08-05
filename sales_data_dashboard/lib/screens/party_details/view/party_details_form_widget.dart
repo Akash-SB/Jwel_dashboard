@@ -49,6 +49,7 @@ class _PartyDetailsFormWidgetState extends State<PartyDetailsFormWidget> {
         widget.partyStore.selectedFormPartyType,
       );
     }
+    setState(() {});
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/screens/purchase/view/purchase_form_widget.dart';
+import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 
@@ -12,7 +13,6 @@ import '../../../models/firm_model.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/normal_button.dart';
 import '../../home/store/userdata_store.dart';
-import '../../products/view/products_screen.dart';
 import '../store/purchase_screen_store.dart';
 
 final getIt = GetIt.instance;

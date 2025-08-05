@@ -2,19 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
-import 'package:sales_data_dashboard/models/activity_model.dart';
 import 'package:sales_data_dashboard/models/app_enum.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
 import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/sales/store/sales_screen_store.dart';
 import 'package:sales_data_dashboard/widgets/common_dropdown.dart';
+import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 
 import '../../../models/firm_model.dart';
 import '../../../widgets/normal_button.dart';
-import '../../products/view/products_screen.dart';
 import 'sales_form_widget.dart';
 
 final getIt = GetIt.instance;
@@ -29,7 +28,7 @@ class SalesScreen extends StatefulWidget {
 class _SalesScreenState extends State<SalesScreen> {
   late SalesScreenStore salesScreenStore;
   late UserDataStore userDataStore;
-  late ActivityStore activityStore;
+  late DashboardStore activityStore;
 
   @override
   void initState() {
@@ -47,13 +46,13 @@ class _SalesScreenState extends State<SalesScreen> {
       instanceName: 'UserDataStore',
     );
 
-    if (!getIt.isRegistered<ActivityStore>()) {
-      getIt.registerSingleton<ActivityStore>(ActivityStore());
+    if (!getIt.isRegistered<DashboardStore>()) {
+      getIt.registerSingleton<DashboardStore>(DashboardStore());
     }
 
     salesScreenStore = getIt<SalesScreenStore>();
 
-    activityStore = getIt<ActivityStore>();
+    activityStore = getIt<DashboardStore>();
 
     if (userDataStore.salesList.isEmpty) {
       salesScreenStore.fetchSales();

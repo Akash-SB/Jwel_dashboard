@@ -7,9 +7,6 @@ import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
 import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
-import '../../models/invoice_notification_model.dart';
-import '../../services/notification_checker_services.dart';
-import '../../services/notification_db_services.dart';
 import '../home/store/userdata_store.dart';
 
 final getIt = GetIt.instance;
@@ -23,13 +20,13 @@ class DashboardSccreen extends StatefulWidget {
 
 class _DashboardSccreenState extends State<DashboardSccreen> {
   late UserDataStore userDataStore;
-  late ActivityStore activityStore;
+  late DashboardStore activityStore;
 
   @override
   void initState() {
     super.initState();
-    if (!GetIt.I.isRegistered<ActivityStore>()) {
-      GetIt.I.registerSingleton<ActivityStore>(ActivityStore());
+    if (!GetIt.I.isRegistered<DashboardStore>()) {
+      GetIt.I.registerSingleton<DashboardStore>(DashboardStore());
     }
 
     if (!getIt.isRegistered<UserDataStore>(
@@ -41,7 +38,7 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
     userDataStore = getIt<UserDataStore>(
       instanceName: 'UserDataStore',
     );
-    activityStore = GetIt.I<ActivityStore>();
+    activityStore = GetIt.I<DashboardStore>();
     activityStore.setnotificationList(userDataStore.notfList);
   }
 
@@ -150,9 +147,7 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           InkWell(
-                            onTap: () async {
-                              
-                            },
+                            onTap: () async {},
                             child: Container(
                               padding: EdgeInsets.all(
                                 12.dp,

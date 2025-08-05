@@ -107,8 +107,6 @@ class _IndexScreenState extends State<IndexScreen> {
                           final icons = [
                             Icons.dashboard,
                             Icons.receipt_long,
-                            Icons.person_3_rounded,
-                            Icons.inventory_2,
                             Icons.bar_chart,
                             Icons.shopping_cart,
                             Icons.people,
@@ -117,8 +115,6 @@ class _IndexScreenState extends State<IndexScreen> {
                           final labels = [
                             "Dashboard",
                             "Invoices",
-                            "Users",
-                            "Products",
                             "Sales",
                             "Purchase",
                             "Party Details",

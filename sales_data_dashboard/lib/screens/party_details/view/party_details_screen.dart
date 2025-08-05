@@ -6,12 +6,12 @@ import 'package:sales_data_dashboard/models/party_model.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/party_details/view/party_details_form_widget.dart';
 import 'package:sales_data_dashboard/screens/party_details/view/show_party_info_widget.dart';
+import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import '../../../models/firm_model.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/custom_image_button.dart';
 import '../../../widgets/custom_searchbar.dart';
 import '../../../widgets/normal_button.dart';
-import '../../products/view/products_screen.dart';
 import '../store/party_details_screen_store.dart';
 
 final getIt = GetIt.instance;

@@ -6,15 +6,11 @@ import 'package:sales_data_dashboard/screens/party_details/view/party_details_sc
 import 'package:sales_data_dashboard/screens/purchase/view/purchase_screen.dart';
 import 'package:sales_data_dashboard/screens/sales/view/sales_screen.dart';
 import 'package:sales_data_dashboard/screens/stock_management/view/stock_management_screen.dart';
-import 'package:sales_data_dashboard/screens/user_management/users_screen.dart';
-import 'screens/products/view/products_screen.dart';
 
 class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String index = '/index';
   static const String invoices = '/invoices';
-  static const String users = '/users';
-  static const String products = '/products';
   static const String sales = '/sales';
   static const String purchase = '/purchase';
   static const String partyDetails = '/partyDetails';
@@ -24,9 +20,7 @@ class AppRoutes {
     final selectedRoute = switch (settings.name) {
       index => const IndexScreen(),
       dashboard => const DashboardSccreen(),
-      invoices => const InvoiceScreen(),
-      users => const UsersScreen(),
-      products => const ProductsScreen(),
+      // invoices => const InvoiceScreen(),
       sales => const SalesScreen(),
       purchase => const PurchaseScreen(),
       partyDetails => const PartyDetailsScreen(),
@@ -46,8 +40,6 @@ class AppRoutes {
   static List<String> tabRoutes = [
     dashboard,
     invoices,
-    users,
-    products,
     sales,
     purchase,
     partyDetails,

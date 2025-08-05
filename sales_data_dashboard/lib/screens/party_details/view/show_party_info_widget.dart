@@ -5,8 +5,8 @@ import 'package:sales_data_dashboard/models/app_enum.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/party_details/store/party_details_screen_store.dart';
-import 'package:sales_data_dashboard/screens/products/view/products_screen.dart';
 import 'package:sales_data_dashboard/widgets/common_dropdown.dart';
+import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
 
 import '../../../models/sales_model.dart';

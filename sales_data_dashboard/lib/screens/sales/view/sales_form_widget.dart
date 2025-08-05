@@ -7,7 +7,6 @@ import 'package:sales_data_dashboard/models/stock_item.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/sales/store/sales_screen_store.dart';
 
-import '../../../models/activity_model.dart';
 import '../../../models/party_model.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/common_textfield.dart';
@@ -29,7 +28,7 @@ class SalesFormWidget extends StatefulWidget {
   final List<Party>? partyList;
   final List<StockItem>? stockItemList;
   final Sale? existingSale;
-  final ActivityStore activityStore;
+  final DashboardStore activityStore;
   final UserDataStore userDataStore;
 
   @override

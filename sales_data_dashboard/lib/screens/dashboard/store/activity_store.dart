@@ -2,23 +2,18 @@ import 'package:mobx/mobx.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sales_data_dashboard/models/invoice_notification_model.dart';
 
-import '../../../models/activity_model.dart';
 import '../../../models/invoice_model.dart';
 
 part 'activity_store.g.dart';
 
-class ActivityStore = _ActivityStore with _$ActivityStore;
+class DashboardStore = _DashboardStore with _$DashboardStore;
 
-abstract class _ActivityStore with Store {
+abstract class _DashboardStore with Store {
   final CollectionReference invoicesRef =
       FirebaseFirestore.instance.collection('invoices');
 
   @observable
   ObservableList<InvoiceModel> invoices = ObservableList.of([]);
-
-  // 🔹 Observable list of activities
-  @observable
-  ObservableList<Activity> activities = ObservableList<Activity>();
 
   @observable
   ObservableList<InvoiceNotificationModel> notifications =
@@ -27,7 +22,6 @@ abstract class _ActivityStore with Store {
   @action
   void setnotificationList(List<InvoiceNotificationModel> list) {
     notifications = ObservableList.of(list);
-    
   }
 
   // 🔹 Observable loading state

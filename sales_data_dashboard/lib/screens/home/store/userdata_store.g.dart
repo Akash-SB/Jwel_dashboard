@@ -106,38 +106,6 @@ mixin _$UserDataStore on _UserDataStore, Store {
     });
   }
 
-  late final _$customersAtom =
-      Atom(name: '_UserDataStore.customers', context: context);
-
-  @override
-  ObservableList<CustomerModel> get customers {
-    _$customersAtom.reportRead();
-    return super.customers;
-  }
-
-  @override
-  set customers(ObservableList<CustomerModel> value) {
-    _$customersAtom.reportWrite(value, super.customers, () {
-      super.customers = value;
-    });
-  }
-
-  late final _$productsAtom =
-      Atom(name: '_UserDataStore.products', context: context);
-
-  @override
-  ObservableList<ProductModel> get products {
-    _$productsAtom.reportRead();
-    return super.products;
-  }
-
-  @override
-  set products(ObservableList<ProductModel> value) {
-    _$productsAtom.reportWrite(value, super.products, () {
-      super.products = value;
-    });
-  }
-
   late final _$stockListAtom =
       Atom(name: '_UserDataStore.stockList', context: context);
 
@@ -218,14 +186,6 @@ mixin _$UserDataStore on _UserDataStore, Store {
     });
   }
 
-  late final _$fetchCustomersAsyncAction =
-      AsyncAction('_UserDataStore.fetchCustomers', context: context);
-
-  @override
-  Future<void> fetchCustomers() {
-    return _$fetchCustomersAsyncAction.run(() => super.fetchCustomers());
-  }
-
   late final _$setNotificationListAsyncAction =
       AsyncAction('_UserDataStore.setNotificationList', context: context);
 
@@ -242,14 +202,6 @@ mixin _$UserDataStore on _UserDataStore, Store {
   Future<void> setNotificationAsPaid(String id, List<Sale> salesList) {
     return _$setNotificationAsPaidAsyncAction
         .run(() => super.setNotificationAsPaid(id, salesList));
-  }
-
-  late final _$fetchProductsAsyncAction =
-      AsyncAction('_UserDataStore.fetchProducts', context: context);
-
-  @override
-  Future<void> fetchProducts() {
-    return _$fetchProductsAsyncAction.run(() => super.fetchProducts());
   }
 
   late final _$fetchInvoicesAsyncAction =
@@ -359,28 +311,6 @@ mixin _$UserDataStore on _UserDataStore, Store {
   }
 
   @override
-  void setCustomers(List<CustomerModel> customerList) {
-    final _$actionInfo = _$_UserDataStoreActionController.startAction(
-        name: '_UserDataStore.setCustomers');
-    try {
-      return super.setCustomers(customerList);
-    } finally {
-      _$_UserDataStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setProducts(List<ProductModel> productList) {
-    final _$actionInfo = _$_UserDataStoreActionController.startAction(
-        name: '_UserDataStore.setProducts');
-    try {
-      return super.setProducts(productList);
-    } finally {
-      _$_UserDataStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void setStockList(List<StockItem> stockItems) {
     final _$actionInfo = _$_UserDataStoreActionController.startAction(
         name: '_UserDataStore.setStockList');
@@ -433,8 +363,6 @@ tabIndex: ${tabIndex},
 invoices: ${invoices},
 sixMonthSalesList: ${sixMonthSalesList},
 sixMonthPurchaseList: ${sixMonthPurchaseList},
-customers: ${customers},
-products: ${products},
 stockList: ${stockList},
 salesList: ${salesList},
 purchaseList: ${purchaseList},
