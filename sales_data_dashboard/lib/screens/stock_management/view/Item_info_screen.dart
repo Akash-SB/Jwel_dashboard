@@ -201,14 +201,14 @@ class ItemInfoScreen extends StatelessWidget {
                     TransactionTypeEnum.sell)
                 ? userDataStore.salesList
                     .where((sale) =>
-                        sale.partyDetails.name.toLowerCase() ==
-                        stockStore.selectedStockItem?.value.itemName
+                        sale.stockDetails.itemId.toLowerCase() ==
+                        stockStore.selectedStockItem?.value.itemId
                             .toLowerCase())
                     .toList()
                 : userDataStore.purchaseList
                     .where((purchase) =>
-                        purchase.partyDetails.name.toLowerCase() ==
-                        stockStore.selectedStockItem?.value.itemName
+                        purchase.stockDetails.itemId.toLowerCase() ==
+                        stockStore.selectedStockItem?.value.itemId
                             .toLowerCase())
                     .toList();
 

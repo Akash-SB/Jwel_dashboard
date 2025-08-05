@@ -102,7 +102,7 @@ class _IndexScreenState extends State<IndexScreen> {
                   Observer(builder: (context) {
                     return Expanded(
                       child: ListView.builder(
-                        itemCount: 8,
+                        itemCount: 6,
                         itemBuilder: (context, index) {
                           final icons = [
                             Icons.dashboard,
