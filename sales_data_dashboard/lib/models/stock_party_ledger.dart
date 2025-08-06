@@ -6,6 +6,7 @@ class StockPartyLedger {
   final String quantity;
   final String amount;
   final String paymentStatus;
+  final String? paymentOption;
   final int? dueDays;
   final String? description;
   final String firm;
@@ -19,6 +20,7 @@ class StockPartyLedger {
       required this.quantity,
       required this.amount,
       required this.paymentStatus,
+      this.paymentOption,
       this.dueDays,
       this.description,
       required this.firm,
@@ -27,7 +29,17 @@ class StockPartyLedger {
 
 enum TransType {
   sale,
-  purchase;
+  purchase,
+  all;
 
-  String get name => this == TransType.sale ? "Sale" : "Purchase";
+  String get name {
+    switch (this) {
+      case TransType.sale:
+        return "Sale";
+      case TransType.purchase:
+        return "Purchase";
+      case TransType.all:
+        return "All";
+    }
+  }
 }

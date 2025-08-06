@@ -24,11 +24,16 @@ class ItemInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<TableColumn> columns = [
-      TableColumn(label: 'Date', key: 'date', isSortable: true),
-      TableColumn(label: 'Item Id', key: 'itemId', isSortable: true),
-      TableColumn(label: 'Pcs/Size', key: 'size'),
-      TableColumn(label: 'Carat', key: 'carat', isSortable: true),
-      TableColumn(label: 'Rate', key: 'rate', isSortable: true),
+      TableColumn(label: 'Transaction ID', key: 'transId', isSortable: true),
+      TableColumn(
+          label: 'Transaction Date', key: 'transDate', isSortable: true),
+      TableColumn(
+        label: 'Transaction Type',
+        key: 'transType',
+      ),
+      TableColumn(label: 'Customer Id', key: 'custId'),
+      TableColumn(label: 'Product Id', key: 'prodId', isSortable: true),
+      TableColumn(label: 'Product Quantity', key: 'quantity', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
       TableColumn(label: 'Due Days', key: 'dueDays', isSortable: true),
       TableColumn(
@@ -38,6 +43,10 @@ class ItemInfoScreen extends StatelessWidget {
       TableColumn(
         label: 'Payment Option',
         key: 'paymentOption',
+      ),
+      TableColumn(
+        label: 'Firm',
+        key: 'firm',
       ),
       TableColumn(label: 'Description', key: 'description'),
       TableColumn(label: 'Actions', key: 'actions', isAction: true),
