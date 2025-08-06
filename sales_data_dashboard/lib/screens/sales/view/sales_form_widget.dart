@@ -73,7 +73,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       descriptionController.text = sale.description ?? '';
       dueDaysController.text = sale.dueDays.toString();
       noteController.text = sale.description ?? '';
-      widget.salesScreenStore.setSelectedFirmType(sale.firm.name);
+      widget.salesScreenStore.setSelectedFilterFirm(sale.firm.name);
     }
   }
 
@@ -115,9 +115,10 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                       return Expanded(
                         child: CommonDropdown(
                           label: 'Firm',
-                          value: widget.salesScreenStore.selectedFirmType,
+                          value: widget.salesScreenStore.selectedFilterFirm,
                           onChanged: (final value) {
-                            widget.salesScreenStore.setSelectedFirmType(value!);
+                            widget.salesScreenStore
+                                .setSelectedFilterFirm(value!);
                           },
                           options: [
                             Firm.sahajanand.name,
@@ -182,7 +183,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                       options: widget.partyList!
                           .where((party) =>
                               party.firm ==
-                                  widget.salesScreenStore.selectedFirmType &&
+                                  widget.salesScreenStore.selectedFilterFirm &&
                               party.partyType.toLowerCase() ==
                                   widget.salesScreenStore.customerType
                                       .toLowerCase())
@@ -190,19 +191,19 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                           .toList(),
                       displayString: (s) => s,
                       onSelect: (val) {
-                        final party = widget.partyList!.firstWhere(
-                            (element) => element.name == val,
-                            orElse: () => Party(
-                                  id: '',
-                                  name: '',
-                                  address: '',
-                                  mobileNumber: '',
-                                  gstNumber: null,
-                                  partyType:
-                                      widget.salesScreenStore.customerType,
-                                  firm:
-                                      widget.salesScreenStore.selectedFirmType,
-                                ));
+                        final party = widget.partyList!
+                            .firstWhere((element) => element.name == val,
+                                orElse: () => Party(
+                                      id: '',
+                                      name: '',
+                                      address: '',
+                                      mobileNumber: '',
+                                      gstNumber: null,
+                                      partyType:
+                                          widget.salesScreenStore.customerType,
+                                      firm: widget
+                                          .salesScreenStore.selectedFilterFirm,
+                                    ));
                         nameController.text = party.name;
                         addressController.text = party.address;
                         mobileController.text = party.mobileNumber;
@@ -418,8 +419,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                   : gstController.text,
                               partyType: widget.salesScreenStore.customerType,
                               id: '${DateTime.now().millisecondsSinceEpoch}',
-                              firm:
-                                  '${widget.salesScreenStore.selectedFirmType}',
+                              firm: widget.salesScreenStore.selectedFilterFirm,
                             ),
                             stockDetails: StockItem(
                               itemId: itemNameController.text,
@@ -439,7 +439,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                   ? 0.0
                                   : double.parse(quantityController.text),
                               description: descriptionController.text,
-                              firm: widget.salesScreenStore.selectedFirmType,
+                              firm: widget.salesScreenStore.selectedFilterFirm,
                             ),
                             paymentOption: 'cash',
                             paymentStatus: PaymentStatus.unpaid.name,
@@ -448,8 +448,8 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                 : int.parse(dueDaysController.text),
                             description: descriptionController.text,
                             createdAt: DateTime.now(),
-                            firm: widget.salesScreenStore.selectedFirmType ==
-                                    Firm.sahajanand
+                            firm: widget.salesScreenStore.selectedFilterFirm ==
+                                    Firm.sahajanand.name
                                 ? Firm.sahajanand
                                 : Firm.harikrishnaEnterprise,
                           );

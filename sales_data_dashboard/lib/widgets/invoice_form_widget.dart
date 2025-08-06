@@ -477,6 +477,9 @@ class _InvoiceFormState extends State<InvoiceForm> {
                       ),
                     ],
                   ),
+                  SizedBox(
+                    height: 12.dp,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [

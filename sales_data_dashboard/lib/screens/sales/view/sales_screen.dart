@@ -132,11 +132,10 @@ class _SalesScreenState extends State<SalesScreen> {
                   IntrinsicWidth(
                     child: CommonDropdown(
                       label: 'Firm Type',
-                      value: Firm.sahajanand.name,
-                      // partyDetailsStore.selectedFilterFirm,
+                      value: salesScreenStore.selectedFilterFirm,
                       onChanged: (p0) {
-                        // partyDetailsStore.setSelectedFilterFirm(p0!);
-                        // partyDetailsStore.isFiltersApplied();
+                        salesScreenStore.setSelectedFilterFirm(p0!);
+                        salesScreenStore.isFiltersApplied();
                       },
                       options: [
                         Firm.sahajanand.name,
@@ -150,13 +149,13 @@ class _SalesScreenState extends State<SalesScreen> {
                   IntrinsicWidth(
                     child: CommonDropdown(
                       label: 'Payment Status',
-                      value: 'All',
+                      value: salesScreenStore.salectedStatus,
                       onChanged: (p0) {
-                        // partyDetailsStore.setSelectedFilterPartyType(p0!);
-                        // partyDetailsStore.isFiltersApplied();
+                        salesScreenStore.setSelectedStatus(p0!);
+                        salesScreenStore.isFiltersApplied();
                       },
                       options: [
-                        'All',
+                        PaymentStatusEnum.all.name,
                         PaymentStatusEnum.paid.name,
                         PaymentStatusEnum.unpaid.name,
                       ],
@@ -168,12 +167,11 @@ class _SalesScreenState extends State<SalesScreen> {
                   SizedBox(
                     width: 300.dp,
                     child: CustomSearchBar(
-                      controller: TextEditingController(),
-                      // controller: partyDetailsStore.searchcontroller,
+                      controller: salesScreenStore.searchcontroller,
                       onChanged: (final value) {
-                        // partyDetailsStore.setSearchText(value);
-                        // partyDetailsStore.isFiltersApplied();
-                        // partyDetailsStore.calculateTotalPages();
+                        salesScreenStore.setSearchText(value);
+                        salesScreenStore.isFiltersApplied();
+                        salesScreenStore.calculateTotalPages();
                       },
                       hintText: 'Search By Name, Mobile Number, GST Number',
                     ),

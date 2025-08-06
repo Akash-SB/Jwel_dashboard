@@ -117,11 +117,10 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   IntrinsicWidth(
                     child: CommonDropdown(
                       label: 'Firm Type',
-                      value: Firm.sahajanand.name,
-                      // partyDetailsStore.selectedFilterFirm,
+                      value: purchaseScreenStore.selectedFilterFirm,
                       onChanged: (p0) {
-                        // partyDetailsStore.setSelectedFilterFirm(p0!);
-                        // partyDetailsStore.isFiltersApplied();
+                        purchaseScreenStore.setSelectedFilterFirm(p0!);
+                        purchaseScreenStore.isFiltersApplied();
                       },
                       options: [
                         Firm.sahajanand.name,
@@ -135,13 +134,13 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   IntrinsicWidth(
                     child: CommonDropdown(
                       label: 'Payment Status',
-                      value: 'All',
+                      value: purchaseScreenStore.salectedStatus,
                       onChanged: (p0) {
-                        // partyDetailsStore.setSelectedFilterPartyType(p0!);
-                        // partyDetailsStore.isFiltersApplied();
+                        purchaseScreenStore.setSelectedStatus(p0!);
+                        purchaseScreenStore.isFiltersApplied();
                       },
                       options: [
-                        'All',
+                        PaymentStatusEnum.all.name,
                         PaymentStatusEnum.paid.name,
                         PaymentStatusEnum.unpaid.name,
                       ],
@@ -153,12 +152,11 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   SizedBox(
                     width: 300.dp,
                     child: CustomSearchBar(
-                      controller: TextEditingController(),
-                      // controller: partyDetailsStore.searchcontroller,
+                      controller: purchaseScreenStore.searchcontroller,
                       onChanged: (final value) {
-                        // partyDetailsStore.setSearchText(value);
-                        // partyDetailsStore.isFiltersApplied();
-                        // partyDetailsStore.calculateTotalPages();
+                        purchaseScreenStore.setSearchText(value);
+                        purchaseScreenStore.isFiltersApplied();
+                        purchaseScreenStore.calculateTotalPages();
                       },
                       hintText: 'Search By Name, Mobile Number, GST Number',
                     ),

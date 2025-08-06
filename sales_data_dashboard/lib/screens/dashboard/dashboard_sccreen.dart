@@ -4,11 +4,9 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
-import 'package:sales_data_dashboard/models/invoice_notification_model.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
 import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
-import 'package:sales_data_dashboard/services/notification_service.dart';
 import 'package:sales_data_dashboard/widgets/normal_button.dart';
 import '../home/store/userdata_store.dart';
 
@@ -233,8 +231,15 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
+                                SizedBox(
+                                  height: 4.dp,
+                                ),
                                 IntrinsicWidth(
                                   child: NormalButton(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 2.dp,
+                                      horizontal: 4.dp,
+                                    ),
                                     text: 'Paid',
                                     filledColor: Colors.white,
                                     textStyle: const TextStyle(
