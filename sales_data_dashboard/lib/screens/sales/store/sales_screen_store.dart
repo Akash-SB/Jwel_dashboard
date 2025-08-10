@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
-import 'package:sales_data_dashboard/models/firm_model.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
-import 'package:sqflite/sqflite.dart';
 import '../../../models/sales_model.dart';
 import '../../../models/stock_item.dart';
 
@@ -11,7 +10,7 @@ part 'sales_screen_store.g.dart';
 class SalesScreenStore = _SalesScreenStore with _$SalesScreenStore;
 
 abstract class _SalesScreenStore with Store {
-  late Database db;
+  late final searchcontroller = TextEditingController();
 
   @observable
   ObservableList<Sale> sales = ObservableList<Sale>();
@@ -29,7 +28,10 @@ abstract class _SalesScreenStore with Store {
   Observable<StockItem>? selectedItem;
 
   @observable
-  String selectedFirmType = Firm.sahajanand.name;
+  String selectedFilterFirm = 'Sahajanand Jewellers';
+
+  @observable
+  String salectedStatus = 'All';
 
   @observable
   String? sortKey;
@@ -43,9 +45,41 @@ abstract class _SalesScreenStore with Store {
   @observable
   String customerType = 'agent';
 
+  @observable
+  bool isFilterApplied = false;
+
+  @action
+  void setSelectedStatus(String value) {
+    salectedStatus = value;
+  }
+
+  @action
+  void setSelectedFilterFirm(String firm) {
+    selectedFilterFirm = firm;
+  }
+
+  @action
+  void isFiltersApplied() {
+    isFilterApplied = searchedText.isNotEmpty ||
+        selectedFilterFirm != 'Sahajanand Jewellers ' ||
+        salectedStatus != 'All' ||
+        sortKey != null;
+  }
+
   @action
   void setCustomerType(final String type) {
     customerType = type;
+  }
+
+  @action
+  void clearAllFilters() {
+    searchcontroller.text = '';
+    setSelectedFilterFirm('Sahajanand Jewellers');
+    setSelectedStatus('All');
+    sortKey = null;
+    setSearchText('');
+    setCurrentPageIndex(0);
+    isFilterApplied = false;
   }
 
   @observable
@@ -62,18 +96,13 @@ abstract class _SalesScreenStore with Store {
     selectedParty = Observable(party);
   }
 
-  @action
-  void setSelectedFirmType(final String firm) {
-    selectedFirmType = firm;
-  }
-
   List<String> getListOfPartyNames() {
     final List<String> list = [];
     if (partiesList.isEmpty) {
       return list;
     } else {
       for (int i = 0; i < partiesList.length; i++) {
-        if (partiesList[i].firm == selectedFirmType &&
+        if (partiesList[i].firm == selectedFilterFirm &&
             partiesList[i].partyType == customerType) {
           list.add(partiesList[i].name);
         }
@@ -88,7 +117,7 @@ abstract class _SalesScreenStore with Store {
       return list;
     } else {
       for (int i = 0; i < stocks.length; i++) {
-        if (partiesList[i].firm == selectedFirmType &&
+        if (partiesList[i].firm == selectedFilterFirm &&
             partiesList[i].partyType == customerType) {
           list.add(partiesList[i].name);
         }
@@ -149,13 +178,6 @@ abstract class _SalesScreenStore with Store {
   }
 
   @action
-  Future<void> addInStock(StockItem product) async {
-    await db.insert('stock', product.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    stocks.add(product);
-  }
-
-  @action
   void setSortKey(String? key) {
     if (sortKey == key) {
       sortAsc = !sortAsc;
@@ -193,13 +215,16 @@ abstract class _SalesScreenStore with Store {
   @computed
   List<Sale> get filteredData {
     List<Sale> filtered = sales.toList();
-    if (searchedText.isNotEmpty) {
-      filtered = filtered
-          .where((item) => item.toMap().values.any((v) =>
-              v.toString().toLowerCase().contains(searchedText.toLowerCase())))
-          .toList();
-    }
-    return filtered;
+    return filtered.where((sale) {
+      final matchesSearch = searchedText.toLowerCase();
+      final searchItem = sale.id.toLowerCase().contains(matchesSearch) ||
+          sale.stockDetails.size.toLowerCase().contains(matchesSearch) ||
+          sale.paymentStatus.toLowerCase().contains(matchesSearch);
+      final matchesFirm = sale.firm.name == selectedFilterFirm;
+      final matchesStatus =
+          salectedStatus == 'All' ? true : sale.paymentStatus == salectedStatus;
+      return searchItem && matchesFirm && matchesStatus;
+    }).toList();
   }
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

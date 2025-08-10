@@ -7,6 +7,7 @@ import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
 import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
+import 'package:sales_data_dashboard/widgets/normal_button.dart';
 import '../home/store/userdata_store.dart';
 
 final getIt = GetIt.instance;
@@ -25,10 +26,6 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
   @override
   void initState() {
     super.initState();
-    if (!GetIt.I.isRegistered<DashboardStore>()) {
-      GetIt.I.registerSingleton<DashboardStore>(DashboardStore());
-    }
-
     if (!getIt.isRegistered<UserDataStore>(
       instanceName: 'UserDataStore',
     )) {
@@ -38,8 +35,19 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
     userDataStore = getIt<UserDataStore>(
       instanceName: 'UserDataStore',
     );
-    activityStore = GetIt.I<DashboardStore>();
-    activityStore.setnotificationList(userDataStore.notfList);
+    if (!GetIt.I.isRegistered<DashboardStore>(
+      instanceName: 'DashboardStore',
+    )) {
+      GetIt.I.registerSingleton<DashboardStore>(
+          DashboardStore(
+            userDataStore,
+          ),
+          instanceName: 'DashboardStore');
+    }
+
+    activityStore = GetIt.I<DashboardStore>(
+      instanceName: 'DashboardStore',
+    );
   }
 
   @override
@@ -140,101 +148,114 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                   padding: EdgeInsets.all(18.dp),
                   color: const Color.fromARGB(255, 239, 240, 241),
                   child: ListView.builder(
-                    itemCount: activityStore.notifications.length,
+                    itemCount: userDataStore.notfList.length,
                     itemBuilder: (ctx, index) {
-                      final notif = activityStore.notifications[index];
+                      final notif = userDataStore.notfList[index];
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          InkWell(
-                            onTap: () async {},
-                            child: Container(
-                              padding: EdgeInsets.all(
-                                12.dp,
+                          Container(
+                            padding: EdgeInsets.all(
+                              12.dp,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 200, 203, 210),
                               ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  color:
-                                      const Color.fromARGB(255, 200, 203, 210),
-                                ),
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    8.dp,
-                                  ),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(
+                                  8.dp,
                                 ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          notif.message,
-                                          softWrap: true,
-                                          overflow: TextOverflow.clip,
-                                          maxLines: 2,
-                                          style: TextStyle(
-                                            fontSize: 12.dp,
-                                            color: const Color(0xFF111827),
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        notif.message,
+                                        softWrap: true,
+                                        overflow: TextOverflow.clip,
+                                        maxLines: 2,
+                                        style: TextStyle(
+                                          fontSize: 12.dp,
+                                          color: const Color(0xFF111827),
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                      notif.isPaid
-                                          ? Icon(
-                                              Icons.check_circle,
-                                              color: Colors.green,
-                                              size: 16.dp,
-                                            )
-                                          : const SizedBox.shrink(),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 2.dp,
-                                  ),
-                                  Text(
-                                    notif.userId,
-                                    softWrap: true,
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontSize: 11.dp,
-                                      color: const Color(0xFF4B5563),
-                                      fontWeight: FontWeight.w500,
                                     ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 2.dp,
+                                ),
+                                Text(
+                                  notif.userId,
+                                  softWrap: true,
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontSize: 11.dp,
+                                    color: const Color(0xFF4B5563),
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                  SizedBox(
-                                    height: 2.dp,
+                                ),
+                                SizedBox(
+                                  height: 2.dp,
+                                ),
+                                Text(
+                                  'Invoice : ${notif.salesId}',
+                                  softWrap: true,
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontSize: 11.dp,
+                                    color: const Color(0xFF4B5563),
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                  Text(
-                                    'Invoice : ${notif.salesId}',
-                                    softWrap: true,
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontSize: 11.dp,
-                                      color: const Color(0xFF4B5563),
-                                      fontWeight: FontWeight.w500,
+                                ),
+                                SizedBox(
+                                  height: 4.dp,
+                                ),
+                                Text(
+                                  'Date : ${notif.notifyDate.day}/${notif.notifyDate.month}/${notif.notifyDate.year}',
+                                  softWrap: true,
+                                  overflow: TextOverflow.fade,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                    fontSize: 10.dp,
+                                    color: const Color(0xFF6B7280),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 4.dp,
+                                ),
+                                IntrinsicWidth(
+                                  child: NormalButton(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 2.dp,
+                                      horizontal: 4.dp,
                                     ),
+                                    text: 'Paid',
+                                    filledColor: Colors.white,
+                                    textStyle: const TextStyle(
+                                        fontSize: 8, color: Color(0xFF4B5563)),
+                                    borderColor: const Color.fromARGB(
+                                        255, 200, 203, 210),
+                                    onPressed: () {
+                                      userDataStore
+                                          .updateSalesStatus(notif.salesId);
+                                      setState(() {
+                                        userDataStore.notfList.removeAt(index);
+                                      });
+                                    },
                                   ),
-                                  SizedBox(
-                                    height: 4.dp,
-                                  ),
-                                  Text(
-                                    '${notif.notifyDate.day}/${notif.notifyDate.month}/${notif.notifyDate.year}',
-                                    softWrap: true,
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontSize: 10.dp,
-                                      color: const Color(0xFF6B7280),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                )
+                              ],
                             ),
                           ),
                           SizedBox(

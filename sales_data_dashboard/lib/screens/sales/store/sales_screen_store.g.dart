@@ -111,19 +111,35 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
     });
   }
 
-  late final _$selectedFirmTypeAtom =
-      Atom(name: '_SalesScreenStore.selectedFirmType', context: context);
+  late final _$selectedFilterFirmAtom =
+      Atom(name: '_SalesScreenStore.selectedFilterFirm', context: context);
 
   @override
-  String get selectedFirmType {
-    _$selectedFirmTypeAtom.reportRead();
-    return super.selectedFirmType;
+  String get selectedFilterFirm {
+    _$selectedFilterFirmAtom.reportRead();
+    return super.selectedFilterFirm;
   }
 
   @override
-  set selectedFirmType(String value) {
-    _$selectedFirmTypeAtom.reportWrite(value, super.selectedFirmType, () {
-      super.selectedFirmType = value;
+  set selectedFilterFirm(String value) {
+    _$selectedFilterFirmAtom.reportWrite(value, super.selectedFilterFirm, () {
+      super.selectedFilterFirm = value;
+    });
+  }
+
+  late final _$salectedStatusAtom =
+      Atom(name: '_SalesScreenStore.salectedStatus', context: context);
+
+  @override
+  String get salectedStatus {
+    _$salectedStatusAtom.reportRead();
+    return super.salectedStatus;
+  }
+
+  @override
+  set salectedStatus(String value) {
+    _$salectedStatusAtom.reportWrite(value, super.salectedStatus, () {
+      super.salectedStatus = value;
     });
   }
 
@@ -188,6 +204,22 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   set customerType(String value) {
     _$customerTypeAtom.reportWrite(value, super.customerType, () {
       super.customerType = value;
+    });
+  }
+
+  late final _$isFilterAppliedAtom =
+      Atom(name: '_SalesScreenStore.isFilterApplied', context: context);
+
+  @override
+  bool get isFilterApplied {
+    _$isFilterAppliedAtom.reportRead();
+    return super.isFilterApplied;
+  }
+
+  @override
+  set isFilterApplied(bool value) {
+    _$isFilterAppliedAtom.reportWrite(value, super.isFilterApplied, () {
+      super.isFilterApplied = value;
     });
   }
 
@@ -271,14 +303,6 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
     });
   }
 
-  late final _$addInStockAsyncAction =
-      AsyncAction('_SalesScreenStore.addInStock', context: context);
-
-  @override
-  Future<void> addInStock(StockItem product) {
-    return _$addInStockAsyncAction.run(() => super.addInStock(product));
-  }
-
   late final _$fetchSalesAsyncAction =
       AsyncAction('_SalesScreenStore.fetchSales', context: context);
 
@@ -315,6 +339,39 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
       ActionController(name: '_SalesScreenStore', context: context);
 
   @override
+  void setSelectedStatus(String value) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setSelectedStatus');
+    try {
+      return super.setSelectedStatus(value);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedFilterFirm(String firm) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setSelectedFilterFirm');
+    try {
+      return super.setSelectedFilterFirm(firm);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void isFiltersApplied() {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.isFiltersApplied');
+    try {
+      return super.isFiltersApplied();
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setCustomerType(String type) {
     final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
         name: '_SalesScreenStore.setCustomerType');
@@ -326,22 +383,22 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   }
 
   @override
-  void setSelectedParty(Party party) {
+  void clearAllFilters() {
     final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
-        name: '_SalesScreenStore.setSelectedParty');
+        name: '_SalesScreenStore.clearAllFilters');
     try {
-      return super.setSelectedParty(party);
+      return super.clearAllFilters();
     } finally {
       _$_SalesScreenStoreActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void setSelectedFirmType(String firm) {
+  void setSelectedParty(Party party) {
     final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
-        name: '_SalesScreenStore.setSelectedFirmType');
+        name: '_SalesScreenStore.setSelectedParty');
     try {
-      return super.setSelectedFirmType(firm);
+      return super.setSelectedParty(party);
     } finally {
       _$_SalesScreenStoreActionController.endAction(_$actionInfo);
     }
@@ -443,11 +500,13 @@ stocks: ${stocks},
 partiesList: ${partiesList},
 selectedParty: ${selectedParty},
 selectedItem: ${selectedItem},
-selectedFirmType: ${selectedFirmType},
+selectedFilterFirm: ${selectedFilterFirm},
+salectedStatus: ${salectedStatus},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},
 customerType: ${customerType},
+isFilterApplied: ${isFilterApplied},
 searchedText: ${searchedText},
 selectedRowCount: ${selectedRowCount},
 currentTablePage: ${currentTablePage},

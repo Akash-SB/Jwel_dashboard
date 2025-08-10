@@ -63,6 +63,22 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     });
   }
 
+  late final _$selectedFilterFirmAtom =
+      Atom(name: '_PurchaseScreenStore.selectedFilterFirm', context: context);
+
+  @override
+  String get selectedFilterFirm {
+    _$selectedFilterFirmAtom.reportRead();
+    return super.selectedFilterFirm;
+  }
+
+  @override
+  set selectedFilterFirm(String value) {
+    _$selectedFilterFirmAtom.reportWrite(value, super.selectedFilterFirm, () {
+      super.selectedFilterFirm = value;
+    });
+  }
+
   late final _$selectedPartyTypeAtom =
       Atom(name: '_PurchaseScreenStore.selectedPartyType', context: context);
 
@@ -79,6 +95,22 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     });
   }
 
+  late final _$salectedStatusAtom =
+      Atom(name: '_PurchaseScreenStore.salectedStatus', context: context);
+
+  @override
+  String get salectedStatus {
+    _$salectedStatusAtom.reportRead();
+    return super.salectedStatus;
+  }
+
+  @override
+  set salectedStatus(String value) {
+    _$salectedStatusAtom.reportWrite(value, super.salectedStatus, () {
+      super.salectedStatus = value;
+    });
+  }
+
   late final _$selectedPaymentTypeAtom =
       Atom(name: '_PurchaseScreenStore.selectedPaymentType', context: context);
 
@@ -92,6 +124,22 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
   set selectedPaymentType(String? value) {
     _$selectedPaymentTypeAtom.reportWrite(value, super.selectedPaymentType, () {
       super.selectedPaymentType = value;
+    });
+  }
+
+  late final _$isFilterAppliedAtom =
+      Atom(name: '_PurchaseScreenStore.isFilterApplied', context: context);
+
+  @override
+  bool get isFilterApplied {
+    _$isFilterAppliedAtom.reportRead();
+    return super.isFilterApplied;
+  }
+
+  @override
+  set isFilterApplied(bool value) {
+    _$isFilterAppliedAtom.reportWrite(value, super.isFilterApplied, () {
+      super.isFilterApplied = value;
     });
   }
 
@@ -389,6 +437,17 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
       ActionController(name: '_PurchaseScreenStore', context: context);
 
   @override
+  void setSelectedStatus(String value) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setSelectedStatus');
+    try {
+      return super.setSelectedStatus(value);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedStockItem(StockItem? item) {
     final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
         name: '_PurchaseScreenStore.setSelectedStockItem');
@@ -416,6 +475,28 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
         name: '_PurchaseScreenStore.setSelectedPaymentStatus');
     try {
       return super.setSelectedPaymentStatus(status);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedFilterFirm(String firm) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setSelectedFilterFirm');
+    try {
+      return super.setSelectedFilterFirm(firm);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void isFiltersApplied() {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.isFiltersApplied');
+    try {
+      return super.isFiltersApplied();
     } finally {
       _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
     }
@@ -569,8 +650,11 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     return '''
 purchaseList: ${purchaseList},
 stockList: ${stockList},
+selectedFilterFirm: ${selectedFilterFirm},
 selectedPartyType: ${selectedPartyType},
+salectedStatus: ${salectedStatus},
 selectedPaymentType: ${selectedPaymentType},
+isFilterApplied: ${isFilterApplied},
 selectedPaymentStatus: ${selectedPaymentStatus},
 selectedStockItem: ${selectedStockItem},
 selectedFirmType: ${selectedFirmType},

@@ -75,6 +75,11 @@ abstract class _UserDataStore with Store {
   ObservableList<InvoiceNotificationModel> notfList = ObservableList.of([]);
 
   @action
+  void fillNotificationList(List<InvoiceNotificationModel> list) {
+    notfList = ObservableList.of(list);
+  }
+
+  @action
   Future<void> setNotificationList(final List<Sale> salesList) async {
     try {
       // Fetch existing notifications from Firestore
@@ -94,11 +99,8 @@ abstract class _UserDataStore with Store {
       final today = DateTime.now();
 
       for (final sale in salesList) {
-        final dueDate = sale.createdAt.add(Duration(days: sale.dueDays ?? 0));
-        final isDueToday = dueDate.year == today.year &&
-            dueDate.month == today.month &&
-            dueDate.day == today.day;
-
+        final dueDate = sale.createdAt.add(Duration(days: sale.dueDays));
+        final isDueToday = true;
         if (isDueToday && !notificationExists(sale.id)) {
           // Create notification model
           final notif = InvoiceNotificationModel(
@@ -248,14 +250,12 @@ abstract class _UserDataStore with Store {
   Future<void> getAllData() async {
     isLoading = true;
     errorMessage = null;
-    await Future.wait([
-      fetchStockList(),
-      fetchSalesList(),
-      fetchPurchaseList(),
-      fetchPartyList(),
-      fetchInvoices(),
-      setNotificationList(salesList),
-    ]);
+    await fetchStockList();
+    await fetchSalesList();
+    await fetchPurchaseList();
+    await fetchPartyList();
+    await fetchInvoices();
+    await setNotificationList(salesList);
     isLoading = false;
     getLastSixMonthsTxns(salesList, purchaseList);
   }
@@ -279,6 +279,80 @@ abstract class _UserDataStore with Store {
   @action
   void setSixMonthSales(List<Sale> salesList) {
     sixMonthSalesList = ObservableList.of(salesList);
+  }
+
+  Future<void> updateNotifcations(
+    final List<InvoiceNotificationModel> notifications,
+  ) async {
+    isLoading = true;
+    try {
+      // Step 1: Delete all existing notifications from Firestore
+      final snapshot = await notificationRef.get();
+      for (final doc in snapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      // Step 2: Add the new notifications from the passed list
+      for (final notification in notifications) {
+        final data = notification
+            .toMap(); // Ensure toMap() method is defined in your model
+        await notificationRef.add(data);
+      }
+
+      // Step 3: Fetch again to update local observable list
+      final updatedSnapshot = await notificationRef.get();
+      notfList = ObservableList.of(
+        updatedSnapshot.docs.map(
+          (doc) => InvoiceNotificationModel.fromMap({
+            ...doc.data() as Map<String, dynamic>,
+            'id': doc.id,
+          }),
+        ),
+      );
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  @action
+  Future<void> updateSalesStatus(String salesId) async {
+    try {
+      await salesRefs.doc(salesId).update({'paymentStatus': 'paid'});
+
+      final index = salesList.indexWhere((s) => s.id == salesId);
+      if (index != -1) {
+        final sale = salesList[index];
+        salesList[index] = Sale(
+          id: sale.id,
+          partyDetails: sale.partyDetails,
+          createdAt: sale.createdAt,
+          dueDays: sale.dueDays,
+          paymentStatus: 'paid',
+          firm: sale.firm,
+          paymentOption: sale.paymentOption,
+          stockDetails: sale.stockDetails,
+          description: sale.description,
+        );
+      }
+      notfList = ObservableList.of(notfList.map((notif) {
+        if (notif.salesId == salesId) {
+          return InvoiceNotificationModel(
+            id: notif.id,
+            salesId: notif.salesId,
+            userId: notif.userId,
+            message: notif.message,
+            notifyDate: notif.notifyDate,
+            isPaid: true,
+            isShown: true,
+          );
+        }
+        return notif;
+      }));
+    } catch (e) {
+      errorMessage = e.toString();
+    }
   }
 
   @action

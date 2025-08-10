@@ -1,6 +1,7 @@
 import 'package:mobx/mobx.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sales_data_dashboard/models/invoice_notification_model.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 
 import '../../../models/invoice_model.dart';
 
@@ -9,8 +10,15 @@ part 'activity_store.g.dart';
 class DashboardStore = _DashboardStore with _$DashboardStore;
 
 abstract class _DashboardStore with Store {
+  _DashboardStore(this.userDataStore);
+
+  final UserDataStore userDataStore;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final CollectionReference invoicesRef =
       FirebaseFirestore.instance.collection('invoices');
+
+  final CollectionReference notificationRef =
+      FirebaseFirestore.instance.collection('notifications');
 
   @observable
   ObservableList<InvoiceModel> invoices = ObservableList.of([]);
