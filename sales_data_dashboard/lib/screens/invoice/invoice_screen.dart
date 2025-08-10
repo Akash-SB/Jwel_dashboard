@@ -400,23 +400,47 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           child: InvoiceForm(
             existingInvoice: existingInvoice,
             onSubmit: (invoiceData) {
-              invoiceStore.addInvoice(invoiceData).then((final onValue) {
-                invoiceStore.fetchInvoices().then((final val) {
-                  userDataStore.setInvoices(invoiceStore.invoices);
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text('Invoice ${invoiceData.invoiceId} added')),
-                );
-              }).onError(
-                (error, stackTrace) {
+              if (existingInvoice != null) {
+                invoiceStore
+                    .updateInvoice(existingInvoice.invoiceId, invoiceData)
+                    .then((final onValue) {
+                  invoiceStore.fetchInvoices().then((final val) {
+                    userDataStore.setInvoices(invoiceStore.invoices);
+                  });
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text(
-                            'Something went wrong while creating invoice')),
+                    SnackBar(
+                        content:
+                            Text('Invoice ${invoiceData.invoiceId} updated')),
                   );
-                },
-              );
+                }).onError(
+                  (error, stackTrace) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text(
+                              'Something went wrong while updating invoice')),
+                    );
+                  },
+                );
+              } else {
+                invoiceStore.addInvoice(invoiceData).then((final onValue) {
+                  invoiceStore.fetchInvoices().then((final val) {
+                    userDataStore.setInvoices(invoiceStore.invoices);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content:
+                            Text('Invoice ${invoiceData.invoiceId} added')),
+                  );
+                }).onError(
+                  (error, stackTrace) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text(
+                              'Something went wrong while creating invoice')),
+                    );
+                  },
+                );
+              }
             },
             customers: userDataStore.partiesList,
             products: userDataStore.stockList,

@@ -113,6 +113,9 @@ class _InvoiceFormState extends State<InvoiceForm> {
         paymentType: _paymentType!,
         productName: _prodNameController.text,
         hsnCode: _hsnCodeController.text,
+        custAddress: _custAddressController.text,
+        custPhone: _custPhoneController.text,
+        custGst: _custGstController.text,
       );
       clearControllers();
       widget.onSubmit(invoiceData);
@@ -131,6 +134,14 @@ class _InvoiceFormState extends State<InvoiceForm> {
     _noteController.clear();
     _prodNameController.clear();
     _hsnCodeController.clear();
+    _custAddressController.clear();
+    _custPhoneController.clear();
+    _custGstController.clear();
+    _transactionType = null;
+    _custType = null;
+    _paymentStatus = null;
+    _paymentType = null;
+    _selectedCustomer = null;
   }
 
   Future<void> _pickDate() async {
@@ -477,6 +488,9 @@ class _InvoiceFormState extends State<InvoiceForm> {
                       ),
                     ],
                   ),
+                  SizedBox(
+                    height: 12.dp,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -580,7 +594,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                 ),
               ],
             ),
-            SizedBox(height: 24.dp),
+            SizedBox(height: 12.dp),
             TextFormField(
               controller: _noteController,
               decoration: _inputDecoration('Note (Optional)'),
