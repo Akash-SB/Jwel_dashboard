@@ -51,6 +51,12 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
   final TextEditingController dueDaysController = TextEditingController();
+  final TextEditingController agentNameController = TextEditingController();
+  final TextEditingController agentAddressController = TextEditingController();
+  final TextEditingController agentMobileController = TextEditingController();
+  final TextEditingController agentGstController = TextEditingController();
+  final TextEditingController agentBrokerageController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -73,6 +79,15 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       descriptionController.text = sale.description ?? '';
       dueDaysController.text = sale.dueDays.toString();
       noteController.text = sale.description ?? '';
+      agentNameController.text = sale.agentDetails?.name ?? '';
+      agentAddressController.text = sale.agentDetails?.address ?? '';
+      agentMobileController.text = sale.agentDetails?.mobileNumber ?? '';
+      agentGstController.text = sale.agentDetails?.gstNumber ?? '';
+      agentBrokerageController.text = sale.agentDetails?.brokerage ?? '';
+      if (sale.agentDetails != null) {
+        widget.salesScreenStore.setAgentDetails(sale.agentDetails!);
+        widget.salesScreenStore.setIsAgentSelected(true);
+      }
       widget.salesScreenStore.setSelectedFilterFirm(sale.firm.name);
     }
   }
@@ -130,52 +145,6 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                   ],
                 ),
                 SizedBox(height: 24.dp),
-                const Text(
-                  'Customer Information',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Color(0XFF111827),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(
-                  height: 12.dp,
-                ),
-                Observer(builder: (context) {
-                  return Row(
-                    children: [
-                      IntrinsicWidth(
-                        child: CustomRadioButton<String>(
-                          title: 'Agent',
-                          value: 'agent',
-                          groupValue: widget.salesScreenStore.customerType,
-                          onChanged: (value) {
-                            setState(() {
-                              widget.salesScreenStore.setCustomerType(value!);
-                              partyTypeController.text = 'Agent';
-                            });
-                          },
-                        ),
-                      ),
-                      IntrinsicWidth(
-                        child: CustomRadioButton<String>(
-                          title: 'Company',
-                          value: 'company',
-                          groupValue: widget.salesScreenStore.customerType,
-                          onChanged: (value) {
-                            setState(() {
-                              widget.salesScreenStore.setCustomerType(value!);
-                              partyTypeController.text = 'company';
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-                SizedBox(
-                  height: 12.dp,
-                ),
                 if (widget.partyList != null && widget.partyList!.isNotEmpty)
                   Observer(builder: (context) {
                     return SearchableTextField<String>(
@@ -184,9 +153,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                           .where((party) =>
                               party.firm ==
                                   widget.salesScreenStore.selectedFilterFirm &&
-                              party.partyType.toLowerCase() ==
-                                  widget.salesScreenStore.customerType
-                                      .toLowerCase())
+                              party.partyType.toLowerCase() == 'company')
                           .map((e) => e.name)
                           .toList(),
                       displayString: (s) => s,
@@ -253,13 +220,6 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                             controller: gstController)),
                     SizedBox(
                       width: 16.dp,
-                    ),
-                    Expanded(
-                      child: CommonTextField(
-                        enabled: false,
-                        label: 'Party Type',
-                        controller: partyTypeController,
-                      ),
                     ),
                   ],
                 ),
@@ -348,6 +308,153 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                     controller: descriptionController,
                     maxLines: 3),
                 SizedBox(height: 24.dp),
+                const Text(
+                  'Agent Information',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0XFF111827),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Observer(builder: (context) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          IntrinsicWidth(
+                            child: CustomRadioButton<String>(
+                              title: 'Sale from agent',
+                              value: 'agent',
+                              groupValue: widget.salesScreenStore.customerType,
+                              onChanged: (value) {
+                                setState(() {
+                                  widget.salesScreenStore
+                                      .setCustomerType(value!);
+                                  widget.salesScreenStore
+                                      .setIsAgentSelected(true);
+                                  partyTypeController.text = 'Agent';
+                                });
+                              },
+                            ),
+                          ),
+                          IntrinsicWidth(
+                            child: CustomRadioButton<String>(
+                              title: 'Sale without agent',
+                              value: 'noAgent',
+                              groupValue: widget.salesScreenStore.customerType,
+                              onChanged: (value) {
+                                setState(() {
+                                  widget.salesScreenStore
+                                      .setCustomerType(value!);
+                                  widget.salesScreenStore
+                                      .setIsAgentSelected(false);
+                                  partyTypeController.text = 'No Agent';
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8.dp),
+                      if (widget.partyList != null &&
+                          widget.partyList!.isNotEmpty &&
+                          widget.salesScreenStore.isAgentSelected)
+                        Observer(builder: (context) {
+                          return SearchableTextField<String>(
+                            label: 'Search by Agent ID',
+                            options: widget.partyList!
+                                .where((party) =>
+                                    party.firm ==
+                                        widget.salesScreenStore
+                                            .selectedFilterFirm &&
+                                    party.partyType.toLowerCase() == 'agent')
+                                .map((e) => e.name)
+                                .toList(),
+                            displayString: (s) => s,
+                            onSelect: (val) {
+                              final party = widget.partyList!
+                                  .firstWhere((element) => element.name == val,
+                                      orElse: () => Party(
+                                            id: '',
+                                            name: '',
+                                            address: '',
+                                            mobileNumber: '',
+                                            gstNumber: null,
+                                            partyType: widget
+                                                .salesScreenStore.customerType,
+                                            firm: widget.salesScreenStore
+                                                .selectedFilterFirm,
+                                          ));
+                              agentNameController.text = party.name;
+                              agentAddressController.text = party.address;
+                              agentMobileController.text = party.mobileNumber;
+                              agentGstController.text = party.gstNumber ?? '';
+                            },
+                          );
+                        })
+                      else if (widget.salesScreenStore.isAgentSelected)
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'No Agent data available. Please add Agent first.',
+                            style: TextStyle(color: Colors.red.shade700),
+                          ),
+                        ),
+                    ],
+                  );
+                }),
+                SizedBox(height: 12.dp),
+                Observer(builder: (context) {
+                  if (!widget.salesScreenStore.isAgentSelected) {
+                    return const SizedBox.shrink();
+                  }
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CommonTextField(
+                              label: 'Name',
+                              controller: agentNameController,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 16.dp,
+                          ),
+                          Expanded(
+                            child: CommonTextField(
+                              label: 'Address',
+                              controller: agentAddressController,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: CommonTextField(
+                                  label: 'Mobile Number',
+                                  controller: agentMobileController)),
+                          SizedBox(width: 16.dp),
+                          Expanded(
+                              child: CommonTextField(
+                                  label: 'GST Number (Optional)',
+                                  controller: agentGstController)),
+                          SizedBox(
+                            width: 16.dp,
+                          ),
+                          Expanded(
+                            child: CommonTextField(
+                              label: 'Agent Brokerage',
+                              controller: agentBrokerageController,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }),
+                SizedBox(height: 24.dp),
                 const Text('Other Information',
                     style: TextStyle(
                       fontSize: 18,
@@ -393,7 +500,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                   children: [
                     IntrinsicWidth(
                       child: NormalButton(
-                        text: 'Cancle',
+                        text: 'Cancel',
                         textColor: const Color(0xFF374151),
                         filledColor: const Color(0xFFF3F4F6),
                         onPressed: () => Navigator.pop(context),
@@ -441,6 +548,26 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                               description: descriptionController.text,
                               firm: widget.salesScreenStore.selectedFilterFirm,
                             ),
+                            agentDetails: widget
+                                    .salesScreenStore.isAgentSelected
+                                ? Party(
+                                    name: agentNameController.text,
+                                    address: agentAddressController.text,
+                                    mobileNumber: agentMobileController.text,
+                                    gstNumber: agentGstController.text.isEmpty
+                                        ? null
+                                        : agentGstController.text,
+                                    brokerage:
+                                        agentBrokerageController.text.isEmpty
+                                            ? null
+                                            : agentBrokerageController.text,
+                                    partyType:
+                                        widget.salesScreenStore.customerType,
+                                    id: '${DateTime.now().millisecondsSinceEpoch}',
+                                    firm: widget
+                                        .salesScreenStore.selectedFilterFirm,
+                                  )
+                                : null,
                             paymentOption: 'cash',
                             paymentStatus: PaymentStatus.unpaid.name,
                             dueDays: dueDaysController.text.isEmpty

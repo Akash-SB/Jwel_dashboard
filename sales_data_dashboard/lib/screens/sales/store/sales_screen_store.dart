@@ -48,6 +48,17 @@ abstract class _SalesScreenStore with Store {
   @observable
   bool isFilterApplied = false;
 
+  @observable
+  Observable<Party>? agentDetails;
+
+  @observable
+  bool isAgentSelected = true;
+
+  @action
+  void setIsAgentSelected(bool value) {
+    isAgentSelected = value;
+  }
+
   @action
   void setSelectedStatus(String value) {
     salectedStatus = value;
@@ -69,6 +80,11 @@ abstract class _SalesScreenStore with Store {
   @action
   void setCustomerType(final String type) {
     customerType = type;
+  }
+
+  @action
+  void setAgentDetails(final Party agent) {
+    agentDetails = Observable(agent);
   }
 
   @action

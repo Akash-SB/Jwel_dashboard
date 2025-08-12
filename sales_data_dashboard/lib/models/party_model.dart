@@ -19,6 +19,7 @@ class Party {
   final String? gstNumber;
   final String partyType; // "company" or "agent"
   final String firm;
+  final String? brokerage; // Optional field for agent brokerage
 
   Party({
     required this.id,
@@ -28,6 +29,7 @@ class Party {
     this.gstNumber,
     required this.partyType,
     required this.firm,
+    this.brokerage,
   });
 
   // SQLite
@@ -39,6 +41,7 @@ class Party {
         'gstNumber': gstNumber,
         'partyType': partyType,
         'firm': firm,
+        'brokerage': brokerage,
       };
 
   factory Party.fromMap(Map<String, dynamic> map) => Party(
@@ -49,6 +52,7 @@ class Party {
         gstNumber: map['gstNumber'] ?? '',
         partyType: map['partyType'],
         firm: map['firm'] ?? Firm.sahajanand.name,
+        brokerage: map['brokerage'],
       );
 
   // Firebase
@@ -60,5 +64,6 @@ class Party {
         'gstNumber': gstNumber,
         'partyType': partyType,
         'firm': firm,
+        'brokerage': brokerage,
       };
 }
