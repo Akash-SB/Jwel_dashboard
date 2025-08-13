@@ -231,8 +231,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text("PAYMENT TERMS: 30 DAYS",
-                          style: pw.TextStyle(font: robotoFont, fontSize: 9)),
+                      // pw.Text("PAYMENT TERMS: 30 DAYS",
+                      //     style: pw.TextStyle(font: robotoFont, fontSize: 9)),
                     ],
                   ),
                 ),
