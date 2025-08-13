@@ -9,6 +9,21 @@ part of 'party_details_screen_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
+  Computed<List<StockPartyLedger>>? _$filteredInfoDataComputed;
+
+  @override
+  List<StockPartyLedger> get filteredInfoData => (_$filteredInfoDataComputed ??=
+          Computed<List<StockPartyLedger>>(() => super.filteredInfoData,
+              name: '_PartyDetailsStore.filteredInfoData'))
+      .value;
+  Computed<List<StockPartyLedger>>? _$paginatedInfoDataComputed;
+
+  @override
+  List<StockPartyLedger> get paginatedInfoData =>
+      (_$paginatedInfoDataComputed ??= Computed<List<StockPartyLedger>>(
+              () => super.paginatedInfoData,
+              name: '_PartyDetailsStore.paginatedInfoData'))
+          .value;
   Computed<List<Party>>? _$paginatedDataComputed;
 
   @override
@@ -44,6 +59,22 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
   set partiesList(ObservableList<Party> value) {
     _$partiesListAtom.reportWrite(value, super.partiesList, () {
       super.partiesList = value;
+    });
+  }
+
+  late final _$partyLedgerListAtom =
+      Atom(name: '_PartyDetailsStore.partyLedgerList', context: context);
+
+  @override
+  ObservableList<StockPartyLedger> get partyLedgerList {
+    _$partyLedgerListAtom.reportRead();
+    return super.partyLedgerList;
+  }
+
+  @override
+  set partyLedgerList(ObservableList<StockPartyLedger> value) {
+    _$partyLedgerListAtom.reportWrite(value, super.partyLedgerList, () {
+      super.partyLedgerList = value;
     });
   }
 
@@ -108,6 +139,87 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
   set selectedParty(Observable<Party>? value) {
     _$selectedPartyAtom.reportWrite(value, super.selectedParty, () {
       super.selectedParty = value;
+    });
+  }
+
+  late final _$selectedTransTypeAtom =
+      Atom(name: '_PartyDetailsStore.selectedTransType', context: context);
+
+  @override
+  String get selectedTransType {
+    _$selectedTransTypeAtom.reportRead();
+    return super.selectedTransType;
+  }
+
+  @override
+  set selectedTransType(String value) {
+    _$selectedTransTypeAtom.reportWrite(value, super.selectedTransType, () {
+      super.selectedTransType = value;
+    });
+  }
+
+  late final _$selectedTransStatusAtom =
+      Atom(name: '_PartyDetailsStore.selectedTransStatus', context: context);
+
+  @override
+  String get selectedTransStatus {
+    _$selectedTransStatusAtom.reportRead();
+    return super.selectedTransStatus;
+  }
+
+  @override
+  set selectedTransStatus(String value) {
+    _$selectedTransStatusAtom.reportWrite(value, super.selectedTransStatus, () {
+      super.selectedTransStatus = value;
+    });
+  }
+
+  late final _$isInfoFilterAppliedAtom =
+      Atom(name: '_PartyDetailsStore.isInfoFilterApplied', context: context);
+
+  @override
+  bool get isInfoFilterApplied {
+    _$isInfoFilterAppliedAtom.reportRead();
+    return super.isInfoFilterApplied;
+  }
+
+  @override
+  set isInfoFilterApplied(bool value) {
+    _$isInfoFilterAppliedAtom.reportWrite(value, super.isInfoFilterApplied, () {
+      super.isInfoFilterApplied = value;
+    });
+  }
+
+  late final _$currentInfoTablePageAtom =
+      Atom(name: '_PartyDetailsStore.currentInfoTablePage', context: context);
+
+  @override
+  int get currentInfoTablePage {
+    _$currentInfoTablePageAtom.reportRead();
+    return super.currentInfoTablePage;
+  }
+
+  @override
+  set currentInfoTablePage(int value) {
+    _$currentInfoTablePageAtom.reportWrite(value, super.currentInfoTablePage,
+        () {
+      super.currentInfoTablePage = value;
+    });
+  }
+
+  late final _$totalinfoPagesAtom =
+      Atom(name: '_PartyDetailsStore.totalinfoPages', context: context);
+
+  @override
+  int get totalinfoPages {
+    _$totalinfoPagesAtom.reportRead();
+    return super.totalinfoPages;
+  }
+
+  @override
+  set totalinfoPages(int value) {
+    _$totalinfoPagesAtom.reportWrite(value, super.totalinfoPages, () {
+      super.totalinfoPages = value;
     });
   }
 
@@ -306,6 +418,61 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
       ActionController(name: '_PartyDetailsStore', context: context);
 
   @override
+  void setSelectedTransType(dynamic value) {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.setSelectedTransType');
+    try {
+      return super.setSelectedTransType(value);
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedTransStatus(dynamic value) {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.setSelectedTransStatus');
+    try {
+      return super.setSelectedTransStatus(value);
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setTotalinfoPages(int index) {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.setTotalinfoPages');
+    try {
+      return super.setTotalinfoPages(index);
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPartyLedgerList(List<StockPartyLedger> list) {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.setPartyLedgerList');
+    try {
+      return super.setPartyLedgerList(list);
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void isInfoFilterAppliedCheck() {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.isInfoFilterAppliedCheck');
+    try {
+      return super.isInfoFilterAppliedCheck();
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedFilterTransactionType(TransactionTypeEnum value) {
     final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
         name: '_PartyDetailsStore.setSelectedFilterTransactionType');
@@ -344,6 +511,50 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
         name: '_PartyDetailsStore.setPartiesList');
     try {
       return super.setPartiesList(partyList);
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setCurrentInfoTablePage(int index) {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.setCurrentInfoTablePage');
+    try {
+      return super.setCurrentInfoTablePage(index);
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void clearInfoFilter() {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.clearInfoFilter');
+    try {
+      return super.clearInfoFilter();
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void filterLedgerList() {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.filterLedgerList');
+    try {
+      return super.filterLedgerList();
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void calculateInfoTotalPages() {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.calculateInfoTotalPages');
+    try {
+      return super.calculateInfoTotalPages();
     } finally {
       _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
     }
@@ -474,10 +685,16 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
   String toString() {
     return '''
 partiesList: ${partiesList},
+partyLedgerList: ${partyLedgerList},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},
 selectedParty: ${selectedParty},
+selectedTransType: ${selectedTransType},
+selectedTransStatus: ${selectedTransStatus},
+isInfoFilterApplied: ${isInfoFilterApplied},
+currentInfoTablePage: ${currentInfoTablePage},
+totalinfoPages: ${totalinfoPages},
 selectedFilterTransactionType: ${selectedFilterTransactionType},
 showPartyInfo: ${showPartyInfo},
 isFilterApplied: ${isFilterApplied},
@@ -488,6 +705,8 @@ selectedRowCount: ${selectedRowCount},
 currentTablePage: ${currentTablePage},
 selectedFilterFirm: ${selectedFilterFirm},
 selectedFilterPartyType: ${selectedFilterPartyType},
+filteredInfoData: ${filteredInfoData},
+paginatedInfoData: ${paginatedInfoData},
 paginatedData: ${paginatedData},
 sortedData: ${sortedData},
 filteredData: ${filteredData}

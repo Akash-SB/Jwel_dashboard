@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/app_enum.dart';
-import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/party_details/store/party_details_screen_store.dart';
 import 'package:sales_data_dashboard/widgets/common_dropdown.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
 
-import '../../../models/sales_model.dart';
+import '../../../models/stock_party_ledger.dart';
 
 class ShowPartyInfoWidget extends StatelessWidget {
   const ShowPartyInfoWidget({
@@ -24,13 +23,27 @@ class ShowPartyInfoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<TableColumn> columns = [
-      TableColumn(label: 'Date', key: 'date', isSortable: true),
-      TableColumn(label: 'Item Id', key: 'itemId', isSortable: true),
-      TableColumn(label: 'Pcs/Size', key: 'size'),
-      TableColumn(label: 'Carat', key: 'carat', isSortable: true),
-      TableColumn(label: 'Rate', key: 'rate', isSortable: true),
+      TableColumn(label: 'Transaction ID', key: 'transId', isSortable: true),
+      TableColumn(
+          label: 'Transaction Date', key: 'transDate', isSortable: true),
+      TableColumn(
+        label: 'Transaction Type',
+        key: 'transType',
+      ),
+      TableColumn(label: 'Customer Id', key: 'custId'),
+      TableColumn(label: 'Customer Name', key: 'custName'),
+      TableColumn(label: 'Product Id', key: 'prodId', isSortable: true),
+      TableColumn(label: 'Product Quantity', key: 'quantity', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
       TableColumn(label: 'Due Days', key: 'dueDays', isSortable: true),
+      TableColumn(
+        label: 'Agent Name',
+        key: 'agentName',
+      ),
+      TableColumn(
+        label: 'Brokerage',
+        key: 'brokerage',
+      ),
       TableColumn(
         label: 'Payment Status',
         key: 'paymentStatus',
@@ -39,8 +52,11 @@ class ShowPartyInfoWidget extends StatelessWidget {
         label: 'Payment Option',
         key: 'paymentOption',
       ),
+      TableColumn(
+        label: 'Firm',
+        key: 'firm',
+      ),
       TableColumn(label: 'Description', key: 'description'),
-      TableColumn(label: 'Actions', key: 'actions', isAction: true),
     ];
 
     return Container(
@@ -66,7 +82,7 @@ class ShowPartyInfoWidget extends StatelessWidget {
                   width: 16.dp,
                 ),
                 Text(
-                  'Item Information',
+                  'Party Information',
                   style: TextStyle(
                     fontSize: 20.dp,
                     fontWeight: FontWeight.bold,
@@ -135,7 +151,7 @@ class ShowPartyInfoWidget extends StatelessWidget {
           }),
           SizedBox(height: 16.dp),
           Text(
-            'Party History',
+            'Party Ledger',
             style: TextStyle(
               fontSize: 18.dp,
               fontWeight: FontWeight.bold,
@@ -150,98 +166,84 @@ class ShowPartyInfoWidget extends StatelessWidget {
                   IntrinsicWidth(
                     child: CommonDropdown(
                       label: 'Transaction Type',
-                      value:
-                          partyDetailsStore.selectedFilterTransactionType.name,
+                      value: partyDetailsStore.selectedTransType,
                       onChanged: (p0) {
-                        partyDetailsStore.setSelectedFilterTransactionType(
-                          TransactionTypeEnum.values.firstWhere(
-                            (e) => e.name == p0,
-                          ),
-                        );
+                        partyDetailsStore.setSelectedTransType(p0!);
+                        partyDetailsStore.isInfoFilterAppliedCheck();
                       },
                       options: [
-                        TransactionTypeEnum.sell.name,
-                        TransactionTypeEnum.purchase.name
+                        TransType.all.name,
+                        TransType.sale.name,
+                        TransType.purchase.name,
                       ],
                     ),
                   ),
                   SizedBox(
                     width: 12.dp,
                   ),
+                  IntrinsicWidth(
+                    child: CommonDropdown(
+                      label: 'Payment Status',
+                      value: partyDetailsStore.selectedTransStatus,
+                      onChanged: (p0) {
+                        partyDetailsStore.setSelectedTransStatus(p0!);
+                        partyDetailsStore.isInfoFilterAppliedCheck();
+                      },
+                      options: [
+                        PaymentStatusEnum.all.name,
+                        PaymentStatusEnum.paid.name,
+                        PaymentStatusEnum.unpaid.name,
+                      ],
+                    ),
+                  ),
                   const Spacer(),
-                  CustomImageButton(
-                    imagePath: 'assets/icons/pdf_icon.png',
-                    text: 'PDF',
-                    borderColor: const Color(0xffE5E7EB),
-                    buttonColor: Colors.white,
-                    onClicked: () {},
-                    // onClicked: widget.onExportPDF,
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
                   CustomImageButton(
                     imagePath: 'assets/icons/excel_icon.png',
                     text: 'Excel',
                     borderColor: const Color(0xffE5E7EB),
                     buttonColor: Colors.white,
                     onClicked: () {},
-                    // onClicked: widget.onExportPDF,
                   ),
                   SizedBox(
                     width: 12.dp,
                   ),
-                  Container(
-                    height: 30.dp,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: partyDetailsStore.isFilterApplied
+                  Observer(builder: (context) {
+                    return Container(
+                      height: 30.dp,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: partyDetailsStore.isInfoFilterApplied
+                                ? Colors.red
+                                : Colors.grey,
+                          )),
+                      child: IconButton(
+                        splashColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        focusColor: Colors.transparent,
+                        padding: EdgeInsets.zero,
+                        onPressed: partyDetailsStore.clearInfoFilter,
+                        icon: Image.asset(
+                          'assets/icons/cross_icon.png',
+                          color: partyDetailsStore.isInfoFilterApplied
                               ? Colors.red
                               : Colors.grey,
-                        )),
-                    child: IconButton(
-                      splashColor: Colors.transparent,
-                      hoverColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      focusColor: Colors.transparent,
-                      padding: EdgeInsets.zero,
-                      icon: Image.asset(
-                        'assets/icons/cross_icon.png',
-                        color: partyDetailsStore.isFilterApplied
-                            ? Colors.red
-                            : Colors.grey,
-                        width: 30.dp,
-                        height: 30.dp,
+                          width: 30.dp,
+                          height: 30.dp,
+                        ),
+                        tooltip: 'Clear All Filters',
                       ),
-                      tooltip: 'Clear All Filters',
-                      onPressed: partyDetailsStore.clearAllFilters,
-                      // onPressed: _clearAllFilters,
-                    ),
-                  ),
+                    );
+                  }),
                 ],
               ),
             );
           }),
           SizedBox(height: 8.dp),
           Observer(builder: (context) {
-            final dataList = (partyDetailsStore.selectedFilterTransactionType ==
-                    TransactionTypeEnum.sell)
-                ? userDataStore.salesList
-                    .where((sale) =>
-                        sale.partyDetails.name.toLowerCase() ==
-                        partyDetailsStore.selectedParty?.value.name
-                            .toLowerCase())
-                    .toList()
-                : userDataStore.purchaseList
-                    .where((purchase) =>
-                        purchase.partyDetails.name.toLowerCase() ==
-                        partyDetailsStore.selectedParty?.value.name
-                            .toLowerCase())
-                    .toList();
-
             return Expanded(
-              child: dataList.isEmpty
+              child: partyDetailsStore.partyLedgerList.isEmpty
                   ? Center(
                       child: Column(
                         children: [
@@ -302,23 +304,15 @@ class ShowPartyInfoWidget extends StatelessWidget {
                                 ),
                               );
                             }).toList(),
-                            rows: dataList.map((row) {
+                            rows:
+                                partyDetailsStore.paginatedInfoData.map((row) {
                               return DataRow(
                                 cells: columns.map((col) {
                                   return DataCell(
                                     Text(
                                       getCellValue(
                                         col.key,
-                                        partyDetailsStore
-                                                    .selectedFilterTransactionType ==
-                                                TransactionTypeEnum.sell
-                                            ? row as Sale
-                                            : null,
-                                        partyDetailsStore
-                                                    .selectedFilterTransactionType ==
-                                                TransactionTypeEnum.purchase
-                                            ? row as Purchase
-                                            : null,
+                                        row,
                                       ),
                                       style: TextStyle(
                                         fontSize: 14.dp,
@@ -335,60 +329,67 @@ class ShowPartyInfoWidget extends StatelessWidget {
                     ),
             );
           }),
+          Observer(builder: (context) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: partyDetailsStore.currentInfoTablePage > 0
+                      ? () => partyDetailsStore.setCurrentInfoTablePage(
+                          partyDetailsStore.currentInfoTablePage - 1)
+                      : null,
+                  icon: const Icon(Icons.chevron_left),
+                ),
+                Text(
+                    'Page ${partyDetailsStore.currentInfoTablePage + 1} of ${partyDetailsStore.totalinfoPages}'),
+                IconButton(
+                  onPressed: partyDetailsStore.currentInfoTablePage <
+                          partyDetailsStore.totalinfoPages - 1
+                      ? () => partyDetailsStore.setTotalinfoPages(
+                          partyDetailsStore.currentInfoTablePage + 1)
+                      : null,
+                  icon: const Icon(Icons.chevron_right),
+                ),
+              ],
+            );
+          }),
         ],
       ),
     );
   }
 
-  String getCellValue(String key, [Sale? row, Purchase? purchaseRow]) {
+  String getCellValue(String key, [StockPartyLedger? info]) {
     switch (key) {
-      case 'date':
-        return partyDetailsStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.createdAt.toIso8601String() ?? 'N/A'
-            : purchaseRow?.createdAt.toIso8601String() ?? 'N/A';
-      case 'itemId':
-        return partyDetailsStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.stockDetails.itemId ?? 'N/A'
-            : purchaseRow?.stockDetails.itemId ?? 'N/A';
-      case 'size':
-        return partyDetailsStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.stockDetails.size ?? 'N/A'
-            : purchaseRow?.stockDetails.size ?? 'N/A';
-      case 'carat':
-        return partyDetailsStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.stockDetails.carat.toString() ?? 'N/A'
-            : purchaseRow?.stockDetails.carat.toString() ?? 'N/A';
-      case 'rate':
-        return partyDetailsStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.stockDetails.rate.toString() ?? 'N/A'
-            : purchaseRow?.stockDetails.rate.toString() ?? 'N/A';
+      case 'transId':
+        return info?.id ?? '';
+      case 'transDate':
+        return info?.createdAt.toIso8601String() ?? 'NA';
+      case 'transType':
+        return info?.transType ?? 'NA';
+      case 'custId':
+        return info?.customerId ?? 'N/A';
+      case 'custName':
+        return info?.customerName ?? 'N/A';
+      case 'prodId':
+        return info?.productId ?? 'N/A';
+      case 'quantity':
+        return info?.quantity ?? 'N/A';
       case 'amount':
-        return partyDetailsStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.stockDetails.amount.toString() ?? 'N/A'
-            : purchaseRow?.stockDetails.amount.toString() ?? 'N/A';
-      case 'description':
-        return partyDetailsStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.description ?? 'N/A'
-            : purchaseRow?.description ?? 'N/A';
+        return info?.amount ?? 'N/A';
       case 'dueDays':
-        return row?.dueDays.toString() ?? 'N/A';
-      case 'paymentOption':
-        return partyDetailsStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.paymentOption.toString() ?? 'N/A'
-            : purchaseRow?.paymentOption.toString() ?? 'N/A';
+        return info?.dueDays.toString() ?? 'N/A';
+      case 'agentName':
+        return info?.agentName ?? 'N/A';
+      case 'brokerage':
+        return info?.brokerage ?? 'N/A';
       case 'paymentStatus':
-        return partyDetailsStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.paymentStatus.toString() ?? 'N/A'
-            : purchaseRow?.paymentStatus.toString() ?? 'N/A';
+        return info?.paymentStatus ?? 'N/A';
+      case 'firm':
+        return info?.firm ?? 'N/A';
+      case 'paymentOption':
+        return info?.paymentOption ?? 'N/A';
+      case 'description':
+        return info?.description ?? 'N/A';
       default:
         return '';
     }

@@ -32,6 +32,7 @@ class _SalesScreenState extends State<SalesScreen> {
 
   @override
   void initState() {
+    super.initState();
     if (!getIt.isRegistered<SalesScreenStore>()) {
       getIt.registerFactory<SalesScreenStore>(() => SalesScreenStore());
     }
@@ -60,7 +61,7 @@ class _SalesScreenState extends State<SalesScreen> {
     } else {
       salesScreenStore.setSalesList(userDataStore.salesList);
     }
-    super.initState();
+    salesScreenStore.calculateTotalPages();
   }
 
   @override
@@ -178,17 +179,6 @@ class _SalesScreenState extends State<SalesScreen> {
                   ),
                   const Spacer(),
                   CustomImageButton(
-                    imagePath: 'assets/icons/pdf_icon.png',
-                    text: 'PDF',
-                    borderColor: const Color(0xffE5E7EB),
-                    buttonColor: Colors.white,
-                    onClicked: () {},
-                    // onClicked: widget.onExportPDF,
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  CustomImageButton(
                     imagePath: 'assets/icons/excel_icon.png',
                     text: 'Excel',
                     borderColor: const Color(0xffE5E7EB),
@@ -204,8 +194,7 @@ class _SalesScreenState extends State<SalesScreen> {
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: false
-                              // partyDetailsStore.isFilterApplied
+                          color: salesScreenStore.isFilterApplied
                               ? Colors.red
                               : Colors.grey,
                         )),
@@ -217,16 +206,14 @@ class _SalesScreenState extends State<SalesScreen> {
                       padding: EdgeInsets.zero,
                       icon: Image.asset(
                         'assets/icons/cross_icon.png',
-                        color: false
-                            // partyDetailsStore.isFilterApplied
+                        color: salesScreenStore.isFilterApplied
                             ? Colors.red
                             : Colors.grey,
                         width: 30.dp,
                         height: 30.dp,
                       ),
-                      tooltip: 'Clear All Filters', onPressed: () {},
-                      // onPressed: partyDetailsStore.clearAllFilters,
-                      // onPressed: _clearAllFilters,
+                      tooltip: 'Clear All Filters',
+                      onPressed: salesScreenStore.clearAllFilters,
                     ),
                   ),
                 ],

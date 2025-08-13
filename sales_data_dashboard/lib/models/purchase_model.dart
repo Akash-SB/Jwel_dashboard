@@ -13,6 +13,7 @@ class Purchase {
   final String description;
   final DateTime createdAt;
   final String firm;
+  final Party? agentDetails;
 
   Purchase({
     required this.id,
@@ -23,6 +24,7 @@ class Purchase {
     required this.description,
     required this.createdAt,
     required this.firm,
+    this.agentDetails,
   });
 
   Map<String, dynamic> toMap() => {

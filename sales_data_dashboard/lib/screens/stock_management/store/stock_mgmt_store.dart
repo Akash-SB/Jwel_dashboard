@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
+import 'package:sales_data_dashboard/models/stock_party_ledger.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import '../../../models/app_enum.dart';
 import '../../../models/stock_item.dart';
@@ -20,11 +21,30 @@ abstract class _StockStore with Store {
   ObservableList<StockItem> stockItemList = ObservableList<StockItem>();
 
   @observable
+  ObservableList<StockPartyLedger> ledgerList =
+      ObservableList<StockPartyLedger>();
+
+  @observable
   Observable<StockItem>? selectedStockItem;
 
   @observable
+  String selectedTransType = 'All';
+
+  @observable
+  String selectedTransStatus = 'All';
+
+  @action
+  void setSelectedTransType(final value) {
+    selectedTransType = value;
+  }
+
+  @action
+  void setSelectedTransStatus(final value) {
+    selectedTransStatus = value;
+  }
+
+  @observable
   TransactionTypeEnum selectedFilterTransactionType = TransactionTypeEnum.sell;
-  
 
   @action
   void setSelectedFilterTransactionType(TransactionTypeEnum value) {
@@ -46,6 +66,11 @@ abstract class _StockStore with Store {
   }
 
   @action
+  void setLedgerList(List<StockPartyLedger> ledgerListValue) {
+    ledgerList = ObservableList.of(ledgerListValue);
+  }
+
+  @action
   void setSelectedProduct(StockItem? stock) {
     selectedStockItem = stock != null ? Observable<StockItem>(stock) : null;
   }
@@ -59,10 +84,16 @@ abstract class _StockStore with Store {
   bool isFilterApplied = false;
 
   @observable
+  bool isInfoFilterApplied = false;
+
+  @observable
   String? sortKey;
 
   @observable
   int totalPages = 0;
+
+  @observable
+  int totalinfoPages = 0;
 
   @observable
   bool sortAsc = true;
@@ -77,6 +108,9 @@ abstract class _StockStore with Store {
   int currentTablePage = 0;
 
   @observable
+  int currentInfoTablePage = 0;
+
+  @observable
   String selectedFirm = 'Sahajanand Jewellers';
 
   @action
@@ -89,12 +123,30 @@ abstract class _StockStore with Store {
     currentTablePage = index;
   }
 
+  @action
+  void setTotalinfoPages(final int index) {
+    totalinfoPages = index;
+  }
+
+  @action
+  void setCurrentInfoTablePage(final int index) {
+    currentInfoTablePage = index;
+  }
+
   @computed
   List<StockItem> get paginatedData {
     final start = currentTablePage * int.parse(selectedRowCount);
     final end =
         (start + int.parse(selectedRowCount)).clamp(0, sortedData.length);
     return sortedData.sublist(start, end);
+  }
+
+  @computed
+  List<StockPartyLedger> get paginatedInfoData {
+    final start = currentInfoTablePage * int.parse(selectedRowCount);
+    final end =
+        (start + int.parse(selectedRowCount)).clamp(0, filteredInfoData.length);
+    return filteredInfoData.sublist(start, end);
   }
 
   @action
@@ -115,12 +167,81 @@ abstract class _StockStore with Store {
   }
 
   @action
+  void isInfoFilterAppliedCheck() {
+    isInfoFilterApplied =
+        selectedTransType != 'All' || selectedTransStatus != 'All';
+  }
+
+  @action
   void calculateTotalPages() {
     if (filteredData.isEmpty) {
       totalPages = 0;
     } else {
       totalPages = (filteredData.length / int.parse(selectedRowCount)).ceil();
     }
+  }
+
+  @action
+  void calculateInfoTotalPages() {
+    if (filteredInfoData.isEmpty) {
+      totalinfoPages = 0;
+    } else {
+      totalinfoPages =
+          (filteredInfoData.length / int.parse(selectedRowCount)).ceil();
+    }
+  }
+
+  @action
+  void filterLedgerList() {
+    List<StockPartyLedger> ledgers = [];
+    ledgers.addAll(
+      userDataStore.salesList
+          .where((final sale) =>
+              sale.stockDetails.itemId == selectedStockItem?.value.itemId)
+          .map(
+            (final sale) => StockPartyLedger(
+                id: sale.id,
+                createdAt: sale.createdAt,
+                customerId: sale.partyDetails.id,
+                customerName: sale.partyDetails.name,
+                productId: sale.stockDetails.itemId,
+                quantity: sale.stockDetails.availableQuantity.toString(),
+                amount: sale.stockDetails.amount.toString(),
+                paymentStatus: sale.paymentStatus,
+                firm: sale.firm.name,
+                transType: TransType.sale.name,
+                description: sale.description,
+                dueDays: sale.dueDays,
+                agentName: sale.agentDetails?.name ?? 'NA',
+                brokerage: sale.agentDetails?.brokerage ?? 'NA'),
+          ),
+    );
+    ledgers.addAll(
+      userDataStore.purchaseList
+          .where((final purchase) =>
+              purchase.stockDetails.itemId == selectedStockItem?.value.itemId)
+          .map(
+            (final purchase) => StockPartyLedger(
+              id: purchase.id,
+              createdAt: purchase.createdAt,
+              customerId: purchase.partyDetails.id,
+              customerName: purchase.partyDetails.name,
+              productId: purchase.stockDetails.itemId,
+              quantity: purchase.stockDetails.availableQuantity.toString(),
+              amount: purchase.stockDetails.amount.toString(),
+              paymentStatus: purchase.paymentStatus,
+              firm: purchase.firm,
+              transType: TransType.purchase.name,
+              description: purchase.description,
+              agentName: purchase.agentDetails?.name ?? 'NA',
+              brokerage: purchase.agentDetails?.brokerage ?? 'NA',
+              paymentOption: purchase.paymentOption,
+            ),
+          ),
+    );
+    ledgers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    ledgerList.clear();
+    setLedgerList(ledgers);
   }
 
   @computed
@@ -148,8 +269,23 @@ abstract class _StockStore with Store {
           item.hsnCode.toLowerCase().contains(query) ||
           item.carat.toString().contains(query) ||
           item.amount.toString().contains(query);
-      final firmMatch = item.firm == selectedFirm;
+      final firmMatch = item.firm.toLowerCase() == selectedFirm.toLowerCase();
       return searchedItem && firmMatch;
+    }).toList();
+  }
+
+  @computed
+  List<StockPartyLedger> get filteredInfoData {
+    List<StockPartyLedger> filtered = ledgerList.toList();
+    return filtered.where((item) {
+      final typeMatch = selectedTransType == 'All'
+          ? true
+          : item.transType == selectedTransType;
+      final statusType = selectedTransStatus == 'All'
+          ? true
+          : item.paymentStatus.toLowerCase() ==
+              selectedTransStatus.toLowerCase();
+      return typeMatch && statusType;
     }).toList();
   }
 
@@ -214,5 +350,13 @@ abstract class _StockStore with Store {
     setSearchText('');
     setCurrentPageIndex(0);
     isFilterApplied = false;
+  }
+
+  @action
+  void clearInfoFilter() {
+    setSelectedTransStatus('All');
+    setSelectedTransType('All');
+    setCurrentInfoTablePage(0);
+    isInfoFilterApplied = false;
   }
 }

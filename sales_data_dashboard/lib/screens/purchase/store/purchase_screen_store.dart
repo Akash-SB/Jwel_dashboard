@@ -242,9 +242,11 @@ abstract class _PurchaseScreenStore with Store {
       final searchItem = sale.id.toLowerCase().contains(matchesSearch) ||
           sale.stockDetails.size.toLowerCase().contains(matchesSearch) ||
           sale.paymentStatus.toLowerCase().contains(matchesSearch);
-      final matchesFirm = sale.firm == selectedFilterFirm;
-      final matchesStatus =
-          salectedStatus == 'All' ? true : sale.paymentStatus == salectedStatus;
+      final matchesFirm =
+          sale.firm.toLowerCase() == selectedFilterFirm.toLowerCase();
+      final matchesStatus = salectedStatus == 'All'
+          ? true
+          : sale.paymentStatus.toLowerCase() == salectedStatus.toLowerCase();
       return searchItem && matchesFirm && matchesStatus;
     }).toList();
   }
@@ -326,5 +328,16 @@ abstract class _PurchaseScreenStore with Store {
     } catch (e) {
       errorMessage = e.toString();
     }
+  }
+
+  @action
+  void clearAllFilters() {
+    searchcontroller.text = '';
+    setSelectedFilterFirm('Sahajanand Jewellers');
+    setSelectedStatus('All');
+    sortKey = null;
+    setSearchText('');
+    setCurrentPageIndex(0);
+    isFilterApplied = false;
   }
 }

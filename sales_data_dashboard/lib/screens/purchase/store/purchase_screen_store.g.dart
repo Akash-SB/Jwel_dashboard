@@ -646,6 +646,17 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
   }
 
   @override
+  void clearAllFilters() {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.clearAllFilters');
+    try {
+      return super.clearAllFilters();
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 purchaseList: ${purchaseList},

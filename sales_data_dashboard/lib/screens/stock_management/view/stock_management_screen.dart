@@ -154,17 +154,6 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
                                 ),
                                 const Spacer(),
                                 CustomImageButton(
-                                  imagePath: 'assets/icons/pdf_icon.png',
-                                  text: 'PDF',
-                                  borderColor: const Color(0xffE5E7EB),
-                                  buttonColor: Colors.white,
-                                  onClicked: () {},
-                                  // onClicked: widget.onExportPDF,
-                                ),
-                                SizedBox(
-                                  width: 12.dp,
-                                ),
-                                CustomImageButton(
                                   imagePath: 'assets/icons/excel_icon.png',
                                   text: 'Excel',
                                   borderColor: const Color(0xffE5E7EB),
@@ -200,7 +189,6 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
                                     ),
                                     tooltip: 'Clear All Filters',
                                     onPressed: stockStore.clearAllFilters,
-                                    // onPressed: _clearAllFilters,
                                   ),
                                 ),
                               ],
@@ -327,6 +315,10 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
                                                         stockStore
                                                             .toggleItemInfo(
                                                                 true);
+                                                        stockStore
+                                                            .filterLedgerList();
+                                                        stockStore
+                                                            .calculateInfoTotalPages();
                                                       },
                                                       child: Text(
                                                         _getCellValue(

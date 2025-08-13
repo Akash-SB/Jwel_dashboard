@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/models/app_enum.dart';
+import 'package:sales_data_dashboard/models/stock_party_ledger.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 
 import '../../../models/party_model.dart';
@@ -25,6 +26,10 @@ abstract class _PartyDetailsStore with Store {
   ObservableList<Party> partiesList = ObservableList<Party>();
 
   @observable
+  ObservableList<StockPartyLedger> partyLedgerList =
+      ObservableList<StockPartyLedger>();
+
+  @observable
   String? sortKey;
 
   @observable
@@ -37,7 +42,50 @@ abstract class _PartyDetailsStore with Store {
   Observable<Party>? selectedParty;
 
   @observable
+  String selectedTransType = 'All';
+
+  @observable
+  String selectedTransStatus = 'All';
+
+  @action
+  void setSelectedTransType(final value) {
+    selectedTransType = value;
+  }
+
+  @observable
+  bool isInfoFilterApplied = false;
+
+  @observable
+  int currentInfoTablePage = 0;
+
+  @observable
+  int totalinfoPages = 0;
+
+  @action
+  void setSelectedTransStatus(final value) {
+    selectedTransStatus = value;
+  }
+
+  @action
+  void setTotalinfoPages(final int index) {
+    totalinfoPages = index;
+  }
+
+  @observable
   TransactionTypeEnum selectedFilterTransactionType = TransactionTypeEnum.sell;
+
+  @action
+  void setPartyLedgerList(final List<StockPartyLedger> list) {
+    partyLedgerList
+      ..clear()
+      ..addAll(list);
+  }
+
+  @action
+  void isInfoFilterAppliedCheck() {
+    isInfoFilterApplied =
+        selectedTransType != 'All' || selectedTransStatus != 'All';
+  }
 
   @action
   void setSelectedFilterTransactionType(TransactionTypeEnum value) {
@@ -65,6 +113,11 @@ abstract class _PartyDetailsStore with Store {
   }
 
   @action
+  void setCurrentInfoTablePage(final int index) {
+    currentInfoTablePage = index;
+  }
+
+  @action
   Future<void> addPartyDetails(Party party) async {
     try {
       await _collection.doc(party.id).set(party.toMap());
@@ -73,6 +126,67 @@ abstract class _PartyDetailsStore with Store {
     } catch (e) {
       print('Error adding party: $e');
     }
+  }
+
+  @action
+  void clearInfoFilter() {
+    setSelectedTransStatus('All');
+    setSelectedTransType('All');
+    setCurrentInfoTablePage(0);
+    isInfoFilterApplied = false;
+  }
+
+  @action
+  void filterLedgerList() {
+    List<StockPartyLedger> ledgers = [];
+    ledgers.addAll(
+      userDataStore.salesList
+          .where((final sale) =>
+              sale.partyDetails.name == selectedParty?.value.name)
+          .map(
+            (final sale) => StockPartyLedger(
+                id: sale.id,
+                createdAt: sale.createdAt,
+                customerId: sale.partyDetails.id,
+                customerName: sale.partyDetails.name,
+                productId: sale.stockDetails.itemId,
+                quantity: sale.stockDetails.availableQuantity.toString(),
+                amount: sale.stockDetails.amount.toString(),
+                paymentStatus: sale.paymentStatus,
+                firm: sale.firm.name,
+                transType: TransType.sale.name,
+                description: sale.description,
+                dueDays: sale.dueDays,
+                agentName: sale.agentDetails?.name ?? 'NA',
+                brokerage: sale.agentDetails?.brokerage ?? 'NA'),
+          ),
+    );
+    ledgers.addAll(
+      userDataStore.purchaseList
+          .where((final purchase) =>
+              purchase.partyDetails.name == selectedParty?.value.name)
+          .map(
+            (final purchase) => StockPartyLedger(
+              id: purchase.id,
+              createdAt: purchase.createdAt,
+              customerId: purchase.partyDetails.id,
+              customerName: purchase.partyDetails.name,
+              productId: purchase.stockDetails.itemId,
+              quantity: purchase.stockDetails.availableQuantity.toString(),
+              amount: purchase.stockDetails.amount.toString(),
+              paymentStatus: purchase.paymentStatus,
+              firm: purchase.firm,
+              transType: TransType.purchase.name,
+              description: purchase.description,
+              agentName: purchase.agentDetails?.name ?? 'NA',
+              brokerage: purchase.agentDetails?.brokerage ?? 'NA',
+              paymentOption: purchase.paymentOption,
+            ),
+          ),
+    );
+    ledgers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    partyLedgerList.clear();
+    setPartyLedgerList(ledgers);
   }
 
   @action
@@ -106,6 +220,16 @@ abstract class _PartyDetailsStore with Store {
   }
 
   @action
+  void calculateInfoTotalPages() {
+    if (filteredInfoData.isEmpty) {
+      totalinfoPages = 0;
+    } else {
+      totalinfoPages =
+          (filteredInfoData.length / int.parse(selectedRowCount)).ceil();
+    }
+  }
+
+  @action
   void setSearchText(final String text) {
     searchedText = text;
   }
@@ -127,6 +251,29 @@ abstract class _PartyDetailsStore with Store {
   @action
   void setSelectedFormFirmType(String value) {
     selectedFormFirmType = value;
+  }
+
+  @computed
+  List<StockPartyLedger> get filteredInfoData {
+    List<StockPartyLedger> filtered = partyLedgerList.toList();
+    return filtered.where((item) {
+      final typeMatch = selectedTransType == 'All'
+          ? true
+          : item.transType == selectedTransType;
+      final statusType = selectedTransStatus == 'All'
+          ? true
+          : item.paymentStatus.toLowerCase() ==
+              selectedTransStatus.toLowerCase();
+      return typeMatch && statusType;
+    }).toList();
+  }
+
+  @computed
+  List<StockPartyLedger> get paginatedInfoData {
+    final start = currentInfoTablePage * int.parse(selectedRowCount);
+    final end =
+        (start + int.parse(selectedRowCount)).clamp(0, filteredInfoData.length);
+    return filteredInfoData.sublist(start, end);
   }
 
   @action

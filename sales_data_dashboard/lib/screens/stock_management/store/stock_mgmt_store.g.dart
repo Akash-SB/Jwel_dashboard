@@ -16,6 +16,14 @@ mixin _$StockStore on _StockStore, Store {
           Computed<List<StockItem>>(() => super.paginatedData,
               name: '_StockStore.paginatedData'))
       .value;
+  Computed<List<StockPartyLedger>>? _$paginatedInfoDataComputed;
+
+  @override
+  List<StockPartyLedger> get paginatedInfoData =>
+      (_$paginatedInfoDataComputed ??= Computed<List<StockPartyLedger>>(
+              () => super.paginatedInfoData,
+              name: '_StockStore.paginatedInfoData'))
+          .value;
   Computed<List<StockItem>>? _$sortedDataComputed;
 
   @override
@@ -29,6 +37,13 @@ mixin _$StockStore on _StockStore, Store {
   List<StockItem> get filteredData => (_$filteredDataComputed ??=
           Computed<List<StockItem>>(() => super.filteredData,
               name: '_StockStore.filteredData'))
+      .value;
+  Computed<List<StockPartyLedger>>? _$filteredInfoDataComputed;
+
+  @override
+  List<StockPartyLedger> get filteredInfoData => (_$filteredInfoDataComputed ??=
+          Computed<List<StockPartyLedger>>(() => super.filteredInfoData,
+              name: '_StockStore.filteredInfoData'))
       .value;
 
   late final _$stockItemListAtom =
@@ -47,6 +62,22 @@ mixin _$StockStore on _StockStore, Store {
     });
   }
 
+  late final _$ledgerListAtom =
+      Atom(name: '_StockStore.ledgerList', context: context);
+
+  @override
+  ObservableList<StockPartyLedger> get ledgerList {
+    _$ledgerListAtom.reportRead();
+    return super.ledgerList;
+  }
+
+  @override
+  set ledgerList(ObservableList<StockPartyLedger> value) {
+    _$ledgerListAtom.reportWrite(value, super.ledgerList, () {
+      super.ledgerList = value;
+    });
+  }
+
   late final _$selectedStockItemAtom =
       Atom(name: '_StockStore.selectedStockItem', context: context);
 
@@ -60,6 +91,38 @@ mixin _$StockStore on _StockStore, Store {
   set selectedStockItem(Observable<StockItem>? value) {
     _$selectedStockItemAtom.reportWrite(value, super.selectedStockItem, () {
       super.selectedStockItem = value;
+    });
+  }
+
+  late final _$selectedTransTypeAtom =
+      Atom(name: '_StockStore.selectedTransType', context: context);
+
+  @override
+  String get selectedTransType {
+    _$selectedTransTypeAtom.reportRead();
+    return super.selectedTransType;
+  }
+
+  @override
+  set selectedTransType(String value) {
+    _$selectedTransTypeAtom.reportWrite(value, super.selectedTransType, () {
+      super.selectedTransType = value;
+    });
+  }
+
+  late final _$selectedTransStatusAtom =
+      Atom(name: '_StockStore.selectedTransStatus', context: context);
+
+  @override
+  String get selectedTransStatus {
+    _$selectedTransStatusAtom.reportRead();
+    return super.selectedTransStatus;
+  }
+
+  @override
+  set selectedTransStatus(String value) {
+    _$selectedTransStatusAtom.reportWrite(value, super.selectedTransStatus, () {
+      super.selectedTransStatus = value;
     });
   }
 
@@ -112,6 +175,22 @@ mixin _$StockStore on _StockStore, Store {
     });
   }
 
+  late final _$isInfoFilterAppliedAtom =
+      Atom(name: '_StockStore.isInfoFilterApplied', context: context);
+
+  @override
+  bool get isInfoFilterApplied {
+    _$isInfoFilterAppliedAtom.reportRead();
+    return super.isInfoFilterApplied;
+  }
+
+  @override
+  set isInfoFilterApplied(bool value) {
+    _$isInfoFilterAppliedAtom.reportWrite(value, super.isInfoFilterApplied, () {
+      super.isInfoFilterApplied = value;
+    });
+  }
+
   late final _$sortKeyAtom =
       Atom(name: '_StockStore.sortKey', context: context);
 
@@ -141,6 +220,22 @@ mixin _$StockStore on _StockStore, Store {
   set totalPages(int value) {
     _$totalPagesAtom.reportWrite(value, super.totalPages, () {
       super.totalPages = value;
+    });
+  }
+
+  late final _$totalinfoPagesAtom =
+      Atom(name: '_StockStore.totalinfoPages', context: context);
+
+  @override
+  int get totalinfoPages {
+    _$totalinfoPagesAtom.reportRead();
+    return super.totalinfoPages;
+  }
+
+  @override
+  set totalinfoPages(int value) {
+    _$totalinfoPagesAtom.reportWrite(value, super.totalinfoPages, () {
+      super.totalinfoPages = value;
     });
   }
 
@@ -205,6 +300,23 @@ mixin _$StockStore on _StockStore, Store {
   set currentTablePage(int value) {
     _$currentTablePageAtom.reportWrite(value, super.currentTablePage, () {
       super.currentTablePage = value;
+    });
+  }
+
+  late final _$currentInfoTablePageAtom =
+      Atom(name: '_StockStore.currentInfoTablePage', context: context);
+
+  @override
+  int get currentInfoTablePage {
+    _$currentInfoTablePageAtom.reportRead();
+    return super.currentInfoTablePage;
+  }
+
+  @override
+  set currentInfoTablePage(int value) {
+    _$currentInfoTablePageAtom.reportWrite(value, super.currentInfoTablePage,
+        () {
+      super.currentInfoTablePage = value;
     });
   }
 
@@ -284,6 +396,28 @@ mixin _$StockStore on _StockStore, Store {
       ActionController(name: '_StockStore', context: context);
 
   @override
+  void setSelectedTransType(dynamic value) {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.setSelectedTransType');
+    try {
+      return super.setSelectedTransType(value);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSelectedTransStatus(dynamic value) {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.setSelectedTransStatus');
+    try {
+      return super.setSelectedTransStatus(value);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedFilterTransactionType(TransactionTypeEnum value) {
     final _$actionInfo = _$_StockStoreActionController.startAction(
         name: '_StockStore.setSelectedFilterTransactionType');
@@ -300,6 +434,17 @@ mixin _$StockStore on _StockStore, Store {
         name: '_StockStore.setStockItemList');
     try {
       return super.setStockItemList(stockList);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setLedgerList(List<StockPartyLedger> ledgerListValue) {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.setLedgerList');
+    try {
+      return super.setLedgerList(ledgerListValue);
     } finally {
       _$_StockStoreActionController.endAction(_$actionInfo);
     }
@@ -372,11 +517,44 @@ mixin _$StockStore on _StockStore, Store {
   }
 
   @override
+  void isInfoFilterAppliedCheck() {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.isInfoFilterAppliedCheck');
+    try {
+      return super.isInfoFilterAppliedCheck();
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void calculateTotalPages() {
     final _$actionInfo = _$_StockStoreActionController.startAction(
         name: '_StockStore.calculateTotalPages');
     try {
       return super.calculateTotalPages();
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void calculateInfoTotalPages() {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.calculateInfoTotalPages');
+    try {
+      return super.calculateInfoTotalPages();
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void filterLedgerList() {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.filterLedgerList');
+    try {
+      return super.filterLedgerList();
     } finally {
       _$_StockStoreActionController.endAction(_$actionInfo);
     }
@@ -394,25 +572,44 @@ mixin _$StockStore on _StockStore, Store {
   }
 
   @override
+  void clearInfoFilter() {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.clearInfoFilter');
+    try {
+      return super.clearInfoFilter();
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 stockItemList: ${stockItemList},
+ledgerList: ${ledgerList},
 selectedStockItem: ${selectedStockItem},
+selectedTransType: ${selectedTransType},
+selectedTransStatus: ${selectedTransStatus},
 selectedFilterTransactionType: ${selectedFilterTransactionType},
 showItemInfo: ${showItemInfo},
 isFilterApplied: ${isFilterApplied},
+isInfoFilterApplied: ${isInfoFilterApplied},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
+totalinfoPages: ${totalinfoPages},
 sortAsc: ${sortAsc},
 searchedText: ${searchedText},
 selectedRowCount: ${selectedRowCount},
 currentTablePage: ${currentTablePage},
+currentInfoTablePage: ${currentInfoTablePage},
 selectedFirm: ${selectedFirm},
 isLoading: ${isLoading},
 errorMessage: ${errorMessage},
 paginatedData: ${paginatedData},
+paginatedInfoData: ${paginatedInfoData},
 sortedData: ${sortedData},
-filteredData: ${filteredData}
+filteredData: ${filteredData},
+filteredInfoData: ${filteredInfoData}
     ''';
   }
 }

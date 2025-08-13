@@ -422,9 +422,8 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                     double.tryParse(rateController.text) ?? 0.0,
                                 carat: double.tryParse(caratController.text) ??
                                     0.0,
-                                availableQuantity: (selectedItem
-                                            .availableQuantity ??
-                                        0) +
+                                availableQuantity: selectedItem
+                                        .availableQuantity +
                                     (double.tryParse(quantityController.text) ??
                                         0.0),
                                 hsnCode: hsnController.text,

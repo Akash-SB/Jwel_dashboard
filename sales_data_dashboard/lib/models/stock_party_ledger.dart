@@ -2,6 +2,7 @@ class StockPartyLedger {
   final String id;
   final DateTime createdAt;
   final String customerId;
+  final String customerName;
   final String productId;
   final String quantity;
   final String amount;
@@ -10,16 +11,21 @@ class StockPartyLedger {
   final int? dueDays;
   final String? description;
   final String firm;
+  final String? agentName;
+  final String? brokerage;
   final String transType;
 
   StockPartyLedger(
       {required this.id,
       required this.createdAt,
       required this.customerId,
+      required this.customerName,
       required this.productId,
       required this.quantity,
       required this.amount,
       required this.paymentStatus,
+      this.agentName,
+      this.brokerage,
       this.paymentOption,
       this.dueDays,
       this.description,

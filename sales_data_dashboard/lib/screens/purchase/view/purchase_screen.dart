@@ -50,6 +50,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     purchaseScreenStore.setStockList(userDataStore.stockList);
     purchaseScreenStore.setPartiesList(userDataStore.partiesList);
     purchaseScreenStore.setCurrentPageIndex(0);
+    purchaseScreenStore.calculateTotalPages();
   }
 
   @override
@@ -189,8 +190,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: false
-                              // partyDetailsStore.isFilterApplied
+                          color: purchaseScreenStore.isFilterApplied
                               ? Colors.red
                               : Colors.grey,
                         )),
@@ -202,16 +202,14 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                       padding: EdgeInsets.zero,
                       icon: Image.asset(
                         'assets/icons/cross_icon.png',
-                        color: false
-                            // partyDetailsStore.isFilterApplied
+                        color: purchaseScreenStore.isFilterApplied
                             ? Colors.red
                             : Colors.grey,
                         width: 30.dp,
                         height: 30.dp,
                       ),
-                      tooltip: 'Clear All Filters', onPressed: () {},
-                      // onPressed: partyDetailsStore.clearAllFilters,
-                      // onPressed: _clearAllFilters,
+                      tooltip: 'Clear All Filters',
+                      onPressed: purchaseScreenStore.clearAllFilters,
                     ),
                   ),
                 ],

@@ -237,8 +237,9 @@ abstract class _SalesScreenStore with Store {
           sale.stockDetails.size.toLowerCase().contains(matchesSearch) ||
           sale.paymentStatus.toLowerCase().contains(matchesSearch);
       final matchesFirm = sale.firm.name == selectedFilterFirm;
-      final matchesStatus =
-          salectedStatus == 'All' ? true : sale.paymentStatus == salectedStatus;
+      final matchesStatus = salectedStatus == 'All'
+          ? true
+          : sale.paymentStatus == salectedStatus.toLowerCase();
       return searchItem && matchesFirm && matchesStatus;
     }).toList();
   }

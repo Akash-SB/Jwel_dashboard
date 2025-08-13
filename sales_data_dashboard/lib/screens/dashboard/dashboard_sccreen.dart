@@ -7,7 +7,6 @@ import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
 import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
-import 'package:sales_data_dashboard/widgets/normal_button.dart';
 import '../home/store/userdata_store.dart';
 
 final getIt = GetIt.instance;
@@ -232,27 +231,38 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                                   ),
                                 ),
                                 SizedBox(
-                                  height: 4.dp,
+                                  height: 8.dp,
                                 ),
-                                IntrinsicWidth(
-                                  child: NormalButton(
+                                InkWell(
+                                  onTap: () {
+                                    userDataStore
+                                        .updateSalesStatus(notif.salesId);
+                                    setState(() {
+                                      userDataStore.notfList.removeAt(index);
+                                    });
+                                  },
+                                  child: Container(
                                     padding: EdgeInsets.symmetric(
-                                      vertical: 2.dp,
-                                      horizontal: 4.dp,
+                                      vertical: 4.dp,
+                                      horizontal: 8.dp,
                                     ),
-                                    text: 'Paid',
-                                    filledColor: Colors.white,
-                                    textStyle: const TextStyle(
-                                        fontSize: 8, color: Color(0xFF4B5563)),
-                                    borderColor: const Color.fromARGB(
-                                        255, 200, 203, 210),
-                                    onPressed: () {
-                                      userDataStore
-                                          .updateSalesStatus(notif.salesId);
-                                      setState(() {
-                                        userDataStore.notfList.removeAt(index);
-                                      });
-                                    },
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color.fromARGB(
+                                            255, 200, 203, 210),
+                                      ),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(6.dp),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Paid',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Color(0xFF4B5563),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                                 )
                               ],
@@ -326,7 +336,7 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
                         userDataStore.sixMonthSalesList.isNotEmpty)
                     ? buildSummaryCards(userDataStore.sixMonthSalesList,
                         userDataStore.sixMonthPurchaseList)
-                    : SizedBox.shrink();
+                    : const SizedBox.shrink();
               }),
             ],
           ),

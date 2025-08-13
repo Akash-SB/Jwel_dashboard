@@ -144,18 +144,21 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                     }),
                   ],
                 ),
-                SizedBox(height: 24.dp),
+                SizedBox(height: 12.dp),
+                const Text(
+                  'Party Details',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0XFF111827),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 12.dp),
                 if (widget.partyList != null && widget.partyList!.isNotEmpty)
                   Observer(builder: (context) {
                     return SearchableTextField<String>(
                       label: 'Search by Party ID',
-                      options: widget.partyList!
-                          .where((party) =>
-                              party.firm ==
-                                  widget.salesScreenStore.selectedFilterFirm &&
-                              party.partyType.toLowerCase() == 'company')
-                          .map((e) => e.name)
-                          .toList(),
+                      options: widget.partyList!.map((e) => e.name).toList(),
                       displayString: (s) => s,
                       onSelect: (val) {
                         final party = widget.partyList!
@@ -223,91 +226,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                     ),
                   ],
                 ),
-                SizedBox(height: 24.dp),
-                const Text('Item Information',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0XFF111827),
-                      fontWeight: FontWeight.w600,
-                    )),
-                if (widget.stockItemList != null &&
-                    widget.stockItemList!.isNotEmpty)
-                  Observer(builder: (context) {
-                    return SearchableTextField<String>(
-                      label: 'Search by Item ID',
-                      options:
-                          widget.stockItemList?.map((e) => e.itemId).toList() ??
-                              [],
-                      displayString: (s) => s,
-                      onSelect: (val) {
-                        final item = widget.stockItemList
-                            ?.firstWhere((element) => element.itemId == val);
-                        itemNameController.text = item?.itemName ?? '';
-                        sizeController.text = item?.size ?? '';
-                        rateController.text = item?.rate.toString() ?? '';
-                        caratController.text = item?.carat.toString() ?? '';
-                        descriptionController.text = item?.description ?? '';
-                        hsnCodeController.text = item?.hsnCode ?? '';
-                        quantityController.text =
-                            item?.availableQuantity.toString() ?? '';
-                        setAmount();
-                      },
-                    );
-                  })
-                else
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'No Stock Item data available. Please add Stock Item first.',
-                      style: TextStyle(color: Colors.red.shade700),
-                    ),
-                  ),
-                Row(
-                  children: [
-                    Expanded(
-                        child: CommonTextField(
-                            label: 'Item Name',
-                            controller: itemNameController)),
-                    SizedBox(width: 16.dp),
-                    Expanded(
-                        child: CommonTextField(
-                            label: 'Size', controller: sizeController)),
-                    SizedBox(width: 16.dp),
-                    Expanded(
-                      child: CommonTextField(
-                        label: 'Rate',
-                        controller: rateController,
-                        onChanged: (p0) => setAmount(),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                        child: CommonTextField(
-                            label: 'Carat', controller: caratController)),
-                    SizedBox(width: 16.dp),
-                    Expanded(
-                        child: CommonTextField(
-                      label: 'Quantity',
-                      controller: quantityController,
-                      onChanged: (p0) => setAmount(),
-                    )),
-                    SizedBox(width: 16.dp),
-                    Expanded(
-                        child: CommonTextField(
-                      label: 'Amount',
-                      controller: amountController,
-                      onChanged: (p0) => setAmount(),
-                    )),
-                  ],
-                ),
-                CommonTextField(
-                    label: 'Description',
-                    controller: descriptionController,
-                    maxLines: 3),
-                SizedBox(height: 24.dp),
+                SizedBox(height: 12.dp),
                 const Text(
                   'Agent Information',
                   style: TextStyle(
@@ -454,6 +373,95 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                     ],
                   );
                 }),
+                const Text('Item Information',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Color(0XFF111827),
+                      fontWeight: FontWeight.w600,
+                    )),
+                SizedBox(
+                  height: 12.dp,
+                ),
+                if (widget.stockItemList != null &&
+                    widget.stockItemList!.isNotEmpty)
+                  Observer(builder: (context) {
+                    return SearchableTextField<String>(
+                      label: 'Search by Item ID',
+                      options:
+                          widget.stockItemList?.map((e) => e.itemId).toList() ??
+                              [],
+                      displayString: (s) => s,
+                      onSelect: (val) {
+                        final item = widget.stockItemList
+                            ?.firstWhere((element) => element.itemId == val);
+                        itemNameController.text = item?.itemName ?? '';
+                        sizeController.text = item?.size ?? '';
+                        rateController.text = item?.rate.toString() ?? '';
+                        caratController.text = item?.carat.toString() ?? '';
+                        descriptionController.text = item?.description ?? '';
+                        hsnCodeController.text = item?.hsnCode ?? '';
+                        quantityController.text =
+                            item?.availableQuantity.toString() ?? '';
+                        setAmount();
+                      },
+                    );
+                  })
+                else
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'No Stock Item data available. Please add Stock Item first.',
+                      style: TextStyle(color: Colors.red.shade700),
+                    ),
+                  ),
+                Row(
+                  children: [
+                    Expanded(
+                        child: CommonTextField(
+                            label: 'Item Name',
+                            controller: itemNameController)),
+                    SizedBox(width: 16.dp),
+                    Expanded(
+                        child: CommonTextField(
+                            label: 'Size', controller: sizeController)),
+                    SizedBox(width: 16.dp),
+                    Expanded(
+                      child: CommonTextField(
+                        label: 'Rate',
+                        controller: rateController,
+                        onChanged: (p0) => setAmount(),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CommonTextField(
+                        label: 'Carat',
+                        controller: caratController,
+                      ),
+                    ),
+                    SizedBox(width: 16.dp),
+                    Expanded(
+                        child: CommonTextField(
+                      label: 'Quantity',
+                      controller: quantityController,
+                      onChanged: (p0) => setAmount(),
+                    )),
+                    SizedBox(width: 16.dp),
+                    Expanded(
+                        child: CommonTextField(
+                      label: 'Amount',
+                      controller: amountController,
+                      onChanged: (p0) => setAmount(),
+                    )),
+                  ],
+                ),
+                CommonTextField(
+                    label: 'Description',
+                    controller: descriptionController,
+                    maxLines: 3),
                 SizedBox(height: 24.dp),
                 const Text('Other Information',
                     style: TextStyle(
@@ -601,7 +609,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                           'Something went wrong while updating Sales data')),
                                 );
                               },
-                            );
+                            )
                             ;
                           } else {
                             widget.salesScreenStore

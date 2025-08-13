@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/models/stock_party_ledger.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/stock_management/store/stock_mgmt_store.dart';
 import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
 
 import '../../../models/app_enum.dart';
-import '../../../models/purchase_model.dart';
-import '../../../models/sales_model.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/custom_data_table.dart';
 
@@ -24,18 +23,47 @@ class ItemInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<TableColumn> columns = [
-      TableColumn(label: 'Transaction ID', key: 'transId', isSortable: true),
+      TableColumn(label: 'Transaction ID', key: 'transId'),
       TableColumn(
-          label: 'Transaction Date', key: 'transDate', isSortable: true),
+        label: 'Transaction Date',
+        key: 'transDate',
+      ),
       TableColumn(
         label: 'Transaction Type',
         key: 'transType',
       ),
-      TableColumn(label: 'Customer Id', key: 'custId'),
-      TableColumn(label: 'Product Id', key: 'prodId', isSortable: true),
-      TableColumn(label: 'Product Quantity', key: 'quantity', isSortable: true),
-      TableColumn(label: 'Amount', key: 'amount', isSortable: true),
-      TableColumn(label: 'Due Days', key: 'dueDays', isSortable: true),
+      TableColumn(
+        label: 'Customer Id',
+        key: 'custId',
+      ),
+      TableColumn(
+        label: 'Customer Name',
+        key: 'custName',
+      ),
+      TableColumn(
+        label: 'Product Id',
+        key: 'prodId',
+      ),
+      TableColumn(
+        label: 'Product Quantity',
+        key: 'quantity',
+      ),
+      TableColumn(
+        label: 'Amount',
+        key: 'amount',
+      ),
+      TableColumn(
+        label: 'Due Days',
+        key: 'dueDays',
+      ),
+      TableColumn(
+        label: 'Agent Name',
+        key: 'agentName',
+      ),
+      TableColumn(
+        label: 'Brokerage',
+        key: 'brokerage',
+      ),
       TableColumn(
         label: 'Payment Status',
         key: 'paymentStatus',
@@ -49,7 +77,6 @@ class ItemInfoScreen extends StatelessWidget {
         key: 'firm',
       ),
       TableColumn(label: 'Description', key: 'description'),
-      TableColumn(label: 'Actions', key: 'actions', isAction: true),
     ];
     return Container(
       color: Colors.white,
@@ -108,7 +135,7 @@ class ItemInfoScreen extends StatelessWidget {
                 },
                 children: [
                   TableRow(children: [
-                    _infoTile('Iten ID',
+                    _infoTile('Item ID',
                         stockStore.selectedStockItem?.value.itemId ?? 'N/A'),
                     _infoTile('Item Name',
                         stockStore.selectedStockItem?.value.itemName ?? 'N/A'),
@@ -148,7 +175,7 @@ class ItemInfoScreen extends StatelessWidget {
           }),
           SizedBox(height: 16.dp),
           Text(
-            'Stock History',
+            'Stock Ledger',
             style: TextStyle(
               fontSize: 18.dp,
               fontWeight: FontWeight.bold,
@@ -163,66 +190,84 @@ class ItemInfoScreen extends StatelessWidget {
                   IntrinsicWidth(
                     child: CommonDropdown(
                       label: 'Transaction Type',
-                      value: stockStore.selectedFilterTransactionType.name,
+                      value: stockStore.selectedTransType,
                       onChanged: (p0) {
-                        stockStore.setSelectedFilterTransactionType(
-                          TransactionTypeEnum.values.firstWhere(
-                            (e) => e.name == p0,
-                          ),
-                        );
+                        stockStore.setSelectedTransType(p0!);
+                        stockStore.isInfoFilterAppliedCheck();
                       },
                       options: [
-                        TransactionTypeEnum.sell.name,
-                        TransactionTypeEnum.purchase.name
+                        TransType.all.name,
+                        TransType.sale.name,
+                        TransType.purchase.name,
                       ],
                     ),
                   ),
                   SizedBox(
                     width: 12.dp,
                   ),
+                  IntrinsicWidth(
+                    child: CommonDropdown(
+                      label: 'Payment Status',
+                      value: stockStore.selectedTransStatus,
+                      onChanged: (p0) {
+                        stockStore.setSelectedTransStatus(p0!);
+                        stockStore.isInfoFilterAppliedCheck();
+                      },
+                      options: [
+                        PaymentStatusEnum.all.name,
+                        PaymentStatusEnum.paid.name,
+                        PaymentStatusEnum.unpaid.name,
+                      ],
+                    ),
+                  ),
                   const Spacer(),
-                  CustomImageButton(
-                    imagePath: 'assets/icons/pdf_icon.png',
-                    text: 'PDF',
-                    borderColor: const Color(0xffE5E7EB),
-                    buttonColor: Colors.white,
-                    onClicked: () {},
-                    // onClicked: widget.onExportPDF,
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
                   CustomImageButton(
                     imagePath: 'assets/icons/excel_icon.png',
                     text: 'Excel',
                     borderColor: const Color(0xffE5E7EB),
                     buttonColor: Colors.white,
                     onClicked: () {},
-                    // onClicked: widget.onExportPDF,
                   ),
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  Observer(builder: (context) {
+                    return Container(
+                      height: 30.dp,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: stockStore.isInfoFilterApplied
+                                ? Colors.red
+                                : Colors.grey,
+                          )),
+                      child: IconButton(
+                        splashColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        focusColor: Colors.transparent,
+                        padding: EdgeInsets.zero,
+                        onPressed: stockStore.clearInfoFilter,
+                        icon: Image.asset(
+                          'assets/icons/cross_icon.png',
+                          color: stockStore.isInfoFilterApplied
+                              ? Colors.red
+                              : Colors.grey,
+                          width: 30.dp,
+                          height: 30.dp,
+                        ),
+                        tooltip: 'Clear All Filters',
+                      ),
+                    );
+                  }),
                 ],
               ),
             );
           }),
           SizedBox(height: 8.dp),
           Observer(builder: (context) {
-            final dataList = (stockStore.selectedFilterTransactionType ==
-                    TransactionTypeEnum.sell)
-                ? userDataStore.salesList
-                    .where((sale) =>
-                        sale.stockDetails.itemId.toLowerCase() ==
-                        stockStore.selectedStockItem?.value.itemId
-                            .toLowerCase())
-                    .toList()
-                : userDataStore.purchaseList
-                    .where((purchase) =>
-                        purchase.stockDetails.itemId.toLowerCase() ==
-                        stockStore.selectedStockItem?.value.itemId
-                            .toLowerCase())
-                    .toList();
-
             return Expanded(
-              child: dataList.isEmpty
+              child: stockStore.ledgerList.isEmpty
                   ? Center(
                       child: Column(
                         children: [
@@ -283,21 +328,14 @@ class ItemInfoScreen extends StatelessWidget {
                                 ),
                               );
                             }).toList(),
-                            rows: dataList.map((row) {
+                            rows: stockStore.paginatedInfoData.map((row) {
                               return DataRow(
                                 cells: columns.map((col) {
                                   return DataCell(
                                     Text(
                                       getCellValue(
                                         col.key,
-                                        stockStore.selectedFilterTransactionType ==
-                                                TransactionTypeEnum.sell
-                                            ? row as Sale
-                                            : null,
-                                        stockStore.selectedFilterTransactionType ==
-                                                TransactionTypeEnum.purchase
-                                            ? row as Purchase
-                                            : null,
+                                        row,
                                       ),
                                       style: TextStyle(
                                         fontSize: 14.dp,
@@ -314,60 +352,67 @@ class ItemInfoScreen extends StatelessWidget {
                     ),
             );
           }),
+          Observer(builder: (context) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: stockStore.currentInfoTablePage > 0
+                      ? () => stockStore.setCurrentInfoTablePage(
+                          stockStore.currentInfoTablePage - 1)
+                      : null,
+                  icon: const Icon(Icons.chevron_left),
+                ),
+                Text(
+                    'Page ${stockStore.currentInfoTablePage + 1} of ${stockStore.totalinfoPages}'),
+                IconButton(
+                  onPressed: stockStore.currentInfoTablePage <
+                          stockStore.totalinfoPages - 1
+                      ? () => stockStore.setTotalinfoPages(
+                          stockStore.currentInfoTablePage + 1)
+                      : null,
+                  icon: const Icon(Icons.chevron_right),
+                ),
+              ],
+            );
+          }),
         ],
       ),
     );
   }
 
-  String getCellValue(String key, [Sale? row, Purchase? purchaseRow]) {
+  String getCellValue(String key, [StockPartyLedger? info]) {
     switch (key) {
-      case 'date':
-        return stockStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.createdAt.toIso8601String() ?? 'N/A'
-            : purchaseRow?.createdAt.toIso8601String() ?? 'N/A';
-      case 'itemId':
-        return stockStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.stockDetails.itemId ?? 'N/A'
-            : purchaseRow?.stockDetails.itemId ?? 'N/A';
-      case 'size':
-        return stockStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.stockDetails.size ?? 'N/A'
-            : purchaseRow?.stockDetails.size ?? 'N/A';
-      case 'carat':
-        return stockStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.stockDetails.carat.toString() ?? 'N/A'
-            : purchaseRow?.stockDetails.carat.toString() ?? 'N/A';
-      case 'rate':
-        return stockStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.stockDetails.rate.toString() ?? 'N/A'
-            : purchaseRow?.stockDetails.rate.toString() ?? 'N/A';
+      case 'transId':
+        return info?.id ?? '';
+      case 'transDate':
+        return info?.createdAt.toIso8601String() ?? 'NA';
+      case 'transType':
+        return info?.transType ?? 'NA';
+      case 'custId':
+        return info?.customerId ?? 'N/A';
+      case 'custName':
+        return info?.customerName ?? 'N/A';
+      case 'prodId':
+        return info?.productId ?? 'N/A';
+      case 'quantity':
+        return info?.quantity ?? 'N/A';
       case 'amount':
-        return stockStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.stockDetails.amount.toString() ?? 'N/A'
-            : purchaseRow?.stockDetails.amount.toString() ?? 'N/A';
-      case 'description':
-        return stockStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.description ?? 'N/A'
-            : purchaseRow?.description ?? 'N/A';
+        return info?.amount ?? 'N/A';
       case 'dueDays':
-        return row?.dueDays.toString() ?? 'N/A';
-      case 'paymentOption':
-        return stockStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.paymentOption.toString() ?? 'N/A'
-            : purchaseRow?.paymentOption.toString() ?? 'N/A';
+        return info?.dueDays.toString() ?? 'N/A';
+      case 'agentName':
+        return info?.agentName ?? 'N/A';
+      case 'brokerage':
+        return info?.brokerage ?? 'N/A';
       case 'paymentStatus':
-        return stockStore.selectedFilterTransactionType ==
-                TransactionTypeEnum.sell
-            ? row?.paymentStatus.toString() ?? 'N/A'
-            : purchaseRow?.paymentStatus.toString() ?? 'N/A';
+        return info?.paymentStatus ?? 'N/A';
+      case 'firm':
+        return info?.firm ?? 'N/A';
+      case 'paymentOption':
+        return info?.paymentOption ?? 'N/A';
+      case 'description':
+        return info?.description ?? 'N/A';
       default:
         return '';
     }
