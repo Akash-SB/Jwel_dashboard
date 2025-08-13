@@ -537,6 +537,9 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                               firm: widget.salesScreenStore.selectedFilterFirm,
                             ),
                             stockDetails: StockItem(
+                              id: DateTime.now()
+                                  .millisecondsSinceEpoch
+                                  .toString(),
                               itemId: itemNameController.text,
                               itemName: itemNameController.text,
                               hsnCode: hsnCodeController.text,
@@ -609,8 +612,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                           'Something went wrong while updating Sales data')),
                                 );
                               },
-                            )
-                            ;
+                            );
                           } else {
                             widget.salesScreenStore
                                 .addSale(sale)

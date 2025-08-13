@@ -1,6 +1,7 @@
 import 'firm_model.dart';
 
 class StockItem {
+  final String id;
   final String itemId; // itemName + size for uniqueness
   final String itemName;
   final String hsnCode;
@@ -13,6 +14,7 @@ class StockItem {
   final String firm;
 
   StockItem({
+    required this.id,
     required this.itemId,
     required this.itemName,
     required this.hsnCode,
@@ -26,6 +28,7 @@ class StockItem {
   });
 
   Map<String, dynamic> toMap() => {
+        'id': id,
         'itemId': itemId,
         'itemName': itemName,
         'size': size,
@@ -39,6 +42,7 @@ class StockItem {
       };
 
   factory StockItem.fromMap(Map<String, dynamic> map) => StockItem(
+        id: map['id'],
         itemId: map['itemId'],
         itemName: map['itemName'],
         size: map['size'],
@@ -52,6 +56,7 @@ class StockItem {
       );
 
   Map<String, dynamic> toFirestore() => {
+        'id': id,
         'itemId': itemId,
         'itemName': itemName,
         'size': size,

@@ -410,6 +410,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                               selectedItem =
                                   widget.purchaseStore.selectedStockItem!;
                               final updatedItem = StockItem(
+                                id: selectedItem.id,
                                 amount:
                                     double.tryParse(amountController.text) ??
                                         0.0,
@@ -431,6 +432,9 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                               widget.purchaseStore.updateStockItem(updatedItem);
                             } else {
                               selectedItem = StockItem(
+                                id: DateTime.now()
+                                    .millisecondsSinceEpoch
+                                    .toString(),
                                 itemId: itemIdController.text,
                                 itemName: itemNameController.text,
                                 size: sizeController.text,

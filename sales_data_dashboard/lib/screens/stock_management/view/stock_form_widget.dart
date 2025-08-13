@@ -228,6 +228,9 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 final stock = StockItem(
+                                  id: DateTime.now()
+                                      .millisecondsSinceEpoch
+                                      .toString(),
                                   itemId: itemIdController.text,
                                   itemName: itemNameController.text,
                                   hsnCode: hsnController.text,
