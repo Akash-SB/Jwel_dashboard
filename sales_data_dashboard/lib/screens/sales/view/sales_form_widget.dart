@@ -581,25 +581,50 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                 : Firm.harikrishnaEnterprise,
                           );
 
-                          widget.salesScreenStore
-                              .addSale(sale)
-                              .then((final onValue) {
-                            widget.userDataStore.setSalesList(
-                                [...widget.userDataStore.salesList, sale]);
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Sales Data ${sale.id} added')),
-                            );
-                          }).onError(
-                            (error, stackTrace) {
+                          if (widget.existingSale != null) {
+                            widget.salesScreenStore
+                                .updateSale(sale)
+                                .then((final onValue) {
+                              widget.userDataStore.setSalesList(
+                                  [...widget.userDataStore.salesList, sale]);
+                              Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Something went wrong while creating Sales data')),
+                                SnackBar(
+                                    content:
+                                        Text('Sales Data ${sale.id} updated')),
                               );
-                            },
-                          );
+                            }).onError(
+                              (error, stackTrace) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Something went wrong while updating Sales data')),
+                                );
+                              },
+                            );
+                            ;
+                          } else {
+                            widget.salesScreenStore
+                                .addSale(sale)
+                                .then((final onValue) {
+                              widget.userDataStore.setSalesList(
+                                  [...widget.userDataStore.salesList, sale]);
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content:
+                                        Text('Sales Data ${sale.id} added')),
+                              );
+                            }).onError(
+                              (error, stackTrace) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Something went wrong while creating Sales data')),
+                                );
+                              },
+                            );
+                          }
                         },
                       ),
                     ),
