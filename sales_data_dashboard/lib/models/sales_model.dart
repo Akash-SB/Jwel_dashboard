@@ -44,7 +44,8 @@ class Sale {
         'description': description,
         'createdAt': createdAt.toIso8601String(),
         'firm': Firm.firmTypeToString(firm),
-        'agentDetails': jsonEncode(agentDetails?.toMap()),
+        'agentDetails':
+            agentDetails != null ? jsonEncode(agentDetails?.toMap()) : null,
       };
 
   factory Sale.fromMap(Map<String, dynamic> map) => Sale(
@@ -57,9 +58,10 @@ class Sale {
         description: map['description'],
         createdAt: DateTime.parse(map['createdAt']),
         firm: Firm.fromString(map['firm']),
-        agentDetails: map['agentDetails'] != null
-            ? Party.fromMap(jsonDecode(map['agentDetails']))
-            : null,
+        agentDetails:
+            map['agentDetails'] != null && !map['agentDetails'].contains('null')
+                ? Party.fromMap(jsonDecode(map['agentDetails']))
+                : null,
       );
 
   Map<String, dynamic> toFirestore() => {
