@@ -283,7 +283,7 @@ abstract class _PurchaseScreenStore with Store {
   @action
   Future<void> addStockItem(StockItem stock) async {
     try {
-      await _stockCollection.doc(stock.itemName).set(stock.toMap());
+      await _stockCollection.doc(stock.itemId).set(stock.toMap());
       stockList.add(stock);
       userDataStore.stockList.add(stock);
     } catch (e) {
@@ -294,7 +294,7 @@ abstract class _PurchaseScreenStore with Store {
   @action
   Future<void> updateStockItem(StockItem stock) async {
     try {
-      await _stockCollection.doc(stock.itemName).update(stock.toMap());
+      await _stockCollection.doc(stock.itemId).update(stock.toMap());
       final index = stockList.indexWhere((s) => s.itemId == stock.itemId);
       if (index != -1) {
         stockList[index] = stock;
