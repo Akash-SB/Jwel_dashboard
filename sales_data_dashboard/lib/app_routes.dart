@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/screens/dashboard/dashboard_sccreen.dart';
 import 'package:sales_data_dashboard/screens/home/index_screen.dart';
 import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
+import 'package:sales_data_dashboard/screens/invoice_stock/view/invoice_stock_mgnt_screen.dart';
 import 'package:sales_data_dashboard/screens/party_details/view/party_details_screen.dart';
 import 'package:sales_data_dashboard/screens/purchase/view/purchase_screen.dart';
 import 'package:sales_data_dashboard/screens/sales/view/sales_screen.dart';
@@ -15,6 +16,7 @@ class AppRoutes {
   static const String purchase = '/purchase';
   static const String partyDetails = '/partyDetails';
   static const String stockMgmt = '/stockMgmt';
+  static const String invoiceStock = '/invoiceStock';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final selectedRoute = switch (settings.name) {
@@ -25,6 +27,7 @@ class AppRoutes {
       purchase => const PurchaseScreen(),
       partyDetails => const PartyDetailsScreen(),
       stockMgmt => const StockManagementScreen(),
+      invoiceStock => const InvoiceStockMgntScreen(),
       _ => const DashboardSccreen()
     };
 
@@ -44,5 +47,6 @@ class AppRoutes {
     purchase,
     partyDetails,
     stockMgmt,
+    invoiceStock,
   ];
 }

@@ -26,7 +26,7 @@ abstract class _PurchaseScreenStore with Store {
   ObservableList<StockItem> stockList = ObservableList<StockItem>();
 
   @observable
-  String selectedFilterFirm = 'Sahajanand Jewellers';
+  String selectedFilterFirm = 'Sahajanand Gems';
 
   @observable
   String selectedPartyType = 'agent';
@@ -74,13 +74,13 @@ abstract class _PurchaseScreenStore with Store {
   @action
   void isFiltersApplied() {
     isFilterApplied = searchedText.isNotEmpty ||
-        selectedFilterFirm != 'Sahajanand Jewellers ' ||
+        selectedFilterFirm != 'Sahajanand Gems ' ||
         salectedStatus != 'All' ||
         sortKey != null;
   }
 
   @observable
-  String selectedFirmType = 'Sahajanand Jewellers';
+  String selectedFirmType = 'Sahajanand Gems';
 
   @observable
   String itemSelectionType = 'existing';
@@ -336,7 +336,7 @@ abstract class _PurchaseScreenStore with Store {
   @action
   void clearAllFilters() {
     searchcontroller.text = '';
-    setSelectedFilterFirm('Sahajanand Jewellers');
+    setSelectedFilterFirm('Sahajanand Gems');
     setSelectedStatus('All');
     sortKey = null;
     setSearchText('');

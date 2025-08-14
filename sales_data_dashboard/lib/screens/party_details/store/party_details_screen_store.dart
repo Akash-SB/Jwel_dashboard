@@ -241,7 +241,7 @@ abstract class _PartyDetailsStore with Store {
   String selectedFormPartyType = 'Agent';
 
   @observable
-  String selectedFormFirmType = 'Sahajanand Jewellers';
+  String selectedFormFirmType = 'Sahajanand Gems';
 
   @action
   void setSelectedFormPartyType(String value) {
@@ -302,7 +302,7 @@ abstract class _PartyDetailsStore with Store {
   }
 
   @observable
-  String selectedFilterFirm = 'Sahajanand Jewellers';
+  String selectedFilterFirm = 'Sahajanand Gems';
 
   @observable
   String selectedFilterPartyType = 'Agent';
@@ -320,7 +320,7 @@ abstract class _PartyDetailsStore with Store {
   @action
   void isFiltersApplied() {
     isFilterApplied = searchedText.isNotEmpty ||
-        selectedFilterFirm != 'Sahajanand Jewellers ' ||
+        selectedFilterFirm != 'Sahajanand Gems ' ||
         selectedFilterPartyType != 'Agent' ||
         sortKey != null;
   }
@@ -385,7 +385,7 @@ abstract class _PartyDetailsStore with Store {
   @action
   void clearAllFilters() {
     searchcontroller.text = '';
-    setSelectedFilterFirm('Sahajanand Jewellers');
+    setSelectedFilterFirm('Sahajanand Gems');
     setSelectedFilterPartyType('Agent');
     sortKey = null;
     setSearchText('');

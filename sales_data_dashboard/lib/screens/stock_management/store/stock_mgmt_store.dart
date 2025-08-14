@@ -111,7 +111,7 @@ abstract class _StockStore with Store {
   int currentInfoTablePage = 0;
 
   @observable
-  String selectedFirm = 'Sahajanand Jewellers';
+  String selectedFirm = 'Sahajanand Gems';
 
   @action
   void setSelectedFirm(String firm) {
@@ -162,7 +162,7 @@ abstract class _StockStore with Store {
   @action
   void isFiltersApplied() {
     isFilterApplied = searchedText.isNotEmpty ||
-        selectedFirm != 'Sahajanand Jewellers' ||
+        selectedFirm != 'Sahajanand Gems' ||
         sortKey != null;
   }
 
@@ -345,7 +345,7 @@ abstract class _StockStore with Store {
   @action
   void clearAllFilters() {
     searchcontroller.text = '';
-    setSelectedFirm('Sahajanand Jewellers');
+    setSelectedFirm('Sahajanand Gems');
     sortKey = null;
     setSearchText('');
     setCurrentPageIndex(0);

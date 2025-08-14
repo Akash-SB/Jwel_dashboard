@@ -28,7 +28,7 @@ abstract class _SalesScreenStore with Store {
   Observable<StockItem>? selectedItem;
 
   @observable
-  String selectedFilterFirm = 'Sahajanand Jewellers';
+  String selectedFilterFirm = 'Sahajanand Gems';
 
   @observable
   String salectedStatus = 'All';
@@ -72,7 +72,7 @@ abstract class _SalesScreenStore with Store {
   @action
   void isFiltersApplied() {
     isFilterApplied = searchedText.isNotEmpty ||
-        selectedFilterFirm != 'Sahajanand Jewellers ' ||
+        selectedFilterFirm != 'Sahajanand Gems ' ||
         salectedStatus != 'All' ||
         sortKey != null;
   }
@@ -90,7 +90,7 @@ abstract class _SalesScreenStore with Store {
   @action
   void clearAllFilters() {
     searchcontroller.text = '';
-    setSelectedFilterFirm('Sahajanand Jewellers');
+    setSelectedFilterFirm('Sahajanand Gems');
     setSelectedStatus('All');
     sortKey = null;
     setSearchText('');

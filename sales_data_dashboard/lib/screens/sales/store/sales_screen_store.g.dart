@@ -223,6 +223,38 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
     });
   }
 
+  late final _$agentDetailsAtom =
+      Atom(name: '_SalesScreenStore.agentDetails', context: context);
+
+  @override
+  Observable<Party>? get agentDetails {
+    _$agentDetailsAtom.reportRead();
+    return super.agentDetails;
+  }
+
+  @override
+  set agentDetails(Observable<Party>? value) {
+    _$agentDetailsAtom.reportWrite(value, super.agentDetails, () {
+      super.agentDetails = value;
+    });
+  }
+
+  late final _$isAgentSelectedAtom =
+      Atom(name: '_SalesScreenStore.isAgentSelected', context: context);
+
+  @override
+  bool get isAgentSelected {
+    _$isAgentSelectedAtom.reportRead();
+    return super.isAgentSelected;
+  }
+
+  @override
+  set isAgentSelected(bool value) {
+    _$isAgentSelectedAtom.reportWrite(value, super.isAgentSelected, () {
+      super.isAgentSelected = value;
+    });
+  }
+
   late final _$searchedTextAtom =
       Atom(name: '_SalesScreenStore.searchedText', context: context);
 
@@ -339,6 +371,17 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
       ActionController(name: '_SalesScreenStore', context: context);
 
   @override
+  void setIsAgentSelected(bool value) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setIsAgentSelected');
+    try {
+      return super.setIsAgentSelected(value);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedStatus(String value) {
     final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
         name: '_SalesScreenStore.setSelectedStatus');
@@ -377,6 +420,17 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
         name: '_SalesScreenStore.setCustomerType');
     try {
       return super.setCustomerType(type);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setAgentDetails(Party agent) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setAgentDetails');
+    try {
+      return super.setAgentDetails(agent);
     } finally {
       _$_SalesScreenStoreActionController.endAction(_$actionInfo);
     }
@@ -507,6 +561,8 @@ totalPages: ${totalPages},
 sortAsc: ${sortAsc},
 customerType: ${customerType},
 isFilterApplied: ${isFilterApplied},
+agentDetails: ${agentDetails},
+isAgentSelected: ${isAgentSelected},
 searchedText: ${searchedText},
 selectedRowCount: ${selectedRowCount},
 currentTablePage: ${currentTablePage},

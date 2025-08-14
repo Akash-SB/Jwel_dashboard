@@ -2,9 +2,8 @@ enum Firm {
   sahajanand,
   harikrishnaEnterprise;
 
-  String get name => this == Firm.sahajanand
-      ? "Sahajanand Jewellers"
-      : "Harikrishna Enterprise";
+  String get name =>
+      this == Firm.sahajanand ? "Sahajanand Gems" : "Harikrishna Enterprise";
 
   static Firm fromString(String value) {
     return value == "Harikrishna Enterprise"
@@ -15,7 +14,7 @@ enum Firm {
   static String firmTypeToString(Firm type) {
     switch (type) {
       case Firm.sahajanand:
-        return 'Sahajanand';
+        return 'Sahajanand Gems';
       case Firm.harikrishnaEnterprise:
         return 'Harikrishna Enterprise';
     }
@@ -23,7 +22,7 @@ enum Firm {
 
   static Firm firmTypeFromString(String value) {
     switch (value) {
-      case 'Sahajanand':
+      case 'Sahajanand Gems':
         return Firm.sahajanand;
       case 'Harikrishna Enterprise':
         return Firm.harikrishnaEnterprise;

@@ -60,6 +60,24 @@ class _IndexScreenState extends State<IndexScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final icons = [
+      Icons.dashboard,
+      Icons.receipt_long,
+      Icons.bar_chart,
+      Icons.shopping_cart,
+      Icons.people,
+      Icons.inventory,
+      Icons.inventory_2,
+    ];
+    final labels = [
+      "Dashboard",
+      "Invoices",
+      "Sales",
+      "Purchase",
+      "Party Details",
+      "Stock Management",
+      "Invoice Stock Management"
+    ];
     return Scaffold(
       body: Observer(builder: (context) {
         return Row(
@@ -121,24 +139,8 @@ class _IndexScreenState extends State<IndexScreen> {
                   Observer(builder: (context) {
                     return Expanded(
                       child: ListView.builder(
-                        itemCount: 6,
+                        itemCount: labels.length,
                         itemBuilder: (context, index) {
-                          final icons = [
-                            Icons.dashboard,
-                            Icons.receipt_long,
-                            Icons.bar_chart,
-                            Icons.shopping_cart,
-                            Icons.people,
-                            Icons.inventory,
-                          ];
-                          final labels = [
-                            "Dashboard",
-                            "Invoices",
-                            "Sales",
-                            "Purchase",
-                            "Party Details",
-                            "Stock Management",
-                          ];
                           return _sidebarItem(
                               icons[index], labels[index], index);
                         },
