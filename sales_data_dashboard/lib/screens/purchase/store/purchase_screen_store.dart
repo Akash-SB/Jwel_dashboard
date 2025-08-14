@@ -256,6 +256,9 @@ abstract class _PurchaseScreenStore with Store {
   /// Collection reference in Firestore
   CollectionReference get _collection => _firestore.collection('purchases');
 
+  CollectionReference get _stockCollection =>
+      _firestore.collection('StockItems');
+
   /// Reactive list of purchases
   @observable
   ObservableList<Purchase> purchases = ObservableList<Purchase>();
@@ -280,7 +283,7 @@ abstract class _PurchaseScreenStore with Store {
   @action
   Future<void> addStockItem(StockItem stock) async {
     try {
-      await _collection.doc(stock.id).set(stock.toMap());
+      await _stockCollection.doc(stock.itemName).set(stock.toMap());
       stockList.add(stock);
       userDataStore.stockList.add(stock);
     } catch (e) {
@@ -291,8 +294,8 @@ abstract class _PurchaseScreenStore with Store {
   @action
   Future<void> updateStockItem(StockItem stock) async {
     try {
-      await _collection.doc(stock.id).update(stock.toMap());
-      final index = stockList.indexWhere((s) => s.id == stock.id);
+      await _stockCollection.doc(stock.itemName).update(stock.toMap());
+      final index = stockList.indexWhere((s) => s.itemId == stock.itemId);
       if (index != -1) {
         stockList[index] = stock;
       }
