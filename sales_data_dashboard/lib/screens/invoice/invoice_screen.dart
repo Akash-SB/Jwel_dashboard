@@ -7,9 +7,9 @@ import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
+import '../../widgets/common_dropdown.dart';
 import '../../widgets/custom_image_button.dart';
 import '../../widgets/custom_searchbar.dart';
-import '../../widgets/filter_dropdown_button.dart';
 import '../../widgets/invoice_form_widget.dart';
 import '../../widgets/normal_button.dart';
 
@@ -119,28 +119,18 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               height: 40.dp,
               child: Row(
                 children: [
-                  FilterDropdownButton(
-                    selectedValue: invoiceStore.selectedPaymentStatus,
-                    onChanged: (final value) {
+                  CommonDropdown(
+                    label: 'Payment Status',
+                    value: invoiceStore.selectedPaymentStatus,
+                    onChanged: (value) {
                       invoiceStore.setSelectedPaymentStatus(value ?? 'All');
                       invoiceStore.isFiltersApplied();
                     },
-                    items: const [
+                    options: const [
                       'All',
                       'Paid',
                       'Unpaid',
                     ],
-                  ),
-                  SizedBox(
-                    width: 8.dp,
-                  ),
-                  FilterDropdownButton(
-                    selectedValue: invoiceStore.selectedPaymentType,
-                    onChanged: (final value) {
-                      invoiceStore.setselectedPaymentTYpe(value ?? 'All');
-                      invoiceStore.isFiltersApplied();
-                    },
-                    items: const ['All', 'Cash', 'Cheque', 'Online'],
                   ),
                   SizedBox(
                     width: 8.dp,
