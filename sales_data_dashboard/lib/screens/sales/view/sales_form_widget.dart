@@ -87,6 +87,8 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       if (sale.agentDetails != null) {
         widget.salesScreenStore.setAgentDetails(sale.agentDetails!);
         widget.salesScreenStore.setIsAgentSelected(true);
+      } else {
+        widget.salesScreenStore.setIsAgentSelected(false);
       }
       widget.salesScreenStore.setSelectedFilterFirm(sale.firm.name);
     }
