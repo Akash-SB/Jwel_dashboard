@@ -1,8 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/models/invoice_stock_model.dart';
-
-import '../../../models/invoice_stock_model.dart';
 
 part 'invoice_stock_store.g.dart';
 
@@ -53,6 +52,84 @@ abstract class _InvoiceStockStore with Store {
   }
 
   @action
+  void setLoading(bool value) {
+    isLoading = value;
+  }
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  /// Firestore collection
+  CollectionReference get _collection =>
+      _firestore.collection('InvoiceStockItems');
+
+  @action
+  Future<void> fetchStockItems() async {
+    isLoading = true;
+    try {
+      final snapshot = await _collection.get();
+      final items = snapshot.docs
+          .map((doc) => InvoiceStockModel.fromMap({
+                ...doc.data() as Map<String, dynamic>,
+                'itemId': doc.id,
+              }))
+          .toList();
+      setStockList(items);
+    } catch (e) {
+      print('Error fetching stock items: $e');
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  @action
+  Future<void> addStockItem(InvoiceStockModel item) async {
+    isLoading = true;
+    try {
+      await _collection.add(item.toJson());
+      stockList.add(item);
+    } catch (e) {
+      print('Error adding stock item: $e');
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  @action
+  Future<void> updateStockItem(InvoiceStockModel item) async {
+    isLoading = true;
+    try {
+      await _collection.doc(item.itemId).update(item.toJson());
+      final index = stockList.indexWhere((i) => i.itemId == item.itemId);
+      if (index != -1) {
+        stockList[index] = item;
+      }
+    } catch (e) {
+      print('Error updating stock item: $e');
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  @action
+  Future<void> deleteStockItem(InvoiceStockModel item) async {
+    isLoading = true;
+    try {
+      await _collection.doc(item.itemId).delete();
+      stockList.remove(item);
+    } catch (e) {
+      print('Error deleting stock item: $e');
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  @action
+  void setStockList(final List<InvoiceStockModel> list) {
+    stockList.clear();
+    stockList.addAll(list);
+  }
+
+  @action
   void setSelectedStockItem(InvoiceStockModel item) {
     selectedStock = item;
   }
@@ -64,12 +141,6 @@ abstract class _InvoiceStockStore with Store {
     } else {
       totalPages = (filteredData.length / int.parse(selectedRowCount)).ceil();
     }
-  }
-
-  @action
-  void setStockList(final List<InvoiceStockModel> list) {
-    stockList.clear();
-    stockList.addAll(list);
   }
 
   @computed
@@ -117,5 +188,10 @@ abstract class _InvoiceStockStore with Store {
   @action
   void setCurrentPageIndex(final int index) {
     currentTablePage = index;
+  }
+
+  @action
+  void setInvoiceStockList(List<InvoiceStockModel> stockItems) {
+    stockList = ObservableList.of(stockItems);
   }
 }

@@ -19,6 +19,7 @@ class InvoiceModel {
   final String? custAddress;
   final String? custPhone;
   final String? custGst;
+  final String? itemId;
 
   InvoiceModel({
     required this.invoiceId,
@@ -38,6 +39,7 @@ class InvoiceModel {
     this.custAddress,
     this.custPhone,
     this.custGst,
+    this.itemId,
   });
 
   /// Convert to Firestore map
@@ -60,6 +62,7 @@ class InvoiceModel {
         'custAddress': custAddress,
         'custPhone': custPhone,
         'custGst': custGst,
+        'itemId': itemId,
       };
 
   /// Construct from Firestore map
@@ -96,6 +99,7 @@ class InvoiceModel {
       custAddress: map['custAddress'],
       custPhone: map['custPhone'],
       custGst: map['custGst'],
+      itemId: map['itemId'],
     );
   }
 
@@ -125,6 +129,7 @@ class InvoiceModel {
       custAddress: custAddress,
       custPhone: custPhone,
       custGst: custGst,
+      itemId: itemId,
     );
   }
 

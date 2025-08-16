@@ -32,6 +32,19 @@ class InvoiceStockModel {
     );
   }
 
+  factory InvoiceStockModel.fromMap(Map<String, dynamic> data) {
+    return InvoiceStockModel(
+      itemId: data['itemId'] ?? '',
+      firm: data['firm'] ?? '',
+      itemName: data['itemName'] ?? '',
+      hsdCode: data['hsdCode'] ?? '',
+      itemWeight: (data['itemWeight'] ?? 0).toDouble(),
+      rate: (data['rate'] ?? 0).toDouble(),
+      amount: (data['amount'] ?? 0).toDouble(),
+      description: data['description'] ?? 'NA',
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'prodId': itemId,

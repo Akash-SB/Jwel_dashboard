@@ -7,6 +7,7 @@ import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/stock_item.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../../models/invoice_stock_model.dart';
 import '../../../models/sales_model.dart';
 
 part 'userdata_store.g.dart';
@@ -33,6 +34,9 @@ abstract class _UserDataStore with Store {
 
   final CollectionReference purchaseRefs =
       FirebaseFirestore.instance.collection('purchases');
+
+  final CollectionReference stockInvoiceItemRefs =
+      FirebaseFirestore.instance.collection('StockInvoiceItems');
 
   late Database db;
 
@@ -73,6 +77,9 @@ abstract class _UserDataStore with Store {
 
   @observable
   ObservableList<InvoiceNotificationModel> notfList = ObservableList.of([]);
+
+  @observable
+  ObservableList<InvoiceStockModel> stockItemList = ObservableList.of([]);
 
   @action
   void fillNotificationList(List<InvoiceNotificationModel> list) {
@@ -190,6 +197,27 @@ abstract class _UserDataStore with Store {
   }
 
   @action
+  Future<void> fetchStockItemList() async {
+    isLoading = true;
+    errorMessage = null;
+    try {
+      final snapshot = await stockInvoiceItemRefs.get();
+      stockItemList = ObservableList.of(
+        snapshot.docs.map(
+          (doc) => InvoiceStockModel.fromMap({
+            ...doc.data() as Map<String, dynamic>,
+            'id': doc.id, // Ensure the Firestore doc id is set
+          }),
+        ),
+      );
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  @action
   Future<void> fetchStockList() async {
     try {
       final querySnapshot = await stockItemRefs.get();
@@ -255,6 +283,7 @@ abstract class _UserDataStore with Store {
     await fetchPurchaseList();
     await fetchPartyList();
     await fetchInvoices();
+    await fetchStockItemList();
     await setNotificationList(salesList);
     isLoading = false;
     getLastSixMonthsTxns(salesList, purchaseList);
@@ -383,5 +412,10 @@ abstract class _UserDataStore with Store {
   @action
   void setPurchaseList(List<Purchase> purchases) {
     purchaseList = ObservableList.of(purchases);
+  }
+
+  @action
+  void setInvoiceStockList(List<InvoiceStockModel> stockItems) {
+    stockItemList = ObservableList.of(stockItems);
   }
 }

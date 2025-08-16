@@ -128,27 +128,6 @@ mixin _$InvoiceStore on _InvoiceStore, Store {
     });
   }
 
-  late final _$ledgerControllerAtom =
-      Atom(name: '_InvoiceStore.ledgerController', context: context);
-
-  @override
-  TextEditingController get ledgerController {
-    _$ledgerControllerAtom.reportRead();
-    return super.ledgerController;
-  }
-
-  bool _ledgerControllerIsInitialized = false;
-
-  @override
-  set ledgerController(TextEditingController value) {
-    _$ledgerControllerAtom.reportWrite(
-        value, _ledgerControllerIsInitialized ? super.ledgerController : null,
-        () {
-      super.ledgerController = value;
-      _ledgerControllerIsInitialized = true;
-    });
-  }
-
   late final _$currentTablePageAtom =
       Atom(name: '_InvoiceStore.currentTablePage', context: context);
 
@@ -194,6 +173,22 @@ mixin _$InvoiceStore on _InvoiceStore, Store {
   set totalPages(int value) {
     _$totalPagesAtom.reportWrite(value, super.totalPages, () {
       super.totalPages = value;
+    });
+  }
+
+  late final _$itemSelectionTypeAtom =
+      Atom(name: '_InvoiceStore.itemSelectionType', context: context);
+
+  @override
+  String get itemSelectionType {
+    _$itemSelectionTypeAtom.reportRead();
+    return super.itemSelectionType;
+  }
+
+  @override
+  set itemSelectionType(String value) {
+    _$itemSelectionTypeAtom.reportWrite(value, super.itemSelectionType, () {
+      super.itemSelectionType = value;
     });
   }
 
@@ -266,6 +261,17 @@ mixin _$InvoiceStore on _InvoiceStore, Store {
       ActionController(name: '_InvoiceStore', context: context);
 
   @override
+  void setItemSelectionType(String type) {
+    final _$actionInfo = _$_InvoiceStoreActionController.startAction(
+        name: '_InvoiceStore.setItemSelectionType');
+    try {
+      return super.setItemSelectionType(type);
+    } finally {
+      _$_InvoiceStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setCurrentPageIndex(int index) {
     final _$actionInfo = _$_InvoiceStoreActionController.startAction(
         name: '_InvoiceStore.setCurrentPageIndex');
@@ -304,17 +310,6 @@ mixin _$InvoiceStore on _InvoiceStore, Store {
         name: '_InvoiceStore.setselectedPaymentTYpe');
     try {
       return super.setselectedPaymentTYpe(status);
-    } finally {
-      _$_InvoiceStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void initSearchController() {
-    final _$actionInfo = _$_InvoiceStoreActionController.startAction(
-        name: '_InvoiceStore.initSearchController');
-    try {
-      return super.initSearchController();
     } finally {
       _$_InvoiceStoreActionController.endAction(_$actionInfo);
     }
@@ -373,10 +368,10 @@ errorMessage: ${errorMessage},
 selectedPaymentStatus: ${selectedPaymentStatus},
 selectedPaymentType: ${selectedPaymentType},
 searchQuery: ${searchQuery},
-ledgerController: ${ledgerController},
 currentTablePage: ${currentTablePage},
 isFilterApplied: ${isFilterApplied},
 totalPages: ${totalPages},
+itemSelectionType: ${itemSelectionType},
 sortKey: ${sortKey},
 sortAsc: ${sortAsc},
 filteredData: ${filteredData},

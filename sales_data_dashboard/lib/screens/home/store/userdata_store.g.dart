@@ -186,6 +186,22 @@ mixin _$UserDataStore on _UserDataStore, Store {
     });
   }
 
+  late final _$stockItemListAtom =
+      Atom(name: '_UserDataStore.stockItemList', context: context);
+
+  @override
+  ObservableList<InvoiceStockModel> get stockItemList {
+    _$stockItemListAtom.reportRead();
+    return super.stockItemList;
+  }
+
+  @override
+  set stockItemList(ObservableList<InvoiceStockModel> value) {
+    _$stockItemListAtom.reportWrite(value, super.stockItemList, () {
+      super.stockItemList = value;
+    });
+  }
+
   late final _$setNotificationListAsyncAction =
       AsyncAction('_UserDataStore.setNotificationList', context: context);
 
@@ -210,6 +226,15 @@ mixin _$UserDataStore on _UserDataStore, Store {
   @override
   Future<void> fetchInvoices() {
     return _$fetchInvoicesAsyncAction.run(() => super.fetchInvoices());
+  }
+
+  late final _$fetchStockItemListAsyncAction =
+      AsyncAction('_UserDataStore.fetchStockItemList', context: context);
+
+  @override
+  Future<void> fetchStockItemList() {
+    return _$fetchStockItemListAsyncAction
+        .run(() => super.fetchStockItemList());
   }
 
   late final _$fetchStockListAsyncAction =
@@ -375,6 +400,17 @@ mixin _$UserDataStore on _UserDataStore, Store {
   }
 
   @override
+  void setInvoiceStockList(List<InvoiceStockModel> stockItems) {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.setInvoiceStockList');
+    try {
+      return super.setInvoiceStockList(stockItems);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 isLoading: ${isLoading},
@@ -387,7 +423,8 @@ stockList: ${stockList},
 salesList: ${salesList},
 purchaseList: ${purchaseList},
 partiesList: ${partiesList},
-notfList: ${notfList}
+notfList: ${notfList},
+stockItemList: ${stockItemList}
     ''';
   }
 }

@@ -184,6 +184,38 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
     });
   }
 
+  late final _$fetchStockItemsAsyncAction =
+      AsyncAction('_InvoiceStockStore.fetchStockItems', context: context);
+
+  @override
+  Future<void> fetchStockItems() {
+    return _$fetchStockItemsAsyncAction.run(() => super.fetchStockItems());
+  }
+
+  late final _$addStockItemAsyncAction =
+      AsyncAction('_InvoiceStockStore.addStockItem', context: context);
+
+  @override
+  Future<void> addStockItem(InvoiceStockModel item) {
+    return _$addStockItemAsyncAction.run(() => super.addStockItem(item));
+  }
+
+  late final _$updateStockItemAsyncAction =
+      AsyncAction('_InvoiceStockStore.updateStockItem', context: context);
+
+  @override
+  Future<void> updateStockItem(InvoiceStockModel item) {
+    return _$updateStockItemAsyncAction.run(() => super.updateStockItem(item));
+  }
+
+  late final _$deleteStockItemAsyncAction =
+      AsyncAction('_InvoiceStockStore.deleteStockItem', context: context);
+
+  @override
+  Future<void> deleteStockItem(InvoiceStockModel item) {
+    return _$deleteStockItemAsyncAction.run(() => super.deleteStockItem(item));
+  }
+
   late final _$_InvoiceStockStoreActionController =
       ActionController(name: '_InvoiceStockStore', context: context);
 
@@ -193,6 +225,28 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
         name: '_InvoiceStockStore.setSelectedFirm');
     try {
       return super.setSelectedFirm(value);
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setLoading(bool value) {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.setLoading');
+    try {
+      return super.setLoading(value);
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setStockList(List<InvoiceStockModel> list) {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.setStockList');
+    try {
+      return super.setStockList(list);
     } finally {
       _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
     }
@@ -215,17 +269,6 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
         name: '_InvoiceStockStore.calculateTotalPages');
     try {
       return super.calculateTotalPages();
-    } finally {
-      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setStockList(List<InvoiceStockModel> list) {
-    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
-        name: '_InvoiceStockStore.setStockList');
-    try {
-      return super.setStockList(list);
     } finally {
       _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
     }
@@ -270,6 +313,17 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
         name: '_InvoiceStockStore.setCurrentPageIndex');
     try {
       return super.setCurrentPageIndex(index);
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setInvoiceStockList(List<InvoiceStockModel> stockItems) {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.setInvoiceStockList');
+    try {
+      return super.setInvoiceStockList(stockItems);
     } finally {
       _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
     }

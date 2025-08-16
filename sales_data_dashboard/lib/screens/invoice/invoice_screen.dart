@@ -3,9 +3,12 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/Utils/generate_invoice.dart';
+import 'package:sales_data_dashboard/models/firm_model.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
+import 'package:sales_data_dashboard/models/invoice_stock_model.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
+import 'package:sales_data_dashboard/screens/invoice_stock/store/invoice_stock_store.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import '../../widgets/common_dropdown.dart';
 import '../../widgets/custom_image_button.dart';
@@ -24,12 +27,18 @@ class InvoiceScreen extends StatefulWidget {
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
   late InvoiceStore invoiceStore;
+  late InvoiceStockStore invoiceStockStore;
   late UserDataStore userDataStore;
+  final TextEditingController ledgerController = TextEditingController();
 
   @override
   void initState() {
     if (!getIt.isRegistered<InvoiceStore>()) {
       getIt.registerSingleton<InvoiceStore>(InvoiceStore());
+    }
+
+    if (!getIt.isRegistered<InvoiceStockStore>()) {
+      getIt.registerSingleton<InvoiceStockStore>(InvoiceStockStore());
     }
 
     if (!getIt.isRegistered<UserDataStore>(
@@ -43,6 +52,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     );
 
     invoiceStore = getIt<InvoiceStore>();
+    invoiceStockStore = getIt<InvoiceStockStore>();
 
     if (userDataStore.invoices.isEmpty) {
       invoiceStore.fetchInvoices();
@@ -50,7 +60,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     } else {
       invoiceStore.setInvoices(userDataStore.invoices);
     }
-    invoiceStore.initSearchController();
 
     super.initState();
   }
@@ -115,11 +124,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           ),
           SizedBox(height: 24.dp),
           Observer(builder: (context) {
-            return SizedBox(
-              height: 40.dp,
-              child: Row(
-                children: [
-                  CommonDropdown(
+            return Row(
+              children: [
+                IntrinsicWidth(
+                  child: CommonDropdown(
                     label: 'Payment Status',
                     value: invoiceStore.selectedPaymentStatus,
                     onChanged: (value) {
@@ -132,74 +140,62 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       'Unpaid',
                     ],
                   ),
-                  SizedBox(
-                    width: 8.dp,
-                  ),
-                  SizedBox(
-                    width: 300.dp,
-                    child: CustomSearchBar(
-                      controller: invoiceStore.ledgerController,
-                      onChanged: (final value) {
-                        invoiceStore.setSearchQuery(value);
-                        invoiceStore.isFiltersApplied();
-                      },
-                      hintText: 'Search By Name, SSN Number, GST Number',
-                    ),
-                  ),
-                  const Spacer(),
-                  CustomImageButton(
-                    imagePath: 'assets/icons/pdf_icon.png',
-                    text: 'PDF',
-                    borderColor: const Color(0xffE5E7EB),
-                    buttonColor: Colors.white,
-                    onClicked: () {
-                      invoiceStore.exportPDF();
+                ),
+                SizedBox(
+                  width: 8.dp,
+                ),
+                SizedBox(
+                  width: 300.dp,
+                  child: CustomSearchBar(
+                    controller: ledgerController,
+                    onChanged: (final value) {
+                      invoiceStore.setSearchQuery(value);
+                      invoiceStore.isFiltersApplied();
                     },
+                    hintText: 'Search By Name, SSN Number, GST Number',
                   ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  CustomImageButton(
-                    imagePath: 'assets/icons/excel_icon.png',
-                    text: 'Excel',
-                    borderColor: const Color(0xffE5E7EB),
-                    buttonColor: Colors.white,
-                    onClicked: () {
-                      invoiceStore.exportExcel();
-                    },
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  Container(
-                    height: 30.dp,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: invoiceStore.isFilterApplied
-                              ? Colors.red
-                              : Colors.grey,
-                        )),
-                    child: IconButton(
-                      splashColor: Colors.transparent,
-                      hoverColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      focusColor: Colors.transparent,
-                      padding: EdgeInsets.zero,
-                      icon: Image.asset(
-                        'assets/icons/cross_icon.png',
+                ),
+                const Spacer(),
+                CustomImageButton(
+                  imagePath: 'assets/icons/excel_icon.png',
+                  text: 'Excel',
+                  borderColor: const Color(0xffE5E7EB),
+                  buttonColor: Colors.white,
+                  onClicked: () {
+                    invoiceStore.exportExcel();
+                  },
+                ),
+                SizedBox(
+                  width: 12.dp,
+                ),
+                Container(
+                  height: 30.dp,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
                         color: invoiceStore.isFilterApplied
                             ? Colors.red
                             : Colors.grey,
-                        width: 30.dp,
-                        height: 30.dp,
-                      ),
-                      tooltip: 'Clear All Filters',
-                      onPressed: invoiceStore.clearFilters,
+                      )),
+                  child: IconButton(
+                    splashColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    focusColor: Colors.transparent,
+                    padding: EdgeInsets.zero,
+                    icon: Image.asset(
+                      'assets/icons/cross_icon.png',
+                      color: invoiceStore.isFilterApplied
+                          ? Colors.red
+                          : Colors.grey,
+                      width: 30.dp,
+                      height: 30.dp,
                     ),
+                    tooltip: 'Clear All Filters',
+                    onPressed: invoiceStore.clearFilters,
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           }),
           SizedBox(
@@ -390,6 +386,32 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           child: InvoiceForm(
             existingInvoice: existingInvoice,
             onSubmit: (invoiceData) {
+              if (invoiceStore.itemSelectionType == 'existing') {
+                invoiceStockStore.updateStockItem(
+                  InvoiceStockModel(
+                    itemId: invoiceData.itemId ?? '',
+                    itemName: invoiceData.productName ?? '',
+                    hsdCode: invoiceData.hsnCode,
+                    itemWeight: double.parse(invoiceData.size),
+                    rate: double.parse(invoiceData.rate),
+                    amount: double.parse(invoiceData.amount),
+                    firm: Firm.sahajanand.name,
+                  ),
+                );
+              } else {
+                invoiceStockStore.addStockItem(
+                  InvoiceStockModel(
+                    itemId: invoiceData.itemId ?? '',
+                    itemName: invoiceData.productName ?? '',
+                    hsdCode: invoiceData.hsnCode,
+                    itemWeight: double.parse(invoiceData.size),
+                    rate: double.parse(invoiceData.rate),
+                    amount: double.parse(invoiceData.amount),
+                    firm: Firm.sahajanand.name,
+                  ),
+                );
+              }
+
               if (existingInvoice != null) {
                 invoiceStore
                     .updateInvoice(existingInvoice.invoiceId, invoiceData)
@@ -434,6 +456,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             },
             customers: userDataStore.partiesList,
             products: userDataStore.stockList,
+            invoiceStore: invoiceStore,
           ),
         ),
       ),

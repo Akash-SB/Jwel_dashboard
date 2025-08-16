@@ -67,8 +67,8 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
           purchase.stockDetails.availableQuantity.toString();
       quantityController.text = '';
       amountController.text = purchase.stockDetails.amount.toString();
-      descriptionController.text = purchase.stockDetails.description ?? '';
-      noteController.text = purchase.description ?? '';
+      descriptionController.text = purchase.stockDetails.description;
+      noteController.text = purchase.description;
       dateController.text =
           "${purchase.createdAt.day.toString().padLeft(2, '0')}-${purchase.createdAt.month.toString().padLeft(2, '0')}-${purchase.createdAt.year}";
       widget.purchaseStore.setSelectedPaymentStatus(purchase.paymentStatus);
@@ -388,7 +388,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                   children: [
                     IntrinsicWidth(
                       child: NormalButton(
-                        text: 'Cancle',
+                        text: 'Cancel',
                         textColor: const Color(0xFF374151),
                         filledColor: const Color(0xFFF3F4F6),
                         onPressed: () => Navigator.pop(context),

@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:excel/excel.dart' as excel;
@@ -35,9 +33,6 @@ abstract class _InvoiceStore with Store {
   String searchQuery = '';
 
   @observable
-  late TextEditingController ledgerController;
-
-  @observable
   int currentTablePage = 0;
 
   @observable
@@ -45,6 +40,14 @@ abstract class _InvoiceStore with Store {
 
   @observable
   int totalPages = 0;
+
+  @observable
+  String itemSelectionType = 'existing';
+
+  @action
+  void setItemSelectionType(String type) {
+    itemSelectionType = type;
+  }
 
   @action
   void setCurrentPageIndex(final int index) {
@@ -64,11 +67,6 @@ abstract class _InvoiceStore with Store {
   @action
   void setselectedPaymentTYpe(String status) {
     selectedPaymentType = status;
-  }
-
-  @action
-  void initSearchController() {
-    ledgerController = TextEditingController();
   }
 
   @action
