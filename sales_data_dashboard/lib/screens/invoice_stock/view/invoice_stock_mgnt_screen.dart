@@ -64,7 +64,7 @@ class _InvoiceStockMgntScreenState extends State<InvoiceStockMgntScreen> {
       key: 'itemName',
     ),
     TableColumn(label: 'HSN Code', key: 'hsnCode'),
-    TableColumn(label: 'Item Weight', key: 'weight'),
+    TableColumn(label: 'Item Weight', key: 'itemWeight'),
     TableColumn(label: 'Rate', key: 'rate', isSortable: true),
     TableColumn(label: 'Amount', key: 'amount', isSortable: true),
     TableColumn(label: 'Firm', key: 'firm'),

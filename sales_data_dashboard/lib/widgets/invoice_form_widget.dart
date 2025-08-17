@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/models/app_enum.dart';
+import 'package:sales_data_dashboard/models/invoice_stock_model.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
-import 'package:sales_data_dashboard/models/stock_item.dart';
 import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
 import 'package:sales_data_dashboard/widgets/custom_radio_button.dart';
 import 'package:sales_data_dashboard/widgets/normal_button.dart';
@@ -14,7 +14,7 @@ class InvoiceForm extends StatefulWidget {
   final InvoiceModel? existingInvoice;
   final void Function(InvoiceModel) onSubmit;
   final List<Party>? customers;
-  final List<StockItem>? products;
+  final List<InvoiceStockModel>? products;
   final InvoiceStore invoiceStore;
 
   const InvoiceForm({
@@ -99,6 +99,13 @@ class _InvoiceFormState extends State<InvoiceForm> {
     _hsnCodeController.dispose();
     _itemIdController.dispose();
     super.dispose();
+  }
+
+  void _setAmount(String size, String rate) {
+    final doubleSize = double.tryParse(size) ?? 0;
+    final doubleRate = double.tryParse(rate) ?? 0;
+    final amount = doubleSize * doubleRate;
+    _amountController.text = amount.toString();
   }
 
   void _submitForm() {
@@ -286,26 +293,28 @@ class _InvoiceFormState extends State<InvoiceForm> {
                                       .invoiceStore.itemSelectionType ==
                                   'existing')
                               ? Flexible(
-                                  child: Autocomplete<StockItem>(
+                                  child: Autocomplete<InvoiceStockModel>(
                                     optionsBuilder:
                                         (TextEditingValue textEditingValue) {
                                       if (textEditingValue.text.isEmpty) {
                                         return const Iterable<
-                                            StockItem>.empty();
+                                            InvoiceStockModel>.empty();
                                       }
                                       return widget.products != null
                                           ? widget.products!.where(
-                                              (StockItem product) => product
-                                                  .itemName
-                                                  .toLowerCase()
-                                                  .contains(textEditingValue
-                                                      .text
-                                                      .toLowerCase()),
+                                              (InvoiceStockModel product) =>
+                                                  product
+                                                      .itemName
+                                                      .toLowerCase()
+                                                      .contains(textEditingValue
+                                                          .text
+                                                          .toLowerCase()),
                                             )
                                           : [];
                                     },
                                     displayStringForOption:
-                                        (StockItem option) => option.itemName,
+                                        (InvoiceStockModel option) =>
+                                            option.itemName,
                                     initialValue: TextEditingValue(
                                         text: _prodNameController.text),
                                     fieldViewBuilder: (context, controller,
@@ -325,7 +334,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
                                       );
                                     },
                                     optionsViewBuilder: (context,
-                                        AutocompleteOnSelected<StockItem>
+                                        AutocompleteOnSelected<
+                                                InvoiceStockModel>
                                             onSelected,
                                         options) {
                                       return Align(
@@ -341,7 +351,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                                               shrinkWrap: true,
                                               itemCount: options.length,
                                               itemBuilder: (context, index) {
-                                                final StockItem option =
+                                                final InvoiceStockModel option =
                                                     options.elementAt(index);
                                                 return ListTile(
                                                   title: Text(option.itemName),
@@ -355,17 +365,18 @@ class _InvoiceFormState extends State<InvoiceForm> {
                                         ),
                                       );
                                     },
-                                    onSelected: (StockItem selection) {
+                                    onSelected: (InvoiceStockModel selection) {
                                       setState(() {
                                         _prodNameController.text =
                                             selection.itemName;
-                                        _sizeController.text = selection.size;
+                                        _sizeController.text =
+                                            selection.itemWeight.toString();
                                         _rateController.text =
                                             selection.rate.toString();
                                         _amountController.text =
                                             selection.amount.toString();
                                         _hsnCodeController.text =
-                                            selection.hsnCode;
+                                            selection.hsdCode;
                                         _itemIdController.text =
                                             selection.itemId;
                                       });
@@ -401,6 +412,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
                                 : null,
                             onChanged: (value) {
                               _setItemId(_prodNameController.text, value);
+                              _setAmount(
+                                  _sizeController.text, _rateController.text);
                             },
                           ),
                         ),
@@ -413,6 +426,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
                             validator: (value) => value == null || value.isEmpty
                                 ? 'Required'
                                 : null,
+                            onChanged: (value) =>
+                                _setAmount(_sizeController.text, value),
                           ),
                         ),
                       ],

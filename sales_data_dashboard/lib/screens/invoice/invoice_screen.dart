@@ -455,7 +455,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
               }
             },
             customers: userDataStore.partiesList,
-            products: userDataStore.stockList,
+            products: userDataStore.stockItemList,
             invoiceStore: invoiceStore,
           ),
         ),

@@ -36,7 +36,7 @@ abstract class _UserDataStore with Store {
       FirebaseFirestore.instance.collection('purchases');
 
   final CollectionReference stockInvoiceItemRefs =
-      FirebaseFirestore.instance.collection('StockInvoiceItems');
+      FirebaseFirestore.instance.collection('InvoiceStockItems');
 
   late Database db;
 

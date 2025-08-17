@@ -47,11 +47,11 @@ class InvoiceStockModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'prodId': itemId,
+      'itemId': itemId,
       'firm': firm,
-      'prodName': itemName,
+      'itemName': itemName,
       'hsdCode': hsdCode,
-      'prodWeight': itemWeight,
+      'itemWeight': itemWeight,
       'rate': rate,
       'amount': amount,
       'description': description,

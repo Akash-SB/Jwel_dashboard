@@ -70,7 +70,6 @@ abstract class _InvoiceStockStore with Store {
       final items = snapshot.docs
           .map((doc) => InvoiceStockModel.fromMap({
                 ...doc.data() as Map<String, dynamic>,
-                'itemId': doc.id,
               }))
           .toList();
       setStockList(items);
