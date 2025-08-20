@@ -5,6 +5,7 @@ import 'package:sales_data_dashboard/models/stock_item.dart';
 import 'package:sales_data_dashboard/screens/purchase/store/purchase_screen_store.dart';
 
 import '../../../models/firm_model.dart';
+import '../../../models/party_model.dart';
 import '../../../models/purchase_model.dart';
 import '../../../models/sales_model.dart';
 import '../../../widgets/common_dropdown.dart';
@@ -54,7 +55,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
     if (widget.existingPurchase != null) {
       final purchase = widget.existingPurchase!;
       nameController.text = purchase.partyDetails.name;
-      addressController.text = purchase.partyDetails.address;
+      addressController.text = purchase.partyDetails.address ?? '';
       mobileController.text = purchase.partyDetails.mobileNumber;
       gstController.text = purchase.partyDetails.gstNumber ?? '';
       firmTypeController.text = purchase.partyDetails.firm;
@@ -65,7 +66,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
       caratController.text = purchase.stockDetails.carat.toString();
       availableQuantController.text =
           purchase.stockDetails.availableQuantity.toString();
-      quantityController.text = '';
+      quantityController.text = purchase.buyQuantity.toString();
       amountController.text = purchase.stockDetails.amount.toString();
       descriptionController.text = purchase.stockDetails.description;
       noteController.text = purchase.description;
@@ -189,14 +190,14 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
               Observer(builder: (context) {
                 return SearchableTextField<String>(
                   label: 'Search by Party ID',
-                  options: widget.purchaseStore.getPartyIds(),
+                  options: widget.purchaseStore.partyIds,
                   displayString: (s) => s,
                   onSelect: (val) {
                     final partyDetails = widget.purchaseStore.getPartyById(val);
                     if (partyDetails != null) {
                       widget.purchaseStore.setselectedParty(partyDetails);
                       nameController.text = partyDetails.name;
-                      addressController.text = partyDetails.address;
+                      addressController.text = partyDetails.address ?? '';
                       mobileController.text = partyDetails.mobileNumber;
                       gstController.text = partyDetails.gstNumber ?? '';
                       firmTypeController.text = partyDetails.firm;
@@ -242,6 +243,10 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a mobile number';
                         }
+                        final numValue = int.tryParse(value);
+                        if (numValue == null) {
+                          return 'Number must be a digits';
+                        }
 
                         return null;
                       },
@@ -277,55 +282,54 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                     color: Color(0XFF111827),
                     fontWeight: FontWeight.w600,
                   )),
-              Observer(builder: (context) {
-                return Row(
-                  children: [
-                    IntrinsicWidth(
-                      child: CustomRadioButton<String>(
-                          title: 'Existing Item',
-                          value: 'existing',
-                          groupValue: widget.purchaseStore.itemSelectionType,
-                          onChanged: (value) {
-                            widget.purchaseStore.setItemSelectionType(value!);
-                            if (value == 'existing') {
-                              itemIdController.clear();
-                              nameController.clear();
-                              itemNameController.clear();
-                              sizeController.clear();
-                              rateController.clear();
-                              caratController.clear();
-                              quantityController.clear();
-                              amountController.clear();
-                              descriptionController.clear();
-                            }
-                          }),
-                    ),
-                    IntrinsicWidth(
-                      child: CustomRadioButton<String>(
-                          title: 'New Item',
-                          value: 'newItem',
-                          groupValue: widget.purchaseStore.itemSelectionType,
-                          onChanged: (final value) {
-                            widget.purchaseStore.setItemSelectionType(value!);
-                            if (value == 'newItem') {
-                              itemIdController.clear();
-                              nameController.clear();
-                              itemNameController.clear();
-                              sizeController.clear();
-                              rateController.clear();
-                              caratController.clear();
-                              quantityController.clear();
-                              amountController.clear();
-                              descriptionController.clear();
-                            }
-                          }),
-                    ),
-                  ],
-                );
-              }),
+              if (widget.existingPurchase == null)
+                Observer(builder: (context) {
+                  return Row(
+                    children: [
+                      IntrinsicWidth(
+                        child: CustomRadioButton<String>(
+                            title: 'Existing Item',
+                            value: 'existing',
+                            groupValue: widget.purchaseStore.itemSelectionType,
+                            onChanged: (value) {
+                              widget.purchaseStore.setItemSelectionType(value!);
+                              if (value == 'existing') {
+                                itemIdController.clear();
+                                nameController.clear();
+                                itemNameController.clear();
+                                sizeController.clear();
+                                rateController.clear();
+                                caratController.clear();
+                                quantityController.clear();
+                                amountController.clear();
+                                descriptionController.clear();
+                              }
+                            }),
+                      ),
+                      IntrinsicWidth(
+                        child: CustomRadioButton<String>(
+                            title: 'New Item',
+                            value: 'newItem',
+                            groupValue: widget.purchaseStore.itemSelectionType,
+                            onChanged: (final value) {
+                              widget.purchaseStore.setItemSelectionType(value!);
+                              if (value == 'newItem') {
+                                itemIdController.clear();
+                                nameController.clear();
+                                itemNameController.clear();
+                                sizeController.clear();
+                                rateController.clear();
+                                caratController.clear();
+                                quantityController.clear();
+                                amountController.clear();
+                                descriptionController.clear();
+                              }
+                            }),
+                      ),
+                    ],
+                  );
+                }),
               SizedBox(height: 12.dp),
-              // Show either existing item form or new item form based on selection
-
               Observer(
                 builder: (context) {
                   if (widget.purchaseStore.itemSelectionType.toLowerCase() ==
@@ -399,38 +403,99 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                     ),
                     IntrinsicWidth(
                       child: NormalButton(
-                        text: 'Create Purchase',
+                        text: widget.existingPurchase != null
+                            ? 'Update Purchase'
+                            : 'Create Purchase',
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            final partyDetails =
-                                widget.purchaseStore.selectedParty;
-                            StockItem selectedItem;
-                            if (widget.purchaseStore.itemSelectionType ==
-                                'existing') {
-                              selectedItem =
-                                  widget.purchaseStore.selectedStockItem!;
-                              final updatedItem = StockItem(
-                                amount:
-                                    double.tryParse(amountController.text) ??
-                                        0.0,
+                            widget.purchaseStore.setShowLoader(true);
+                            if (widget.existingPurchase == null) {
+                              final partyDetails =
+                                  widget.purchaseStore.selectedParty;
+                              StockItem selectedItem;
+                              if (widget.purchaseStore.itemSelectionType ==
+                                  'existing') {
+                                selectedItem =
+                                    widget.purchaseStore.selectedStockItem!;
+                                final updatedItem = StockItem(
+                                  amount:
+                                      double.tryParse(amountController.text) ??
+                                          0.0,
+                                  description: descriptionController.text,
+                                  firm: firmTypeController.text,
+                                  itemId: selectedItem.itemId,
+                                  itemName: itemNameController.text,
+                                  size: sizeController.text,
+                                  rate: double.tryParse(rateController.text) ??
+                                      0.0,
+                                  carat:
+                                      double.tryParse(caratController.text) ??
+                                          0.0,
+                                  availableQuantity:
+                                      selectedItem.availableQuantity +
+                                          (double.tryParse(
+                                                  quantityController.text) ??
+                                              0.0),
+                                  hsnCode: hsnController.text,
+                                );
+                                widget.purchaseStore
+                                    .updateStockItem(updatedItem);
+                              } else {
+                                selectedItem = StockItem(
+                                  itemId: itemIdController.text,
+                                  itemName: itemNameController.text,
+                                  size: sizeController.text,
+                                  rate: double.tryParse(rateController.text) ??
+                                      0.0,
+                                  carat:
+                                      double.tryParse(caratController.text) ??
+                                          0.0,
+                                  availableQuantity: double.tryParse(
+                                          quantityController.text) ??
+                                      0.0,
+                                  hsnCode: hsnController.text,
+                                  amount:
+                                      double.tryParse(amountController.text) ??
+                                          0.0,
+                                  description: descriptionController.text,
+                                  firm: firmTypeController.text,
+                                );
+                                widget.purchaseStore.addStockItem(
+                                  selectedItem,
+                                );
+                              }
+                              final purchase = Purchase(
+                                createdAt: DateTime.parse(
+                                  '${dateController.text.split('-')[2]}-${dateController.text.split('-')[1].padLeft(2, '0')}-${dateController.text.split('-')[0].padLeft(2, '0')}',
+                                ),
+                                firm: widget.purchaseStore.selectedFirmType,
                                 description: descriptionController.text,
-                                firm: firmTypeController.text,
-                                itemId: selectedItem.itemId,
-                                itemName: itemNameController.text,
-                                size: sizeController.text,
-                                rate:
-                                    double.tryParse(rateController.text) ?? 0.0,
-                                carat: double.tryParse(caratController.text) ??
-                                    0.0,
-                                availableQuantity: selectedItem
-                                        .availableQuantity +
-                                    (double.tryParse(quantityController.text) ??
-                                        0.0),
-                                hsnCode: hsnController.text,
+                                id: DateTime.now()
+                                    .millisecondsSinceEpoch
+                                    .toString(),
+                                partyDetails: partyDetails!,
+                                stockDetails: selectedItem,
+                                paymentStatus:
+                                    widget.purchaseStore.selectedPaymentStatus,
+                                paymentOption:
+                                    widget.purchaseStore.selectedPaymentType,
+                                buyQuantity:
+                                    double.tryParse(quantityController.text) ??
+                                        0,
                               );
-                              widget.purchaseStore.updateStockItem(updatedItem);
+                              widget.purchaseStore.addPurchase(purchase);
+                              Navigator.pop(context);
+                              widget.purchaseStore.setShowLoader(false);
                             } else {
-                              selectedItem = StockItem(
+                              Party? partyDetails;
+                              if (widget.purchaseStore.selectedParty != null) {
+                                partyDetails =
+                                    widget.purchaseStore.selectedParty;
+                              } else {
+                                partyDetails =
+                                    widget.existingPurchase?.partyDetails;
+                              }
+                              final selectedItem = StockItem(
                                 itemId: itemIdController.text,
                                 itemName: itemNameController.text,
                                 size: sizeController.text,
@@ -448,28 +513,27 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                 description: descriptionController.text,
                                 firm: firmTypeController.text,
                               );
-                              widget.purchaseStore.addStockItem(
-                                selectedItem,
+                              final purchase = Purchase(
+                                createdAt: DateTime.parse(
+                                  '${dateController.text.split('-')[2]}-${dateController.text.split('-')[1].padLeft(2, '0')}-${dateController.text.split('-')[0].padLeft(2, '0')}',
+                                ),
+                                firm: widget.purchaseStore.selectedFirmType,
+                                description: descriptionController.text,
+                                id: widget.existingPurchase?.id ?? '',
+                                partyDetails: partyDetails!,
+                                stockDetails: selectedItem,
+                                paymentStatus:
+                                    widget.purchaseStore.selectedPaymentStatus,
+                                paymentOption:
+                                    widget.purchaseStore.selectedPaymentType,
+                                buyQuantity:
+                                    double.tryParse(quantityController.text) ??
+                                        0,
                               );
+                              widget.purchaseStore.updatePurchase(purchase);
+                              Navigator.pop(context);
+                              widget.purchaseStore.setShowLoader(false);
                             }
-                            final purchase = Purchase(
-                              createdAt: DateTime.parse(
-                                '${dateController.text.split('-')[2]}-${dateController.text.split('-')[1].padLeft(2, '0')}-${dateController.text.split('-')[0].padLeft(2, '0')}',
-                              ),
-                              firm: widget.purchaseStore.selectedFirmType,
-                              description: descriptionController.text,
-                              id: DateTime.now()
-                                  .millisecondsSinceEpoch
-                                  .toString(),
-                              partyDetails: partyDetails!,
-                              stockDetails: selectedItem,
-                              paymentStatus:
-                                  widget.purchaseStore.selectedPaymentStatus,
-                              paymentOption:
-                                  widget.purchaseStore.selectedPaymentType,
-                            );
-                            widget.purchaseStore.addPurchase(purchase);
-                            Navigator.pop(context);
                           }
                         },
                       ),
@@ -491,6 +555,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
           SearchableTextField<String>(
             label: 'Search by Item ID',
             options: widget.purchaseStore.getStockListNames(),
+            isEnable: widget.existingPurchase == null,
             displayString: (s) => s,
             onSelect: (val) {
               final stockItem = widget.purchaseStore.getStockItemById(val);
@@ -530,7 +595,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
               Expanded(
                 child: CommonTextField(
                   label: 'Item Name',
-                  controller: nameController,
+                  controller: itemNameController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter an item name';
@@ -568,6 +633,10 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a rate';
                     }
+                    final numValue = double.tryParse(value);
+                    if (numValue == null) {
+                      return 'Rate must be a number';
+                    }
                     return null;
                   },
                 ),
@@ -599,11 +668,15 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                     label: 'Buy Quantity',
                     controller: quantityController,
                     onChanged: (p0) => setAmount(),
+                    enabled: widget.existingPurchase == null,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter a quantity';
                       }
-
+                      final numValue = double.tryParse(value);
+                      if (numValue == null) {
+                        return 'Quantity must be a number';
+                      }
                       return null;
                     },
                   ),
@@ -617,6 +690,10 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                       if ((rateController.text.isEmpty ||
                           quantityController.text.isEmpty)) {
                         return 'Please enter both rate and quantity';
+                      }
+                      final numValue = double.tryParse(value ?? '');
+                      if (numValue == null) {
+                        return 'Amount must be a number';
                       }
                       return null;
                     },
@@ -655,7 +732,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
               Expanded(
                 child: CommonTextField(
                   label: 'Item Name',
-                  controller: nameController,
+                  controller: itemNameController,
                   onChanged: (p0) {
                     _setItemId(p0, sizeController.text);
                   },

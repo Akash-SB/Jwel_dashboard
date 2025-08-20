@@ -543,7 +543,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
                                 _custType = selection.partyType == 'broker'
                                     ? UsertypeEnum.broker
                                     : UsertypeEnum.company;
-                                _custAddressController.text = selection.address;
+                                _custAddressController.text =
+                                    selection.address ?? '';
                                 _custPhoneController.text =
                                     selection.mobileNumber;
                                 _custGstController.text =

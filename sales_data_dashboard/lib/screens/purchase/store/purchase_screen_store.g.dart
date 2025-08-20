@@ -31,22 +31,6 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
               name: '_PurchaseScreenStore.filteredData'))
       .value;
 
-  late final _$purchaseListAtom =
-      Atom(name: '_PurchaseScreenStore.purchaseList', context: context);
-
-  @override
-  ObservableList<Purchase> get purchaseList {
-    _$purchaseListAtom.reportRead();
-    return super.purchaseList;
-  }
-
-  @override
-  set purchaseList(ObservableList<Purchase> value) {
-    _$purchaseListAtom.reportWrite(value, super.purchaseList, () {
-      super.purchaseList = value;
-    });
-  }
-
   late final _$stockListAtom =
       Atom(name: '_PurchaseScreenStore.stockList', context: context);
 
@@ -63,6 +47,22 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     });
   }
 
+  late final _$partyIdsAtom =
+      Atom(name: '_PurchaseScreenStore.partyIds', context: context);
+
+  @override
+  List<String> get partyIds {
+    _$partyIdsAtom.reportRead();
+    return super.partyIds;
+  }
+
+  @override
+  set partyIds(List<String> value) {
+    _$partyIdsAtom.reportWrite(value, super.partyIds, () {
+      super.partyIds = value;
+    });
+  }
+
   late final _$selectedFilterFirmAtom =
       Atom(name: '_PurchaseScreenStore.selectedFilterFirm', context: context);
 
@@ -76,6 +76,22 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
   set selectedFilterFirm(String value) {
     _$selectedFilterFirmAtom.reportWrite(value, super.selectedFilterFirm, () {
       super.selectedFilterFirm = value;
+    });
+  }
+
+  late final _$showLoadersAtom =
+      Atom(name: '_PurchaseScreenStore.showLoaders', context: context);
+
+  @override
+  Observable<bool> get showLoaders {
+    _$showLoadersAtom.reportRead();
+    return super.showLoaders;
+  }
+
+  @override
+  set showLoaders(Observable<bool> value) {
+    _$showLoadersAtom.reportWrite(value, super.showLoaders, () {
+      super.showLoaders = value;
     });
   }
 
@@ -437,11 +453,33 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
       ActionController(name: '_PurchaseScreenStore', context: context);
 
   @override
+  void setShowLoader(bool value) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setShowLoader');
+    try {
+      return super.setShowLoader(value);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedStatus(String value) {
     final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
         name: '_PurchaseScreenStore.setSelectedStatus');
     try {
       return super.setSelectedStatus(value);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPartyIds(List<String> list) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setPartyIds');
+    try {
+      return super.setPartyIds(list);
     } finally {
       _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
     }
@@ -547,7 +585,7 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
   }
 
   @override
-  List<String> getPartyIds() {
+  void getPartyIds() {
     final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
         name: '_PurchaseScreenStore.getPartyIds');
     try {
@@ -563,17 +601,6 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
         name: '_PurchaseScreenStore.getPartyById');
     try {
       return super.getPartyById(partyId);
-    } finally {
-      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setPurchaseList(List<Purchase> list) {
-    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
-        name: '_PurchaseScreenStore.setPurchaseList');
-    try {
-      return super.setPurchaseList(list);
     } finally {
       _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
     }
@@ -646,6 +673,17 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
   }
 
   @override
+  void setPurchaseList(List<Purchase> list) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setPurchaseList');
+    try {
+      return super.setPurchaseList(list);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void clearAllFilters() {
     final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
         name: '_PurchaseScreenStore.clearAllFilters');
@@ -659,9 +697,10 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
   @override
   String toString() {
     return '''
-purchaseList: ${purchaseList},
 stockList: ${stockList},
+partyIds: ${partyIds},
 selectedFilterFirm: ${selectedFilterFirm},
+showLoaders: ${showLoaders},
 selectedPartyType: ${selectedPartyType},
 salectedStatus: ${salectedStatus},
 selectedPaymentType: ${selectedPaymentType},

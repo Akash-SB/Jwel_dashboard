@@ -32,13 +32,14 @@ class _PartyDetailsFormWidgetState extends State<PartyDetailsFormWidget> {
 
   final _formKey = GlobalKey<FormState>();
 
-  inistate() {
+  @override
+  void initState() {
     super.initState();
     final party = widget.party;
     if (party != null) {
       idController.text = party.id;
       nameController.text = party.name;
-      addressController.text = party.address;
+      addressController.text = party.address ?? '';
       mobileController.text = party.mobileNumber;
       gstController.text = party.gstNumber ?? '';
       widget.partyStore.selectedFormPartyType = party.partyType;
@@ -49,7 +50,6 @@ class _PartyDetailsFormWidgetState extends State<PartyDetailsFormWidget> {
         widget.partyStore.selectedFormPartyType,
       );
     }
-    setState(() {});
   }
 
   @override
@@ -199,7 +199,9 @@ class _PartyDetailsFormWidgetState extends State<PartyDetailsFormWidget> {
                       Observer(builder: (context) {
                         return IntrinsicWidth(
                           child: NormalButton(
-                            text: 'Create User',
+                            text: widget.party != null
+                                ? 'Update User'
+                                : 'Create User',
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 final party = Party(

@@ -7,6 +7,7 @@ class SearchableTextField<T> extends StatefulWidget {
   final List<T> options;
   final String Function(T) displayString;
   final void Function(T) onSelect;
+  final bool isEnable;
 
   const SearchableTextField({
     super.key,
@@ -14,6 +15,7 @@ class SearchableTextField<T> extends StatefulWidget {
     required this.options,
     required this.displayString,
     required this.onSelect,
+    this.isEnable = true,
   });
 
   @override
@@ -27,14 +29,19 @@ class _SearchableTextFieldState<T> extends State<SearchableTextField<T>> {
 
   void _onChanged(String value) {
     setState(() {
-      filteredOptions = widget.options
-          .where((e) => widget
-              .displayString(e)
-              .toLowerCase()
-              .contains(value.toLowerCase()))
-          .take(5)
-          .toList();
-      showOptions = true;
+      if (value.isEmpty) {
+        filteredOptions = [];
+        showOptions = false;
+      } else {
+        filteredOptions = widget.options
+            .where((e) => widget
+                .displayString(e)
+                .toLowerCase()
+                .contains(value.toLowerCase()))
+            .take(5)
+            .toList();
+        showOptions = true;
+      }
     });
   }
 
@@ -64,6 +71,7 @@ class _SearchableTextFieldState<T> extends State<SearchableTextField<T>> {
                 color: Color(0xFF9CA3AF),
               ),
               filled: true,
+              enabled: widget.isEnable,
               fillColor: Colors.white,
               hoverColor: Colors.transparent,
               focusColor: Colors.transparent,

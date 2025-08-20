@@ -16,7 +16,7 @@ import '../../../widgets/searchable_textfield.dart';
 import '../../dashboard/store/activity_store.dart';
 
 class SalesFormWidget extends StatefulWidget {
-  SalesFormWidget(
+  const SalesFormWidget(
       {super.key,
       required this.salesScreenStore,
       required this.partyList,
@@ -64,7 +64,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
     if (widget.existingSale != null) {
       final sale = widget.existingSale!;
       nameController.text = sale.partyDetails.name;
-      addressController.text = sale.partyDetails.address;
+      addressController.text = sale.partyDetails.address ?? '';
       mobileController.text = sale.partyDetails.mobileNumber;
       gstController.text = sale.partyDetails.gstNumber ?? '';
       partyTypeController.text = sale.partyDetails.partyType;
@@ -177,7 +177,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                           .salesScreenStore.selectedFilterFirm,
                                     ));
                         nameController.text = party.name;
-                        addressController.text = party.address;
+                        addressController.text = party.address ?? '';
                         mobileController.text = party.mobileNumber;
                         gstController.text = party.gstNumber ?? '';
                         partyTypeController.text = party.partyType;
@@ -307,7 +307,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                                 .selectedFilterFirm,
                                           ));
                               agentNameController.text = party.name;
-                              agentAddressController.text = party.address;
+                              agentAddressController.text = party.address ?? '';
                               agentMobileController.text = party.mobileNumber;
                               agentGstController.text = party.gstNumber ?? '';
                             },
@@ -521,7 +521,9 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                     ),
                     IntrinsicWidth(
                       child: NormalButton(
-                        text: 'Create Sale',
+                        text: widget.existingSale != null
+                            ? 'Update Sale'
+                            : 'Create Sale',
                         onPressed: () {
                           final sale = Sale(
                             id: DateTime.now()

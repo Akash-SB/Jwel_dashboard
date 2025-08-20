@@ -6,7 +6,6 @@ import 'package:sales_data_dashboard/app_routes.dart';
 import 'package:sales_data_dashboard/theme.dart';
 
 import '../../models/invoice_notification_model.dart';
-import '../../services/notification_service.dart';
 import 'store/userdata_store.dart';
 
 final getIt = GetIt.instance;
@@ -34,19 +33,26 @@ class _IndexScreenState extends State<IndexScreen> {
     userDataStore = getIt<UserDataStore>(
       instanceName: 'UserDataStore',
     );
+    userDataStore.initialize();
     _fetchData();
   }
 
   Future<void> showNotification(
       final List<InvoiceNotificationModel> notfList) async {
-    for (final notif in notfList) {
-      if (notif.isShown == false) {
-        final id = int.tryParse(notif.id.toString()) ?? 0;
-        final title = notif.message;
-        final body = 'Invoice ID: ${notif.salesId}';
+    for (int i = 0; i < notfList.length; i++) {
+      if (notfList[i].isShown == false) {
+        final id = int.tryParse(notfList[i].id.toString()) ?? 0;
+        final title = notfList[i].message;
+        final body = 'Invoice ID: ${notfList[i].salesId}';
 
-        await NotificationService.showNotification(
-            id: id, title: title, body: body);
+        await userDataStore.showNotification(
+          id: id,
+          title: title,
+          body: body,
+        );
+
+        // Mark as shown after displaying notification
+        notfList[i].isShown = true;
       }
     }
     // After showing notifications, update the list with the updated notfList
@@ -56,28 +62,30 @@ class _IndexScreenState extends State<IndexScreen> {
   Future<void> _fetchData() async {
     await userDataStore.getAllData();
     await showNotification(userDataStore.notfList);
+    userDataStore.setIsAllDataLoaded(true);
   }
+
+  final icons = [
+    Icons.dashboard,
+    Icons.receipt_long,
+    Icons.bar_chart,
+    Icons.shopping_cart,
+    Icons.people,
+    Icons.inventory,
+    Icons.inventory_2,
+  ];
+  final labels = [
+    "Dashboard",
+    "Invoices",
+    "Sales",
+    "Purchase",
+    "Party Details",
+    "Stock Management",
+    "Invoice Stock Management"
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final icons = [
-      Icons.dashboard,
-      Icons.receipt_long,
-      Icons.bar_chart,
-      Icons.shopping_cart,
-      Icons.people,
-      Icons.inventory,
-      Icons.inventory_2,
-    ];
-    final labels = [
-      "Dashboard",
-      "Invoices",
-      "Sales",
-      "Purchase",
-      "Party Details",
-      "Stock Management",
-      "Invoice Stock Management"
-    ];
     return Scaffold(
       body: Observer(builder: (context) {
         return Row(
@@ -150,13 +158,19 @@ class _IndexScreenState extends State<IndexScreen> {
                 ],
               ),
             ),
-            Expanded(
-              child: Navigator(
-                key: _navigatorKey,
-                initialRoute: AppRoutes.dashboard,
-                onGenerateRoute: AppRoutes.generateRoute,
-              ),
-            ),
+            Observer(builder: (context) {
+              return Expanded(
+                child: userDataStore.isAllDataLoaded.value
+                    ? Navigator(
+                        key: _navigatorKey,
+                        initialRoute: AppRoutes.dashboard,
+                        onGenerateRoute: AppRoutes.generateRoute,
+                      )
+                    : const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+              );
+            }),
           ],
         );
       }),

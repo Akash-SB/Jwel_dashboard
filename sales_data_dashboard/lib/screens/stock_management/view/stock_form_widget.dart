@@ -34,27 +34,28 @@ class _StockFormWidgetState extends State<StockFormWidget> {
   final TextEditingController amountController = TextEditingController();
   final TextEditingController descController = TextEditingController();
 
-  String selectedFirm = 'Sahajanand';
+  String selectedFirm = 'Sahajanand Gems';
 
   void _setItemId(final String itemName, final String size) {
     final id = '$itemName-$size';
     itemIdController.text = id;
   }
 
-  inistate() {
+  @override
+  void initState() {
     super.initState();
-    final stockItem = widget.existingStockItem;
-    if (stockItem != null) {
-      itemIdController.text = stockItem.itemId;
-      itemNameController.text = stockItem.itemName;
-      hsnController.text = stockItem.hsnCode;
-      sizeController.text = stockItem.size;
-      rateController.text = stockItem.rate.toString();
-      caratController.text = stockItem.carat.toString();
-      quantController.text = stockItem.availableQuantity.toString();
-      amountController.text = stockItem.amount.toString();
-      descController.text = stockItem.description;
-      selectedFirm = stockItem.firm;
+    if (widget.existingStockItem != null) {
+      final stockItem = widget.existingStockItem;
+      itemIdController.text = stockItem?.itemId ?? '';
+      itemNameController.text = stockItem?.itemName ?? '';
+      hsnController.text = stockItem?.hsnCode ?? '';
+      sizeController.text = stockItem?.size ?? '';
+      rateController.text = stockItem?.rate.toString() ?? '';
+      caratController.text = stockItem?.carat.toString() ?? '';
+      quantController.text = stockItem?.availableQuantity.toString() ?? '';
+      amountController.text = stockItem?.amount.toString() ?? '';
+      descController.text = stockItem?.description ?? 'NA';
+      selectedFirm = stockItem?.firm ?? 'NA';
     }
   }
 
@@ -116,6 +117,7 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                         Expanded(
                           child: CommonDropdown(
                             label: 'Firm',
+                            value: selectedFirm,
                             options: Firm.values.map((e) => e.name).toList(),
                             validator: (value) =>
                                 value == null || value.trim().isEmpty
@@ -123,7 +125,7 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                                     : null,
                             onChanged: (value) {
                               setState(() {
-                                selectedFirm = value ?? 'Sahajanand';
+                                selectedFirm = value ?? 'Sahajanand Gems';
                               });
                             },
                           ),
@@ -224,7 +226,9 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                         ),
                         IntrinsicWidth(
                           child: NormalButton(
-                            text: 'Add In Stock',
+                            text: widget.existingStockItem != null
+                                ? 'Update Stock'
+                                : 'Add In Stock',
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 final stock = StockItem(
@@ -246,9 +250,19 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                                   description: descController.text,
                                   firm: selectedFirm,
                                 );
-                                widget.stockStore.addStockItem(stock).then((_) {
-                                  Navigator.pop(context);
-                                });
+                                if (widget.existingStockItem != null) {
+                                  widget.stockStore
+                                      .updateStockItem(stock)
+                                      .then((_) {
+                                    Navigator.pop(context);
+                                  });
+                                } else {
+                                  widget.stockStore
+                                      .addStockItem(stock)
+                                      .then((_) {
+                                    Navigator.pop(context);
+                                  });
+                                }
                               }
                             },
                           ),

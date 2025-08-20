@@ -20,13 +20,23 @@ abstract class _PurchaseScreenStore with Store {
   final UserDataStore userDataStore;
 
   @observable
-  ObservableList<Purchase> purchaseList = ObservableList<Purchase>();
-
-  @observable
   ObservableList<StockItem> stockList = ObservableList<StockItem>();
 
   @observable
+  List<String> partyIds = [];
+
+  @observable
   String selectedFilterFirm = 'Sahajanand Gems';
+
+  @observable
+  Observable<bool> showLoaders = Observable(false);
+
+  @action
+  void setShowLoader(final bool value) {
+    runInAction(() {
+      showLoaders.value = value;
+    });
+  }
 
   @observable
   String selectedPartyType = 'agent';
@@ -49,6 +59,11 @@ abstract class _PurchaseScreenStore with Store {
   @action
   void setSelectedStatus(String value) {
     salectedStatus = value;
+  }
+
+  @action
+  void setPartyIds(final List<String> list) {
+    partyIds = list;
   }
 
   @action
@@ -96,7 +111,7 @@ abstract class _PurchaseScreenStore with Store {
   @action
   Future<void> addPartyDetails(Party party) async {
     try {
-      await _collection.doc(party.id).set(party.toMap());
+      await _partyCollection.doc(party.id).set(party.toMap());
       userDataStore.partiesList.add(party);
       partiesList.add(party);
     } catch (e) {
@@ -117,15 +132,18 @@ abstract class _PurchaseScreenStore with Store {
   @action
   void setSelectedPartyType(String type) {
     selectedPartyType = type;
+    getPartyIds();
   }
 
   @action
-  List<String> getPartyIds() {
-    return partiesList
+  void getPartyIds() {
+    final list = partiesList
         .where((party) =>
             party.partyType.toLowerCase() == selectedPartyType.toLowerCase())
         .map((party) => party.id)
         .toList();
+    partyIds.clear();
+    partyIds.addAll(list);
   }
 
   @action
@@ -133,11 +151,6 @@ abstract class _PurchaseScreenStore with Store {
     return partiesList.firstWhere(
       (party) => party.id == partyId,
     );
-  }
-
-  @action
-  void setPurchaseList(List<Purchase> list) {
-    purchaseList = ObservableList<Purchase>.of(list);
   }
 
   @action
@@ -236,7 +249,7 @@ abstract class _PurchaseScreenStore with Store {
 
   @computed
   List<Purchase> get filteredData {
-    List<Purchase> filtered = purchaseList.toList();
+    List<Purchase> filtered = purchases.toList();
     return filtered.where((sale) {
       final matchesSearch = searchedText.toLowerCase();
       final searchItem = sale.id.toLowerCase().contains(matchesSearch) ||
@@ -258,10 +271,18 @@ abstract class _PurchaseScreenStore with Store {
 
   CollectionReference get _stockCollection =>
       _firestore.collection('StockItems');
+  CollectionReference get _partyCollection =>
+      _firestore.collection('PartyDetails');
 
   /// Reactive list of purchases
   @observable
   ObservableList<Purchase> purchases = ObservableList<Purchase>();
+
+  @action
+  void setPurchaseList(final List<Purchase> list) {
+    purchases.clear();
+    purchases.addAll(list);
+  }
 
   @observable
   bool isLoading = false;

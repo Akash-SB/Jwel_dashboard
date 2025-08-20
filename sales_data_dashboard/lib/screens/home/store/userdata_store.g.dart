@@ -25,6 +25,22 @@ mixin _$UserDataStore on _UserDataStore, Store {
     });
   }
 
+  late final _$isAllDataLoadedAtom =
+      Atom(name: '_UserDataStore.isAllDataLoaded', context: context);
+
+  @override
+  Observable<bool> get isAllDataLoaded {
+    _$isAllDataLoadedAtom.reportRead();
+    return super.isAllDataLoaded;
+  }
+
+  @override
+  set isAllDataLoaded(Observable<bool> value) {
+    _$isAllDataLoadedAtom.reportWrite(value, super.isAllDataLoaded, () {
+      super.isAllDataLoaded = value;
+    });
+  }
+
   late final _$errorMessageAtom =
       Atom(name: '_UserDataStore.errorMessage', context: context);
 
@@ -290,6 +306,17 @@ mixin _$UserDataStore on _UserDataStore, Store {
       ActionController(name: '_UserDataStore', context: context);
 
   @override
+  void setIsAllDataLoaded(bool value) {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.setIsAllDataLoaded');
+    try {
+      return super.setIsAllDataLoaded(value);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setTab(int index) {
     final _$actionInfo = _$_UserDataStoreActionController.startAction(
         name: '_UserDataStore.setTab');
@@ -414,6 +441,7 @@ mixin _$UserDataStore on _UserDataStore, Store {
   String toString() {
     return '''
 isLoading: ${isLoading},
+isAllDataLoaded: ${isAllDataLoaded},
 errorMessage: ${errorMessage},
 tabIndex: ${tabIndex},
 invoices: ${invoices},

@@ -48,14 +48,6 @@ mixin _$LoginScreenStore on _LoginScreenStore, Store {
     });
   }
 
-  late final _$loginAsyncAction =
-      AsyncAction('_LoginScreenStore.login', context: context);
-
-  @override
-  Future<bool> login() {
-    return _$loginAsyncAction.run(() => super.login());
-  }
-
   late final _$_LoginScreenStoreActionController =
       ActionController(name: '_LoginScreenStore', context: context);
 
@@ -87,6 +79,17 @@ mixin _$LoginScreenStore on _LoginScreenStore, Store {
         name: '_LoginScreenStore.resetFields');
     try {
       return super.resetFields();
+    } finally {
+      _$_LoginScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  bool login() {
+    final _$actionInfo = _$_LoginScreenStoreActionController.startAction(
+        name: '_LoginScreenStore.login');
+    try {
+      return super.login();
     } finally {
       _$_LoginScreenStoreActionController.endAction(_$actionInfo);
     }

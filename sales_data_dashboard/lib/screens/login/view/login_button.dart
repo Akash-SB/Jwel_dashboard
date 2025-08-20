@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 
 class LoginButton extends StatelessWidget {
   final String label;
@@ -14,16 +15,17 @@ class LoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        backgroundColor: Colors.blueAccent,
+        padding: EdgeInsets.symmetric(vertical: 16.dp),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.dp)),
+        backgroundColor: const Color(0xFF3B82F6),
       ),
       onPressed: onPressed,
       child: Center(
         child: Text(
           label,
-          style: const TextStyle(
-            fontSize: 16,
+          style: TextStyle(
+            fontSize: 16.dp,
             color: Colors.white,
           ),
         ),
@@ -31,3 +33,4 @@ class LoginButton extends StatelessWidget {
     );
   }
 }
+ 

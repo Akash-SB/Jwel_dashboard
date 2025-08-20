@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/screens/home/index_screen.dart';
 import 'package:sales_data_dashboard/screens/login/store/login_screen_store.dart';
 import 'package:sales_data_dashboard/screens/login/view/login_button.dart';
-import 'package:sales_data_dashboard/screens/login/view/login_carousal_widget.dart';
 import 'package:sales_data_dashboard/screens/login/view/login_custom_textfield.dart';
 import 'package:get_it/get_it.dart';
 
@@ -78,96 +78,153 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.grey[200],
       body: Container(
         color: const Color(0xFFDBDBDB),
-        padding: const EdgeInsets.symmetric(
-          vertical: 50,
-          horizontal: 30,
+        padding: EdgeInsets.symmetric(
+          vertical: 50.dp,
+          horizontal: 30.dp,
         ),
         child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: const BoxDecoration(
+          padding: EdgeInsets.all(16.dp),
+          decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(
               Radius.circular(
-                16,
+                16.dp,
               ),
             ),
           ),
           child: Row(
             children: [
               // Left Carousel
-              const Expanded(
+              Expanded(
                 flex: 1,
-                child: LoginCarousalWidget(
-                  images: [
-                    'assets/login_promo_1.jpg',
-                    'assets/login_promo_1.jpg',
-                    'assets/login_promo_1.jpg'
-                  ], // replace with your image
-                  titles: [
-                    'Manage Properties Efficiently',
-                    'Track Payments Easily',
-                    'All in One Platform',
-                  ],
-                  subtitles: [
-                    'Track rent payments, maintenance requests,\nand tenant communications in one place.',
-                    'No more spreadsheets. Everything is auto-logged\nand organized by tenant and property.',
-                    'Reduce manual work and focus on what matters\nwith smart automation and alerts.',
-                  ],
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16.dp),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.asset(
+                        'assets/login_promo_1.jpg',
+                        fit: BoxFit.cover,
+                      ),
+                      Container(
+                        color: const Color(0xFF1E3A8A).withOpacity(0.5),
+                      ),
+                      // Centered icon and text
+                      Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Icon (replace with your desired icon)
+                            Image.asset(
+                              'assets/icons/apps_icon.png',
+                              width: 36.dp,
+                              height: 36.dp,
+                              color: Colors.white,
+                            ),
+                            SizedBox(height: 24.dp),
+                            Text(
+                              'Streamline Your Gem Management',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 24.dp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 16.dp),
+                            Text(
+                              'An intelligent platform for efficient inventory and sales tracking',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12.dp,
+                                color: Colors.white.withOpacity(0.9),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-
               // Right Login Form
               Expanded(
                 flex: 1,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 48.0),
+                  padding: EdgeInsets.symmetric(horizontal: 48.dp),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Welcome Back\nto Real Nest!",
-                        style: TextStyle(
-                          fontSize: 38,
-                          fontWeight: FontWeight.w600,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/icons/diamond_icon.png',
+                            width: 30.dp,
+                            height: 30.dp,
+                          ),
+                          SizedBox(
+                            width: 8.dp,
+                          ),
+                          Text(
+                            "Sahajanand Gems",
+                            style: TextStyle(
+                                fontSize: 28.dp,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF312E81)),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 24.dp),
+                      Container(
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Welcome Back",
+                          style: TextStyle(
+                            fontSize: 24.dp,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF111827),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 28),
-                      const Text(
-                        "Sign in your account",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      SizedBox(height: 8.dp),
+                      Container(
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Sign in your account",
+                          style: TextStyle(
+                            fontSize: 14.dp,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(
+                              0xFF4B5563,
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 32.dp),
                       Observer(builder: (context) {
-                        return LoginCustomTextfield(
-                          hint: 'UserName',
-                          icon: Icons.email,
+                        return LoginCustomTextfield.email(
                           onChanged: loginStore.setEmail,
-                          label: 'Enter Your UserName',
                           controller: emailController,
                           validator: (value) => value == null || value.isEmpty
                               ? "Username cannot be empty"
                               : null,
                         );
                       }),
-                      const SizedBox(height: 28),
+                      SizedBox(height: 24.dp),
                       Observer(builder: (context) {
-                        return LoginCustomTextfield(
-                          hint: 'Password',
+                        return LoginCustomTextfield.password(
                           onChanged: loginStore.setPassword,
-                          icon: Icons.lock,
-                          obscure: true,
                           controller: passwordController,
-                          label: 'Enter Your Password',
                           validator: (value) => value == null || value.isEmpty
                               ? "Password cannot be empty"
                               : null,
                         );
                       }),
-                      const SizedBox(height: 56),
+                      SizedBox(height: 68.dp),
                       Observer(builder: (context) {
                         return AbsorbPointer(
                           absorbing: !loginStore.isValid,
@@ -175,8 +232,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             opacity: loginStore.isValid ? 1 : 0.5,
                             child: LoginButton(
                               label: 'Login',
-                              onPressed: () async {
-                                final success = await loginStore.login();
+                              onPressed: () {
+                                final success = loginStore.login();
                                 if (success &&
                                     loginStore.email == 'Admin' &&
                                     loginStore.password == 'Admin@123') {

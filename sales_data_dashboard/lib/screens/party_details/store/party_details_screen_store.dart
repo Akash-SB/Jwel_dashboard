@@ -302,10 +302,10 @@ abstract class _PartyDetailsStore with Store {
   }
 
   @observable
-  String selectedFilterFirm = 'Sahajanand Gems';
+  String selectedFilterFirm = 'All';
 
   @observable
-  String selectedFilterPartyType = 'Agent';
+  String selectedFilterPartyType = 'All';
 
   @action
   void setSelectedFilterPartyType(String value) {
@@ -320,8 +320,8 @@ abstract class _PartyDetailsStore with Store {
   @action
   void isFiltersApplied() {
     isFilterApplied = searchedText.isNotEmpty ||
-        selectedFilterFirm != 'Sahajanand Gems ' ||
-        selectedFilterPartyType != 'Agent' ||
+        selectedFilterFirm != 'All' ||
+        selectedFilterPartyType != 'All' ||
         sortKey != null;
   }
 
@@ -376,8 +376,11 @@ abstract class _PartyDetailsStore with Store {
       final searchItem = party.id.toLowerCase().contains(matchesSearch) ||
           party.name.toLowerCase().contains(matchesSearch) ||
           party.mobileNumber.toLowerCase().contains(matchesSearch);
-      final matchesFirm = party.firm == selectedFilterFirm;
-      final matchesPartyType = party.partyType == selectedFilterPartyType;
+      final matchesFirm =
+          selectedFilterFirm == 'All' ? true : party.firm == selectedFilterFirm;
+      final matchesPartyType = selectedFilterPartyType == 'All'
+          ? true
+          : party.partyType == selectedFilterPartyType;
       return searchItem && matchesFirm && matchesPartyType;
     }).toList();
   }
@@ -385,8 +388,8 @@ abstract class _PartyDetailsStore with Store {
   @action
   void clearAllFilters() {
     searchcontroller.text = '';
-    setSelectedFilterFirm('Sahajanand Gems');
-    setSelectedFilterPartyType('Agent');
+    setSelectedFilterFirm('All');
+    setSelectedFilterPartyType('All');
     sortKey = null;
     setSearchText('');
     setCurrentPageIndex(0);

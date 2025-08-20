@@ -31,7 +31,7 @@ abstract class _LoginScreenStore with Store {
   }
 
   @action
-  Future<bool> login() async {
+  bool login() {
     if (!isValid) return false;
     return true;
   }

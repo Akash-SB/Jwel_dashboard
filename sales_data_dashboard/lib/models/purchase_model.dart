@@ -14,6 +14,7 @@ class Purchase {
   final DateTime createdAt;
   final String firm;
   final Party? agentDetails;
+  final double buyQuantity;
 
   Purchase({
     required this.id,
@@ -25,6 +26,7 @@ class Purchase {
     required this.createdAt,
     required this.firm,
     this.agentDetails,
+    required this.buyQuantity,
   });
 
   Map<String, dynamic> toMap() => {
@@ -34,6 +36,7 @@ class Purchase {
         'paymentOption': paymentOption,
         'paymentStatus': paymentStatus,
         'description': description,
+        'buyQuantity': buyQuantity,
         'createdAt': createdAt.toIso8601String(),
         'firm': firm,
       };
@@ -47,6 +50,7 @@ class Purchase {
         description: map['description'],
         createdAt: DateTime.parse(map['createdAt']),
         firm: map['firm'] ?? Firm.sahajanand.name,
+        buyQuantity: map['buyQuantity'] ?? 0,
       );
 
   Map<String, dynamic> toFirestore() => {
@@ -57,6 +61,7 @@ class Purchase {
         'paymentStatus': paymentStatus,
         'description': description,
         'firm': firm,
+        'buyQuantity': buyQuantity,
         'createdAt': createdAt.toIso8601String(),
       };
 
@@ -77,6 +82,7 @@ class Purchase {
       'Status': paymentStatus,
       'Created': createdAt.toIso8601String(),
       'Firm': firm,
+      'buyQuantity': buyQuantity
     };
   }
 }

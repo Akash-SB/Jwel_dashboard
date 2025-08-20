@@ -67,7 +67,6 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
       TableColumn(
           label: 'Available Quantity', key: 'availableQuant', isSortable: true),
-      TableColumn(label: 'Amount', key: 'amount', isSortable: true),
       TableColumn(label: 'Firm', key: 'firm'),
       TableColumn(label: 'Description', key: 'description'),
       TableColumn(label: 'Actions', key: 'actions', isAction: true),
@@ -149,7 +148,7 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
                                       stockStore.calculateTotalPages();
                                     },
                                     hintText:
-                                        'Search By Name, SSN Number, GST Number',
+                                        'Search By Item ID, HSN Code, Carat, Amount',
                                   ),
                                 ),
                                 const Spacer(),
@@ -392,6 +391,7 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
         ),
         content: SingleChildScrollView(
           child: StockFormWidget(
+            existingStockItem: existingStock,
             stockStore: stockStore,
           ),
         ),
@@ -470,19 +470,13 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
                     stockStore
                         .deleteStockItem(stock.itemId)
                         .then((final onValue) {
-                      // activityStore.addActivity(Activity(
-                      //   id: invoice.invoiceId,
-                      //   date: DateTime.parse(invoice.date),
-                      //   title: 'Invoice data for ${invoice.custName} Deleted',
-                      // ));
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content: Text('Invoice ${stock.itemId} deleted')),
                       );
                     });
-
-                    setState(() {});
                     Navigator.pop(ctx);
+                    setState(() {});
                   },
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
@@ -535,8 +529,6 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
         return row.rate.toString();
       case 'availableQuant':
         return row.availableQuantity.toString();
-      case 'amount':
-        return row.amount.toString();
       case 'firm':
         return row.firm == Firm.sahajanand.name
             ? Firm.sahajanand.name

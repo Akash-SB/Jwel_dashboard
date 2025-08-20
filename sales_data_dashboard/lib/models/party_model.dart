@@ -2,29 +2,48 @@ import 'firm_model.dart';
 
 enum PartyTypeEnum {
   agent,
+  all,
   company;
 
-  String get name => this == PartyTypeEnum.agent ? "Agent" : "Company";
+  String get name {
+    switch (this) {
+      case PartyTypeEnum.agent:
+        return "Agent";
+      case PartyTypeEnum.company:
+        return "Company";
+      case PartyTypeEnum.all:
+        return "All";
+    }
+  }
 
   static PartyTypeEnum fromString(String value) {
-    return value == "Agent" ? PartyTypeEnum.agent : PartyTypeEnum.company;
+    switch (value) {
+      case "Agent":
+        return PartyTypeEnum.agent;
+      case "Company":
+        return PartyTypeEnum.company;
+      case "All":
+        return PartyTypeEnum.all;
+      default:
+        return PartyTypeEnum.all; // fallback to 'all' if unknown
+    }
   }
 }
 
 class Party {
   final String id;
   final String name;
-  final String address;
+  final String? address;
   final String mobileNumber;
   final String? gstNumber;
   final String partyType; // "company" or "agent"
   final String firm;
-  final String? brokerage; // Optional field for agent brokerage
+  final String? brokerage;
 
   Party({
     required this.id,
     required this.name,
-    required this.address,
+    this.address,
     required this.mobileNumber,
     this.gstNumber,
     required this.partyType,
@@ -47,7 +66,7 @@ class Party {
   factory Party.fromMap(Map<String, dynamic> map) => Party(
         id: map['id'],
         name: map['name'],
-        address: map['address'],
+        address: map['address'] ?? '',
         mobileNumber: map['mobileNumber'],
         gstNumber: map['gstNumber'] ?? '',
         partyType: map['partyType'],

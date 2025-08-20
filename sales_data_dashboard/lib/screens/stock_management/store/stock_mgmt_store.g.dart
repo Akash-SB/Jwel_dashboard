@@ -495,6 +495,28 @@ mixin _$StockStore on _StockStore, Store {
   }
 
   @override
+  void setTotalinfoPages(int index) {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.setTotalinfoPages');
+    try {
+      return super.setTotalinfoPages(index);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setCurrentInfoTablePage(int index) {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.setCurrentInfoTablePage');
+    try {
+      return super.setCurrentInfoTablePage(index);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSortKey(String? key) {
     final _$actionInfo = _$_StockStoreActionController.startAction(
         name: '_StockStore.setSortKey');

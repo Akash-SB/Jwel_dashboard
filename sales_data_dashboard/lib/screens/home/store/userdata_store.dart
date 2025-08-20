@@ -1,11 +1,18 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobx/mobx.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/models/invoice_notification_model.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/stock_item.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest_all.dart' as tzdata;
 
 import '../../../models/invoice_stock_model.dart';
 import '../../../models/sales_model.dart';
@@ -38,10 +45,21 @@ abstract class _UserDataStore with Store {
   final CollectionReference stockInvoiceItemRefs =
       FirebaseFirestore.instance.collection('InvoiceStockItems');
 
+  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
   late Database db;
 
   @observable
   bool isLoading = false;
+
+  @observable
+  Observable<bool> isAllDataLoaded = Observable(false);
+
+  @action
+  void setIsAllDataLoaded(final bool value) {
+    isAllDataLoaded.value = value;
+  }
 
   @observable
   String? errorMessage;
@@ -52,6 +70,77 @@ abstract class _UserDataStore with Store {
   @action
   void setTab(int index) {
     tabIndex = index;
+  }
+
+  Future<void> initialize() async {
+    // Initialize time zone data
+    tzdata.initializeTimeZones();
+    tz.setLocalLocation(
+        tz.getLocation('Asia/Kolkata')); // Set to your local timezone
+
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const iosInit = DarwinInitializationSettings();
+    const linuxInit =
+        LinuxInitializationSettings(defaultActionName: 'Open notification');
+
+    const windowsInit = WindowsInitializationSettings(
+      appName: 'Sahajanand Gems Dashboard', // Your app name
+      appUserModelId: 'com.sahajanand.gems',
+      guid: '9fa09333-bd09-4a1b-bb1c-6200f1e25c88',
+    );
+
+    const initSettings = InitializationSettings(
+      android: androidInit,
+      iOS: iosInit,
+      linux: linuxInit,
+      windows: windowsInit,
+    );
+
+    await _notificationsPlugin.initialize(initSettings);
+  }
+
+  Future<void> showNotification({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
+    // Copy asset image to a file
+    final byteData = await rootBundle.load('assets/logo.png');
+    final tempDir = await getTemporaryDirectory();
+    final imagePath = '${tempDir.path}/logo_win.png';
+    final file = File(imagePath);
+    await file.writeAsBytes(byteData.buffer.asUint8List());
+
+    // Create URI
+    final imageUri = Uri.file(imagePath);
+    AndroidNotificationDetails androidDetails =
+        const AndroidNotificationDetails(
+      'interest_channel_id',
+      'Interest Notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    NotificationDetails generalNotificationDetails = NotificationDetails(
+        android: androidDetails,
+        windows: WindowsNotificationDetails(
+          images: [
+            WindowsImage(imageUri,
+                altText: 'Company logo',
+                placement: WindowsImagePlacement.appLogoOverride,
+                crop: WindowsImageCrop.circle),
+          ],
+        ));
+
+    await _notificationsPlugin.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.now(tz.local)
+          .add(const Duration(seconds: 1)), // Instant trigger
+      generalNotificationDetails,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
   }
 
   @observable
@@ -107,14 +196,15 @@ abstract class _UserDataStore with Store {
 
       for (final sale in salesList) {
         final dueDate = sale.createdAt.add(Duration(days: sale.dueDays));
-        final isDueToday = true;
+        final isDueToday = dueDate.isBefore(today) || dueDate == today;
         if (isDueToday && !notificationExists(sale.id)) {
           // Create notification model
           final notif = InvoiceNotificationModel(
             id: sale.id + today.toIso8601String().substring(0, 10),
             salesId: sale.id,
             userId: sale.partyDetails.id,
-            message: 'Invoice due today for ${sale.partyDetails.name}',
+            message:
+                'Invoice due on ${dueDate.day}/${dueDate.month}/${dueDate.year} for ${sale.partyDetails.name}',
             notifyDate: today,
             isPaid: sale.paymentStatus == 'paid',
             isShown: false,

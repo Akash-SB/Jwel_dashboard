@@ -56,6 +56,7 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
       TableColumn(label: 'Mobile Number', key: 'mobileNumber'),
       TableColumn(label: 'GST Number', key: 'gstNumber'),
       TableColumn(label: 'Party Type', key: 'partyType', isSortable: true),
+      TableColumn(label: 'Address', key: 'address', isSortable: true),
       TableColumn(label: 'Firm', key: 'firm', isSortable: true),
       TableColumn(label: 'Actions', key: 'actions', isAction: true),
     ];
@@ -115,6 +116,7 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
                                 partyDetailsStore.isFiltersApplied();
                               },
                               options: [
+                                Firm.all.name,
                                 Firm.sahajanand.name,
                                 Firm.harikrishnaEnterprise.name
                               ],
@@ -133,6 +135,7 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
                                 partyDetailsStore.isFiltersApplied();
                               },
                               options: [
+                                PartyTypeEnum.all.name,
                                 PartyTypeEnum.agent.name,
                                 PartyTypeEnum.company.name,
                               ],
@@ -150,8 +153,7 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
                                 partyDetailsStore.isFiltersApplied();
                                 partyDetailsStore.calculateTotalPages();
                               },
-                              hintText:
-                                  'Search By Name, Mobile Number, GST Number',
+                              hintText: 'Search By ID, Name, Mobile Number',
                             ),
                           ),
                           const Spacer(),
@@ -494,6 +496,8 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
         return party.mobileNumber;
       case 'gstNumber':
         return party.gstNumber ?? '';
+      case 'address':
+        return party.address ?? '';
       case 'partyType':
         return party.partyType == PartyTypeEnum.agent.name
             ? 'Agent'

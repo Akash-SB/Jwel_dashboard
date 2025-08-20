@@ -51,6 +51,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     purchaseScreenStore.setPartiesList(userDataStore.partiesList);
     purchaseScreenStore.setCurrentPageIndex(0);
     purchaseScreenStore.calculateTotalPages();
+    purchaseScreenStore.getPartyIds();
   }
 
   @override
@@ -61,6 +62,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       TableColumn(label: 'Pcs/Size', key: 'size'),
       TableColumn(label: 'Carat', key: 'carat', isSortable: true),
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
+      TableColumn(label: 'Buy Quantity', key: 'buyQuantity', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
       TableColumn(label: 'Firm', key: 'firmType', isSortable: true),
       TableColumn(
@@ -74,272 +76,282 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       TableColumn(label: 'Description', key: 'description'),
       TableColumn(label: 'Actions', key: 'actions', isAction: true),
     ];
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.all(24.dp),
-      child: Column(
-        children: [
-          Observer(builder: (context) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Purchase Management',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(
-                      0xFF111827,
-                    ),
-                  ),
-                ),
-                IntrinsicWidth(
-                  child: NormalButton(
-                    text: 'Create New Purchase',
-                    onPressed: () => _openPurchaseForm(context),
-                  ),
-                ),
-              ],
-            );
-          }),
-          SizedBox(height: 12.dp),
-          SizedBox(
-            width: double.infinity,
-            child: Divider(
-              thickness: 1.dp,
-              color: const Color(0xFFE5E7EB),
-            ),
-          ),
-          SizedBox(height: 24.dp),
-          Observer(builder: (context) {
-            return SizedBox(
-              child: Row(
+    return Observer(builder: (context) {
+      return purchaseScreenStore.showLoaders.value
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
+              color: Colors.white,
+              padding: EdgeInsets.all(24.dp),
+              child: Column(
                 children: [
-                  IntrinsicWidth(
-                    child: CommonDropdown(
-                      label: 'Firm Type',
-                      value: purchaseScreenStore.selectedFilterFirm,
-                      onChanged: (p0) {
-                        purchaseScreenStore.setSelectedFilterFirm(p0!);
-                        purchaseScreenStore.isFiltersApplied();
-                      },
-                      options: [
-                        Firm.sahajanand.name,
-                        Firm.harikrishnaEnterprise.name
+                  Observer(builder: (context) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Purchase Management',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(
+                              0xFF111827,
+                            ),
+                          ),
+                        ),
+                        IntrinsicWidth(
+                          child: NormalButton(
+                            text: 'Create New Purchase',
+                            onPressed: () => _openPurchaseForm(context),
+                          ),
+                        ),
                       ],
+                    );
+                  }),
+                  SizedBox(height: 12.dp),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Divider(
+                      thickness: 1.dp,
+                      color: const Color(0xFFE5E7EB),
                     ),
                   ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  IntrinsicWidth(
-                    child: CommonDropdown(
-                      label: 'Payment Status',
-                      value: purchaseScreenStore.salectedStatus,
-                      onChanged: (p0) {
-                        purchaseScreenStore.setSelectedStatus(p0!);
-                        purchaseScreenStore.isFiltersApplied();
-                      },
-                      options: [
-                        PaymentStatusEnum.all.name,
-                        PaymentStatusEnum.paid.name,
-                        PaymentStatusEnum.unpaid.name,
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  SizedBox(
-                    width: 300.dp,
-                    child: CustomSearchBar(
-                      controller: purchaseScreenStore.searchcontroller,
-                      onChanged: (final value) {
-                        purchaseScreenStore.setSearchText(value);
-                        purchaseScreenStore.isFiltersApplied();
-                        purchaseScreenStore.calculateTotalPages();
-                      },
-                      hintText: 'Search By Name, Mobile Number, GST Number',
-                    ),
-                  ),
-                  const Spacer(),
-                  CustomImageButton(
-                    imagePath: 'assets/icons/pdf_icon.png',
-                    text: 'PDF',
-                    borderColor: const Color(0xffE5E7EB),
-                    buttonColor: Colors.white,
-                    onClicked: () {},
-                    // onClicked: widget.onExportPDF,
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  CustomImageButton(
-                    imagePath: 'assets/icons/excel_icon.png',
-                    text: 'Excel',
-                    borderColor: const Color(0xffE5E7EB),
-                    buttonColor: Colors.white,
-                    onClicked: () {},
-                    // onClicked: widget.onExportPDF,
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  Container(
-                    height: 30.dp,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: purchaseScreenStore.isFilterApplied
-                              ? Colors.red
-                              : Colors.grey,
-                        )),
-                    child: IconButton(
-                      splashColor: Colors.transparent,
-                      hoverColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      focusColor: Colors.transparent,
-                      padding: EdgeInsets.zero,
-                      icon: Image.asset(
-                        'assets/icons/cross_icon.png',
-                        color: purchaseScreenStore.isFilterApplied
-                            ? Colors.red
-                            : Colors.grey,
-                        width: 30.dp,
-                        height: 30.dp,
-                      ),
-                      tooltip: 'Clear All Filters',
-                      onPressed: purchaseScreenStore.clearAllFilters,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-          SizedBox(height: 12.dp),
-          Observer(builder: (context) {
-            return Expanded(
-              child: SingleChildScrollView(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8.dp),
-                      border: Border.all(
-                        color: const Color(0xFFE5E7EB),
-                        width: 1.5.dp,
-                      ),
-                    ),
-                    child: DataTable(
-                      dividerThickness: 0.1.dp,
-                      headingRowHeight: 48,
-                      dataRowMinHeight: 48,
-                      headingRowColor:
-                          WidgetStateProperty.all(const Color(0xFFF9FAFB)),
-                      dataRowColor: WidgetStateProperty.resolveWith(
-                          (states) => Colors.white),
-                      showBottomBorder: false,
-                      columns: columns.map((col) {
-                        return DataColumn(
-                          label: InkWell(
-                            onTap: col.isSortable
-                                ? () => purchaseScreenStore.setSortKey(col.key)
-                                : null,
-                            child: Row(
-                              children: [
-                                Text(
-                                  col.label,
-                                  style: TextStyle(
-                                    fontSize: 16.dp,
-                                    color: const Color(
-                                      0xFF4B5563,
-                                    ),
-                                  ),
-                                ),
-                                if (col.isSortable &&
-                                    purchaseScreenStore.sortKey == col.key)
-                                  Icon(
-                                    purchaseScreenStore.sortAsc
-                                        ? Icons.arrow_upward
-                                        : Icons.arrow_downward,
-                                    size: 14.dp,
-                                  ),
+                  SizedBox(height: 24.dp),
+                  Observer(builder: (context) {
+                    return SizedBox(
+                      child: Row(
+                        children: [
+                          IntrinsicWidth(
+                            child: CommonDropdown(
+                              label: 'Firm Type',
+                              value: purchaseScreenStore.selectedFilterFirm,
+                              onChanged: (p0) {
+                                purchaseScreenStore.setSelectedFilterFirm(p0!);
+                                purchaseScreenStore.isFiltersApplied();
+                              },
+                              options: [
+                                Firm.sahajanand.name,
+                                Firm.harikrishnaEnterprise.name
                               ],
                             ),
                           ),
-                        );
-                      }).toList(),
-                      rows: purchaseScreenStore.paginatedData.map((row) {
-                        return DataRow(
-                          cells: columns.map((col) {
-                            if (col.isAction) {
-                              return DataCell(Row(
-                                children: [
-                                  IconButton(
-                                    icon: Image.asset(
-                                      'assets/icons/edit_icon.png',
-                                    ),
-                                    onPressed: () {
-                                      _openPurchaseForm(context, row);
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: Image.asset(
-                                      'assets/icons/delete_icon.png',
-                                    ),
-                                    onPressed: () {
-                                      _confirmDelete(context, row);
-                                    },
-                                  ),
-                                ],
-                              ));
-                            }
-                            return DataCell(
-                              Text(
-                                _getCellValue(row, col.key),
-                                style: TextStyle(
-                                  fontSize: 14.dp,
-                                  color: const Color(0xFF111827),
-                                ),
+                          SizedBox(
+                            width: 12.dp,
+                          ),
+                          IntrinsicWidth(
+                            child: CommonDropdown(
+                              label: 'Payment Status',
+                              value: purchaseScreenStore.salectedStatus,
+                              onChanged: (p0) {
+                                purchaseScreenStore.setSelectedStatus(p0!);
+                                purchaseScreenStore.isFiltersApplied();
+                              },
+                              options: [
+                                PaymentStatusEnum.all.name,
+                                PaymentStatusEnum.paid.name,
+                                PaymentStatusEnum.unpaid.name,
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 12.dp,
+                          ),
+                          SizedBox(
+                            width: 300.dp,
+                            child: CustomSearchBar(
+                              controller: purchaseScreenStore.searchcontroller,
+                              onChanged: (final value) {
+                                purchaseScreenStore.setSearchText(value);
+                                purchaseScreenStore.isFiltersApplied();
+                                purchaseScreenStore.calculateTotalPages();
+                              },
+                              hintText:
+                                  'Search By Name, Mobile Number, GST Number',
+                            ),
+                          ),
+                          const Spacer(),
+                          CustomImageButton(
+                            imagePath: 'assets/icons/pdf_icon.png',
+                            text: 'PDF',
+                            borderColor: const Color(0xffE5E7EB),
+                            buttonColor: Colors.white,
+                            onClicked: () {},
+                            // onClicked: widget.onExportPDF,
+                          ),
+                          SizedBox(
+                            width: 12.dp,
+                          ),
+                          CustomImageButton(
+                            imagePath: 'assets/icons/excel_icon.png',
+                            text: 'Excel',
+                            borderColor: const Color(0xffE5E7EB),
+                            buttonColor: Colors.white,
+                            onClicked: () {},
+                            // onClicked: widget.onExportPDF,
+                          ),
+                          SizedBox(
+                            width: 12.dp,
+                          ),
+                          Container(
+                            height: 30.dp,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: purchaseScreenStore.isFilterApplied
+                                      ? Colors.red
+                                      : Colors.grey,
+                                )),
+                            child: IconButton(
+                              splashColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              padding: EdgeInsets.zero,
+                              icon: Image.asset(
+                                'assets/icons/cross_icon.png',
+                                color: purchaseScreenStore.isFilterApplied
+                                    ? Colors.red
+                                    : Colors.grey,
+                                width: 30.dp,
+                                height: 30.dp,
                               ),
-                            );
-                          }).toList(),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
+                              tooltip: 'Clear All Filters',
+                              onPressed: purchaseScreenStore.clearAllFilters,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  SizedBox(height: 12.dp),
+                  Observer(builder: (context) {
+                    return Expanded(
+                      child: SingleChildScrollView(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8.dp),
+                              border: Border.all(
+                                color: const Color(0xFFE5E7EB),
+                                width: 1.5.dp,
+                              ),
+                            ),
+                            child: DataTable(
+                              dividerThickness: 0.1.dp,
+                              headingRowHeight: 48,
+                              dataRowMinHeight: 48,
+                              headingRowColor: WidgetStateProperty.all(
+                                  const Color(0xFFF9FAFB)),
+                              dataRowColor: WidgetStateProperty.resolveWith(
+                                  (states) => Colors.white),
+                              showBottomBorder: false,
+                              columns: columns.map((col) {
+                                return DataColumn(
+                                  label: InkWell(
+                                    onTap: col.isSortable
+                                        ? () => purchaseScreenStore
+                                            .setSortKey(col.key)
+                                        : null,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          col.label,
+                                          style: TextStyle(
+                                            fontSize: 16.dp,
+                                            color: const Color(
+                                              0xFF4B5563,
+                                            ),
+                                          ),
+                                        ),
+                                        if (col.isSortable &&
+                                            purchaseScreenStore.sortKey ==
+                                                col.key)
+                                          Icon(
+                                            purchaseScreenStore.sortAsc
+                                                ? Icons.arrow_upward
+                                                : Icons.arrow_downward,
+                                            size: 14.dp,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              rows:
+                                  purchaseScreenStore.paginatedData.map((row) {
+                                return DataRow(
+                                  cells: columns.map((col) {
+                                    if (col.isAction) {
+                                      return DataCell(Row(
+                                        children: [
+                                          IconButton(
+                                            icon: Image.asset(
+                                              'assets/icons/edit_icon.png',
+                                            ),
+                                            onPressed: () {
+                                              _openPurchaseForm(context, row);
+                                            },
+                                          ),
+                                          IconButton(
+                                            icon: Image.asset(
+                                              'assets/icons/delete_icon.png',
+                                            ),
+                                            onPressed: () {
+                                              _confirmDelete(context, row);
+                                            },
+                                          ),
+                                        ],
+                                      ));
+                                    }
+                                    return DataCell(
+                                      Text(
+                                        _getCellValue(row, col.key),
+                                        style: TextStyle(
+                                          fontSize: 14.dp,
+                                          color: const Color(0xFF111827),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                  Observer(builder: (context) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: purchaseScreenStore.currentTablePage > 0
+                              ? () => purchaseScreenStore.setCurrentPageIndex(
+                                  purchaseScreenStore.currentTablePage - 1)
+                              : null,
+                          icon: const Icon(Icons.chevron_left),
+                        ),
+                        Text(
+                            'Page ${purchaseScreenStore.currentTablePage + 1} of ${purchaseScreenStore.totalPages}'),
+                        IconButton(
+                          onPressed: purchaseScreenStore.currentTablePage <
+                                  purchaseScreenStore.totalPages - 1
+                              ? () => purchaseScreenStore.setCurrentPageIndex(
+                                  purchaseScreenStore.currentTablePage + 1)
+                              : null,
+                          icon: const Icon(Icons.chevron_right),
+                        ),
+                      ],
+                    );
+                  }),
+                ],
               ),
             );
-          }),
-          Observer(builder: (context) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: purchaseScreenStore.currentTablePage > 0
-                      ? () => purchaseScreenStore.setCurrentPageIndex(
-                          purchaseScreenStore.currentTablePage - 1)
-                      : null,
-                  icon: const Icon(Icons.chevron_left),
-                ),
-                Text(
-                    'Page ${purchaseScreenStore.currentTablePage + 1} of ${purchaseScreenStore.totalPages}'),
-                IconButton(
-                  onPressed: purchaseScreenStore.currentTablePage <
-                          purchaseScreenStore.totalPages - 1
-                      ? () => purchaseScreenStore.setCurrentPageIndex(
-                          purchaseScreenStore.currentTablePage + 1)
-                      : null,
-                  icon: const Icon(Icons.chevron_right),
-                ),
-              ],
-            );
-          }),
-        ],
-      ),
-    );
+    });
   }
 
   void _openPurchaseForm(BuildContext context, [Purchase? existingPurchase]) {
@@ -439,6 +451,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                 ),
                 InkWell(
                   onTap: () {
+                    purchaseScreenStore.setShowLoader(true);
                     purchaseScreenStore
                         .deletePurchase(purchase.id)
                         .then((final onValue) {
@@ -447,8 +460,8 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                             content: Text('Invoice ${purchase.id} deleted')),
                       );
                     });
-
                     Navigator.pop(ctx);
+                    purchaseScreenStore.setShowLoader(false);
                   },
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
@@ -497,6 +510,8 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
         return row.stockDetails.rate.toString();
       case 'amount':
         return row.stockDetails.amount.toString();
+      case 'buyQuantity':
+        return row.buyQuantity.toString();
       case 'firmType':
         return row.firm;
       // == Firm.sahajanand
