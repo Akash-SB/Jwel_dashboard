@@ -46,6 +46,12 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
   final TextEditingController hsnController = TextEditingController();
   final TextEditingController availableQuantController =
       TextEditingController();
+  final TextEditingController agentNameController = TextEditingController();
+  final TextEditingController agentAddressController = TextEditingController();
+  final TextEditingController agentMobileController = TextEditingController();
+  final TextEditingController agentGstController = TextEditingController();
+  final TextEditingController agentBrokerageController =
+      TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -275,7 +281,155 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                   ),
                 ],
               ),
-              SizedBox(height: 24.dp),
+              SizedBox(height: 12.dp),
+              const Text(
+                'Agent Information',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Color(0XFF111827),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Observer(builder: (context) {
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        IntrinsicWidth(
+                          child: CustomRadioButton<String>(
+                            title: 'Purchase from agent',
+                            value: 'agent',
+                            groupValue: widget.purchaseStore.agentType,
+                            onChanged: (value) {
+                              widget.purchaseStore.setAgentType(value!);
+                              widget.purchaseStore.setIsAgentSelected(true);
+                            },
+                          ),
+                        ),
+                        IntrinsicWidth(
+                          child: CustomRadioButton<String>(
+                            title: 'Purchase without agent',
+                            value: 'noAgent',
+                            groupValue: widget.purchaseStore.agentType,
+                            onChanged: (value) {
+                              setState(() {
+                                widget.purchaseStore.setAgentType(value!);
+                                widget.purchaseStore.setIsAgentSelected(false);
+                                // partyTypeController.text = 'No Agent';
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8.dp),
+                    if (widget.purchaseStore.partiesList.isNotEmpty &&
+                        widget.purchaseStore.isAgentSelected)
+                      Observer(builder: (context) {
+                        return SearchableTextField<String>(
+                          label: 'Search by Agent ID',
+                          options: widget.purchaseStore.partiesList
+                              .where((party) =>
+                                  party.firm ==
+                                      widget.purchaseStore.selectedFilterFirm &&
+                                  party.partyType.toLowerCase() == 'agent')
+                              .map((e) => e.name)
+                              .toList(),
+                          displayString: (s) => s,
+                          onSelect: (val) {
+                            widget.purchaseStore.setAgentInfoDetails(widget
+                                .purchaseStore.partiesList
+                                .firstWhere((element) => element.name == val,
+                                    orElse: () => Party(
+                                          id: '',
+                                          name: '',
+                                          address: '',
+                                          mobileNumber: '',
+                                          gstNumber: null,
+                                          partyType:
+                                              widget.purchaseStore.agentType,
+                                          firm: widget
+                                              .purchaseStore.selectedFilterFirm,
+                                        )));
+                            agentNameController.text = widget
+                                    .purchaseStore.selectedAgentDetails?.name ??
+                                '';
+                            agentAddressController.text = widget.purchaseStore
+                                    .selectedAgentDetails?.address ??
+                                '';
+                            agentMobileController.text = widget.purchaseStore
+                                    .selectedAgentDetails?.mobileNumber ??
+                                '';
+                            ;
+                            agentGstController.text = widget.purchaseStore
+                                    .selectedAgentDetails?.gstNumber ??
+                                '';
+                          },
+                        );
+                      })
+                    else if (widget.purchaseStore.isAgentSelected)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'No Agent data available. Please add Agent first.',
+                          style: TextStyle(color: Colors.red.shade700),
+                        ),
+                      ),
+                  ],
+                );
+              }),
+              SizedBox(height: 12.dp),
+              Observer(builder: (context) {
+                if (!widget.purchaseStore.isAgentSelected) {
+                  return const SizedBox.shrink();
+                }
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CommonTextField(
+                            label: 'Name',
+                            controller: agentNameController,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 16.dp,
+                        ),
+                        Expanded(
+                          child: CommonTextField(
+                            label: 'Address',
+                            controller: agentAddressController,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: CommonTextField(
+                                label: 'Mobile Number',
+                                controller: agentMobileController)),
+                        SizedBox(width: 16.dp),
+                        Expanded(
+                            child: CommonTextField(
+                                label: 'GST Number (Optional)',
+                                controller: agentGstController)),
+                        SizedBox(
+                          width: 16.dp,
+                        ),
+                        Expanded(
+                          child: CommonTextField(
+                            label: 'Agent Brokerage',
+                            controller: agentBrokerageController,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              }),
+              // SizedBox(height: 24.dp),
               const Text('Item Information',
                   style: TextStyle(
                     fontSize: 18,
@@ -464,6 +618,25 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                   selectedItem,
                                 );
                               }
+                              Party? agentDetails;
+                              if (widget.purchaseStore.isAgentSelected &&
+                                  widget.purchaseStore.selectedAgentDetails !=
+                                      null) {
+                                agentDetails = Party(
+                                  id: widget.purchaseStore.selectedAgentDetails
+                                          ?.id ??
+                                      '',
+                                  name: agentNameController.text,
+                                  mobileNumber: agentMobileController.text,
+                                  partyType: PartyTypeEnum.agent.name,
+                                  firm: widget.purchaseStore
+                                          .selectedAgentDetails?.firm ??
+                                      '',
+                                  brokerage: agentBrokerageController.text,
+                                  address: agentAddressController.text,
+                                  gstNumber: agentGstController.text,
+                                );
+                              }
                               final purchase = Purchase(
                                 createdAt: DateTime.parse(
                                   '${dateController.text.split('-')[2]}-${dateController.text.split('-')[1].padLeft(2, '0')}-${dateController.text.split('-')[0].padLeft(2, '0')}',
@@ -475,6 +648,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                     .toString(),
                                 partyDetails: partyDetails!,
                                 stockDetails: selectedItem,
+                                agentDetails: agentDetails,
                                 paymentStatus:
                                     widget.purchaseStore.selectedPaymentStatus,
                                 paymentOption:

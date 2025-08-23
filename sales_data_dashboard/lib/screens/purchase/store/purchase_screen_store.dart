@@ -103,6 +103,39 @@ abstract class _PurchaseScreenStore with Store {
   @observable
   Party? selectedParty;
 
+  @observable
+  Observable<Party>? agentDetails;
+
+  @observable
+  bool isAgentSelected = true;
+
+  @observable
+  String agentType = 'agent';
+
+  @action
+  void setIsAgentSelected(bool value) {
+    isAgentSelected = value;
+  }
+
+  @action
+  void setAgentType(final String type) {
+    agentType = type;
+  }
+
+  @action
+  void setAgentDetails(final Party agent) {
+    agentDetails = Observable(agent);
+  }
+
+
+  @observable
+  Party? selectedAgentDetails;
+
+  @action
+  void setAgentInfoDetails(Party? agentDetails) {
+    selectedAgentDetails = agentDetails;
+  }
+
   @action
   void setselectedParty(Party? party) {
     selectedParty = party;
