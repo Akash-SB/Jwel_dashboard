@@ -38,7 +38,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     }
 
     if (!getIt.isRegistered<InvoiceStockStore>()) {
-      getIt.registerSingleton<InvoiceStockStore>(InvoiceStockStore());
+      getIt.registerSingleton<InvoiceStockStore>(InvoiceStockStore(
+        userDataStore,
+      ));
     }
 
     if (!getIt.isRegistered<UserDataStore>(

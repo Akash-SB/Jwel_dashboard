@@ -1,13 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
+import 'package:sales_data_dashboard/models/invoice_stock_ledger_model.dart';
 import 'package:sales_data_dashboard/models/invoice_stock_model.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
+
+import '../../../models/app_enum.dart';
 
 part 'invoice_stock_store.g.dart';
 
 class InvoiceStockStore = _InvoiceStockStore with _$InvoiceStockStore;
 
 abstract class _InvoiceStockStore with Store {
+  _InvoiceStockStore(this.userDataStore);
+  final UserDataStore userDataStore;
   final searchcontroller = TextEditingController();
 
   @observable
@@ -23,13 +29,84 @@ abstract class _InvoiceStockStore with Store {
   int currentTablePage = 0;
 
   @observable
+  int totalinfoPages = 0;
+
+  @observable
+  bool isInfoFilterApplied = false;
+
+  @observable
   bool isFilterApplied = false;
 
   @observable
   String selectedRowCount = '10';
 
   @observable
+  int currentInfoTablePage = 0;
+
+  @observable
   int totalPages = 0;
+
+  @observable
+  String selectedinfoTransType = 'All';
+
+  @observable
+  ObservableList<InvoiceStockLedgerModel> stockledgerList =
+      ObservableList<InvoiceStockLedgerModel>();
+
+  @action
+  void setSelectedInfoTransType(final String value) {
+    selectedinfoTransType = value;
+  }
+
+  @action
+  void filterLedgerList() {
+    List<InvoiceStockLedgerModel> ledgers = [];
+    ledgers.addAll(
+      userDataStore.invoices
+          .where(
+              (final invoice) => invoice.productName == selectedStock?.itemId)
+          .map(
+            (final invoice) => InvoiceStockLedgerModel(
+              date: invoice.date,
+              itemName: invoice.productName ?? '',
+              partyName: invoice.custName,
+              paymentType: invoice.transactionType.name,
+              credit: invoice.transactionType == TransactionTypeEnum.purchase
+                  ? double.tryParse(invoice.amount)
+                  : null,
+              debit: invoice.transactionType == TransactionTypeEnum.sell
+                  ? double.tryParse(invoice.amount)
+                  : null,
+            ),
+          ),
+    );
+
+    ledgers.sort((a, b) => b.date.compareTo(a.date));
+    stockledgerList.clear();
+    setLedgerList(ledgers);
+  }
+
+  @computed
+  List<InvoiceStockLedgerModel> get filteredLedgerData {
+    List<InvoiceStockLedgerModel> filtered = stockledgerList.toList();
+    return filtered.where((item) {
+      return item.paymentType.toLowerCase() ==
+          selectedinfoTransType.toLowerCase();
+    }).toList();
+  }
+
+  @action
+  void setLedgerList(List<InvoiceStockLedgerModel> ledgerListValue) {
+    stockledgerList = ObservableList.of(ledgerListValue);
+  }
+
+  @computed
+  List<InvoiceStockLedgerModel> get paginatedInfoData {
+    final start = currentInfoTablePage * int.parse(selectedRowCount);
+    final end = (start + int.parse(selectedRowCount))
+        .clamp(0, filteredLedgerData.length);
+    return filteredLedgerData.sublist(start, end);
+  }
 
   @observable
   ObservableList<InvoiceStockModel> stockList = ObservableList();
@@ -54,6 +131,11 @@ abstract class _InvoiceStockStore with Store {
   @action
   void setLoading(bool value) {
     isLoading = value;
+  }
+
+  @action
+  void setTotalinfoPages(final int index) {
+    totalinfoPages = index;
   }
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -123,6 +205,16 @@ abstract class _InvoiceStockStore with Store {
   }
 
   @action
+  void calculateInfoTotalPages() {
+    if (filteredLedgerData.isEmpty) {
+      totalinfoPages = 0;
+    } else {
+      totalinfoPages =
+          (filteredLedgerData.length / int.parse(selectedRowCount)).ceil();
+    }
+  }
+
+  @action
   void setStockList(final List<InvoiceStockModel> list) {
     stockList.clear();
     stockList.addAll(list);
@@ -140,6 +232,11 @@ abstract class _InvoiceStockStore with Store {
     } else {
       totalPages = (filteredData.length / int.parse(selectedRowCount)).ceil();
     }
+  }
+
+  @action
+  void isInfoFilterAppliedCheck() {
+    isInfoFilterApplied = selectedinfoTransType != 'All';
   }
 
   @computed
@@ -192,5 +289,17 @@ abstract class _InvoiceStockStore with Store {
   @action
   void setInvoiceStockList(List<InvoiceStockModel> stockItems) {
     stockList = ObservableList.of(stockItems);
+  }
+
+  @action
+  void setCurrentInfoTablePage(final int index) {
+    currentInfoTablePage = index;
+  }
+
+  @action
+  void clearInfoFilter() {
+    setSelectedInfoTransType('All');
+    setCurrentInfoTablePage(0);
+    isInfoFilterApplied = false;
   }
 }

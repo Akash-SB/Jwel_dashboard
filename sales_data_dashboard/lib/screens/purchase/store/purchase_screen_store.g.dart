@@ -240,6 +240,71 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     });
   }
 
+  late final _$agentDetailsAtom =
+      Atom(name: '_PurchaseScreenStore.agentDetails', context: context);
+
+  @override
+  Observable<Party>? get agentDetails {
+    _$agentDetailsAtom.reportRead();
+    return super.agentDetails;
+  }
+
+  @override
+  set agentDetails(Observable<Party>? value) {
+    _$agentDetailsAtom.reportWrite(value, super.agentDetails, () {
+      super.agentDetails = value;
+    });
+  }
+
+  late final _$isAgentSelectedAtom =
+      Atom(name: '_PurchaseScreenStore.isAgentSelected', context: context);
+
+  @override
+  bool get isAgentSelected {
+    _$isAgentSelectedAtom.reportRead();
+    return super.isAgentSelected;
+  }
+
+  @override
+  set isAgentSelected(bool value) {
+    _$isAgentSelectedAtom.reportWrite(value, super.isAgentSelected, () {
+      super.isAgentSelected = value;
+    });
+  }
+
+  late final _$agentTypeAtom =
+      Atom(name: '_PurchaseScreenStore.agentType', context: context);
+
+  @override
+  String get agentType {
+    _$agentTypeAtom.reportRead();
+    return super.agentType;
+  }
+
+  @override
+  set agentType(String value) {
+    _$agentTypeAtom.reportWrite(value, super.agentType, () {
+      super.agentType = value;
+    });
+  }
+
+  late final _$selectedAgentDetailsAtom =
+      Atom(name: '_PurchaseScreenStore.selectedAgentDetails', context: context);
+
+  @override
+  Party? get selectedAgentDetails {
+    _$selectedAgentDetailsAtom.reportRead();
+    return super.selectedAgentDetails;
+  }
+
+  @override
+  set selectedAgentDetails(Party? value) {
+    _$selectedAgentDetailsAtom.reportWrite(value, super.selectedAgentDetails,
+        () {
+      super.selectedAgentDetails = value;
+    });
+  }
+
   late final _$sortKeyAtom =
       Atom(name: '_PurchaseScreenStore.sortKey', context: context);
 
@@ -541,6 +606,50 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
   }
 
   @override
+  void setIsAgentSelected(bool value) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setIsAgentSelected');
+    try {
+      return super.setIsAgentSelected(value);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setAgentType(String type) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setAgentType');
+    try {
+      return super.setAgentType(type);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setAgentDetails(Party agent) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setAgentDetails');
+    try {
+      return super.setAgentDetails(agent);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setAgentInfoDetails(Party? agentDetails) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setAgentInfoDetails');
+    try {
+      return super.setAgentInfoDetails(agentDetails);
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setselectedParty(Party? party) {
     final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
         name: '_PurchaseScreenStore.setselectedParty');
@@ -710,6 +819,10 @@ selectedStockItem: ${selectedStockItem},
 selectedFirmType: ${selectedFirmType},
 itemSelectionType: ${itemSelectionType},
 selectedParty: ${selectedParty},
+agentDetails: ${agentDetails},
+isAgentSelected: ${isAgentSelected},
+agentType: ${agentType},
+selectedAgentDetails: ${selectedAgentDetails},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},

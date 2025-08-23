@@ -1,10 +1,381 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/models/invoice_stock_ledger_model.dart';
+
+import '../../../models/stock_party_ledger.dart';
+import '../../../widgets/common_dropdown.dart';
+import '../../../widgets/custom_data_table.dart';
+import '../../../widgets/custom_image_button.dart';
+import '../store/invoice_stock_store.dart';
 
 class InvoiceStockLedgerScreen extends StatelessWidget {
-  const InvoiceStockLedgerScreen({super.key});
+  const InvoiceStockLedgerScreen({
+    super.key,
+    required this.ledgerStore,
+  });
+
+  final InvoiceStockStore ledgerStore;
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final List<TableColumn> columns = [
+      TableColumn(
+        label: 'Transaction Date',
+        key: 'transDate',
+      ),
+      TableColumn(
+        label: 'Item name',
+        key: 'itemName',
+      ),
+      TableColumn(
+        label: 'Party name',
+        key: 'partyName',
+      ),
+      TableColumn(
+        label: 'Transaction Type',
+        key: 'transType',
+      ),
+      TableColumn(
+        label: 'Due Days',
+        key: 'dueDays',
+      ),
+      TableColumn(
+        label: 'Credit',
+        key: 'credit',
+      ),
+      TableColumn(
+        label: 'Debit',
+        key: 'debit',
+      ),
+    ];
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.all(24.dp),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Observer(builder: (context) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                IconButton(
+                  onPressed: () => ledgerStore.toggleItemInfo(false),
+                  focusColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  icon: const Icon(
+                    Icons.arrow_back_sharp,
+                  ),
+                ),
+                SizedBox(
+                  width: 16.dp,
+                ),
+                Text(
+                  'Item Information',
+                  style: TextStyle(
+                    fontSize: 20.dp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(
+                      0xFF111827,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
+          SizedBox(
+            height: 16.dp,
+          ),
+          Observer(builder: (context) {
+            return Container(
+              padding: EdgeInsets.all(16.dp),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color(0xFFE5E7EB),
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(12.dp),
+              ),
+              child: Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(2),
+                  1: FlexColumnWidth(2),
+                  2: FlexColumnWidth(2),
+                  3: FlexColumnWidth(2),
+                },
+                children: [
+                  TableRow(children: [
+                    _infoTile(
+                        'Item ID', ledgerStore.selectedStock?.itemId ?? 'N/A'),
+                    _infoTile('Item Name',
+                        ledgerStore.selectedStock?.itemName ?? 'N/A'),
+                    _infoTile('HSN Code',
+                        ledgerStore.selectedStock?.hsdCode ?? 'N/A'),
+                    _infoTile(
+                        'Item Weight',
+                        ledgerStore.selectedStock?.itemWeight.toString() ??
+                            'N/A'),
+                  ]),
+                  TableRow(children: [
+                    SizedBox(height: 16.dp),
+                    SizedBox(height: 16.dp),
+                    SizedBox(height: 16.dp),
+                    SizedBox(height: 16.dp),
+                  ]),
+                  TableRow(children: [
+                    _infoTile('Rate',
+                        ledgerStore.selectedStock?.rate.toString() ?? '0'),
+                    _infoTile('Amount',
+                        ledgerStore.selectedStock?.amount.toString() ?? '0'),
+                    _infoTile('Firm', ledgerStore.selectedStock?.firm ?? '-'),
+                  ]),
+                ],
+              ),
+            );
+          }),
+          SizedBox(height: 16.dp),
+          Text(
+            'Invoice Stock Ledger',
+            style: TextStyle(
+              fontSize: 18.dp,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF111827),
+            ),
+          ),
+          SizedBox(height: 24.dp),
+          Observer(builder: (context) {
+            return SizedBox(
+              child: Row(
+                children: [
+                  IntrinsicWidth(
+                    child: CommonDropdown(
+                      label: 'Transaction Type',
+                      value: ledgerStore.selectedinfoTransType,
+                      onChanged: (p0) {
+                        ledgerStore.setSelectedInfoTransType(p0!);
+                        ledgerStore.isInfoFilterAppliedCheck();
+                      },
+                      options: [
+                        TransType.all.name,
+                        TransType.sale.name,
+                        TransType.purchase.name,
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  const Spacer(),
+                  CustomImageButton(
+                    imagePath: 'assets/icons/excel_icon.png',
+                    text: 'Excel',
+                    borderColor: const Color(0xffE5E7EB),
+                    buttonColor: Colors.white,
+                    onClicked: () {},
+                  ),
+                  SizedBox(
+                    width: 12.dp,
+                  ),
+                  Observer(builder: (context) {
+                    return Container(
+                      height: 30.dp,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: ledgerStore.isInfoFilterApplied
+                                ? Colors.red
+                                : Colors.grey,
+                          )),
+                      child: IconButton(
+                        splashColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        focusColor: Colors.transparent,
+                        padding: EdgeInsets.zero,
+                        onPressed: ledgerStore.clearInfoFilter,
+                        icon: Image.asset(
+                          'assets/icons/cross_icon.png',
+                          color: ledgerStore.isInfoFilterApplied
+                              ? Colors.red
+                              : Colors.grey,
+                          width: 30.dp,
+                          height: 30.dp,
+                        ),
+                        tooltip: 'Clear All Filters',
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            );
+          }),
+          SizedBox(height: 8.dp),
+          Observer(builder: (context) {
+            return Expanded(
+              child: ledgerStore.stockledgerList.isEmpty
+                  ? Center(
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/no_data_found.png',
+                            width: 200.dp,
+                            height: 200.dp,
+                          ),
+                          SizedBox(
+                            height: 12.dp,
+                          ),
+                          Text(
+                            'No Data Found',
+                            style: TextStyle(
+                                fontSize: 16.dp,
+                                color: const Color(0xFF111827)),
+                          )
+                        ],
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.dp),
+                            border: Border.all(
+                              color: const Color(0xFFE5E7EB),
+                              width: 1.5.dp,
+                            ),
+                          ),
+                          child: DataTable(
+                            dividerThickness: 0.1.dp,
+                            headingRowHeight: 48,
+                            dataRowMinHeight: 48,
+                            headingRowColor: WidgetStateProperty.all(
+                                const Color(0xFFF9FAFB)),
+                            dataRowColor: WidgetStateProperty.resolveWith(
+                                (states) => Colors.white),
+                            showBottomBorder: false,
+                            columns: columns.map((col) {
+                              return DataColumn(
+                                label: InkWell(
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        col.label,
+                                        style: TextStyle(
+                                          fontSize: 16.dp,
+                                          color: const Color(
+                                            0xFF4B5563,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            rows: ledgerStore.paginatedInfoData.map((row) {
+                              return DataRow(
+                                cells: columns.map((col) {
+                                  return DataCell(
+                                    Text(
+                                      getCellValue(
+                                        col.key,
+                                        row,
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: 14.dp,
+                                        color: const Color(0xFF111827),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+            );
+          }),
+          Observer(builder: (context) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: ledgerStore.currentInfoTablePage > 0
+                      ? () => ledgerStore.setCurrentInfoTablePage(
+                          ledgerStore.currentInfoTablePage - 1)
+                      : null,
+                  icon: const Icon(Icons.chevron_left),
+                ),
+                Text(
+                    'Page ${ledgerStore.currentInfoTablePage + 1} of ${ledgerStore.totalinfoPages}'),
+                IconButton(
+                  onPressed: ledgerStore.currentInfoTablePage <
+                          ledgerStore.totalinfoPages - 1
+                      ? () => ledgerStore.setTotalinfoPages(
+                          ledgerStore.currentInfoTablePage + 1)
+                      : null,
+                  icon: const Icon(Icons.chevron_right),
+                ),
+              ],
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  String getCellValue(String key, [InvoiceStockLedgerModel? info]) {
+    switch (key) {
+      case 'transDate':
+        return info?.date ?? '';
+      case 'itemName':
+        return info?.itemName ?? 'NA';
+      case 'partyName':
+        return info?.partyName ?? 'N/A';
+      case 'transType':
+        return info?.paymentType ?? 'N/A';
+      case 'dueDays':
+        return info?.dueDays.toString() ?? 'N/A';
+      case 'debit':
+        return info?.debit.toString() ?? 'N/A';
+      case 'credit':
+        return info?.credit.toString() ?? 'N/A';
+
+      default:
+        return '';
+    }
+  }
+
+  Widget _infoTile(String title, String value) {
+    return SizedBox(
+      child: IntrinsicWidth(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF6B7280),
+              ),
+            ),
+            SizedBox(height: 4.dp),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF000000),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

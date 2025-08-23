@@ -9,6 +9,22 @@ part of 'invoice_stock_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
+  Computed<List<InvoiceStockLedgerModel>>? _$filteredLedgerDataComputed;
+
+  @override
+  List<InvoiceStockLedgerModel> get filteredLedgerData =>
+      (_$filteredLedgerDataComputed ??= Computed<List<InvoiceStockLedgerModel>>(
+              () => super.filteredLedgerData,
+              name: '_InvoiceStockStore.filteredLedgerData'))
+          .value;
+  Computed<List<InvoiceStockLedgerModel>>? _$paginatedInfoDataComputed;
+
+  @override
+  List<InvoiceStockLedgerModel> get paginatedInfoData =>
+      (_$paginatedInfoDataComputed ??= Computed<List<InvoiceStockLedgerModel>>(
+              () => super.paginatedInfoData,
+              name: '_InvoiceStockStore.paginatedInfoData'))
+          .value;
   Computed<List<InvoiceStockModel>>? _$paginatedDataComputed;
 
   @override
@@ -88,6 +104,38 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
     });
   }
 
+  late final _$totalinfoPagesAtom =
+      Atom(name: '_InvoiceStockStore.totalinfoPages', context: context);
+
+  @override
+  int get totalinfoPages {
+    _$totalinfoPagesAtom.reportRead();
+    return super.totalinfoPages;
+  }
+
+  @override
+  set totalinfoPages(int value) {
+    _$totalinfoPagesAtom.reportWrite(value, super.totalinfoPages, () {
+      super.totalinfoPages = value;
+    });
+  }
+
+  late final _$isInfoFilterAppliedAtom =
+      Atom(name: '_InvoiceStockStore.isInfoFilterApplied', context: context);
+
+  @override
+  bool get isInfoFilterApplied {
+    _$isInfoFilterAppliedAtom.reportRead();
+    return super.isInfoFilterApplied;
+  }
+
+  @override
+  set isInfoFilterApplied(bool value) {
+    _$isInfoFilterAppliedAtom.reportWrite(value, super.isInfoFilterApplied, () {
+      super.isInfoFilterApplied = value;
+    });
+  }
+
   late final _$isFilterAppliedAtom =
       Atom(name: '_InvoiceStockStore.isFilterApplied', context: context);
 
@@ -120,6 +168,23 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
     });
   }
 
+  late final _$currentInfoTablePageAtom =
+      Atom(name: '_InvoiceStockStore.currentInfoTablePage', context: context);
+
+  @override
+  int get currentInfoTablePage {
+    _$currentInfoTablePageAtom.reportRead();
+    return super.currentInfoTablePage;
+  }
+
+  @override
+  set currentInfoTablePage(int value) {
+    _$currentInfoTablePageAtom.reportWrite(value, super.currentInfoTablePage,
+        () {
+      super.currentInfoTablePage = value;
+    });
+  }
+
   late final _$totalPagesAtom =
       Atom(name: '_InvoiceStockStore.totalPages', context: context);
 
@@ -133,6 +198,39 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
   set totalPages(int value) {
     _$totalPagesAtom.reportWrite(value, super.totalPages, () {
       super.totalPages = value;
+    });
+  }
+
+  late final _$selectedinfoTransTypeAtom =
+      Atom(name: '_InvoiceStockStore.selectedinfoTransType', context: context);
+
+  @override
+  String get selectedinfoTransType {
+    _$selectedinfoTransTypeAtom.reportRead();
+    return super.selectedinfoTransType;
+  }
+
+  @override
+  set selectedinfoTransType(String value) {
+    _$selectedinfoTransTypeAtom.reportWrite(value, super.selectedinfoTransType,
+        () {
+      super.selectedinfoTransType = value;
+    });
+  }
+
+  late final _$stockledgerListAtom =
+      Atom(name: '_InvoiceStockStore.stockledgerList', context: context);
+
+  @override
+  ObservableList<InvoiceStockLedgerModel> get stockledgerList {
+    _$stockledgerListAtom.reportRead();
+    return super.stockledgerList;
+  }
+
+  @override
+  set stockledgerList(ObservableList<InvoiceStockLedgerModel> value) {
+    _$stockledgerListAtom.reportWrite(value, super.stockledgerList, () {
+      super.stockledgerList = value;
     });
   }
 
@@ -220,6 +318,39 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
       ActionController(name: '_InvoiceStockStore', context: context);
 
   @override
+  void setSelectedInfoTransType(String value) {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.setSelectedInfoTransType');
+    try {
+      return super.setSelectedInfoTransType(value);
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void filterLedgerList() {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.filterLedgerList');
+    try {
+      return super.filterLedgerList();
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setLedgerList(List<InvoiceStockLedgerModel> ledgerListValue) {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.setLedgerList');
+    try {
+      return super.setLedgerList(ledgerListValue);
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectedFirm(String value) {
     final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
         name: '_InvoiceStockStore.setSelectedFirm');
@@ -236,6 +367,28 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
         name: '_InvoiceStockStore.setLoading');
     try {
       return super.setLoading(value);
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setTotalinfoPages(int index) {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.setTotalinfoPages');
+    try {
+      return super.setTotalinfoPages(index);
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void calculateInfoTotalPages() {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.calculateInfoTotalPages');
+    try {
+      return super.calculateInfoTotalPages();
     } finally {
       _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
     }
@@ -269,6 +422,17 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
         name: '_InvoiceStockStore.calculateTotalPages');
     try {
       return super.calculateTotalPages();
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void isInfoFilterAppliedCheck() {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.isInfoFilterAppliedCheck');
+    try {
+      return super.isInfoFilterAppliedCheck();
     } finally {
       _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
     }
@@ -330,18 +494,47 @@ mixin _$InvoiceStockStore on _InvoiceStockStore, Store {
   }
 
   @override
+  void setCurrentInfoTablePage(int index) {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.setCurrentInfoTablePage');
+    try {
+      return super.setCurrentInfoTablePage(index);
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void clearInfoFilter() {
+    final _$actionInfo = _$_InvoiceStockStoreActionController.startAction(
+        name: '_InvoiceStockStore.clearInfoFilter');
+    try {
+      return super.clearInfoFilter();
+    } finally {
+      _$_InvoiceStockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 showItemInfo: ${showItemInfo},
 isLoading: ${isLoading},
 searchedText: ${searchedText},
 currentTablePage: ${currentTablePage},
+totalinfoPages: ${totalinfoPages},
+isInfoFilterApplied: ${isInfoFilterApplied},
 isFilterApplied: ${isFilterApplied},
 selectedRowCount: ${selectedRowCount},
+currentInfoTablePage: ${currentInfoTablePage},
 totalPages: ${totalPages},
+selectedinfoTransType: ${selectedinfoTransType},
+stockledgerList: ${stockledgerList},
 stockList: ${stockList},
 selectedStock: ${selectedStock},
 selectedFirm: ${selectedFirm},
+filteredLedgerData: ${filteredLedgerData},
+paginatedInfoData: ${paginatedInfoData},
 paginatedData: ${paginatedData},
 filteredData: ${filteredData}
     ''';

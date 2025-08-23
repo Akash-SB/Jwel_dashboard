@@ -30,7 +30,9 @@ class _InvoiceStockMgntScreenState extends State<InvoiceStockMgntScreen> {
   void initState() {
     super.initState();
     if (!getIt.isRegistered<InvoiceStockStore>()) {
-      getIt.registerFactory<InvoiceStockStore>(() => InvoiceStockStore());
+      getIt.registerFactory<InvoiceStockStore>(() => InvoiceStockStore(
+            userDataStore,
+          ));
     }
     invoiceStockStore = getIt<InvoiceStockStore>();
 
@@ -74,7 +76,9 @@ class _InvoiceStockMgntScreenState extends State<InvoiceStockMgntScreen> {
   Widget build(BuildContext context) {
     return Observer(builder: (context) {
       return invoiceStockStore.showItemInfo.value
-          ? InvoiceStockLedgerScreen()
+          ? InvoiceStockLedgerScreen(
+              ledgerStore: invoiceStockStore,
+            )
           : Container(
               color: Colors.white,
               padding: EdgeInsets.all(24.dp),
@@ -267,8 +271,10 @@ class _InvoiceStockMgntScreenState extends State<InvoiceStockMgntScreen> {
                                                         invoiceStockStore
                                                             .toggleItemInfo(
                                                                 true);
-                                                        // invoiceStockStore
-                                                        //     .calculateInfoTotalPages();
+                                                        invoiceStockStore
+                                                            .filterLedgerList();
+                                                        invoiceStockStore
+                                                            .calculateInfoTotalPages();
                                                       },
                                                       child: Text(
                                                         _getCellValue(
