@@ -29,12 +29,6 @@ class _InvoiceStockMgntScreenState extends State<InvoiceStockMgntScreen> {
   @override
   void initState() {
     super.initState();
-    if (!getIt.isRegistered<InvoiceStockStore>()) {
-      getIt.registerFactory<InvoiceStockStore>(() => InvoiceStockStore(
-            userDataStore,
-          ));
-    }
-    invoiceStockStore = getIt<InvoiceStockStore>();
 
     if (!getIt.isRegistered<UserDataStore>(
       instanceName: 'UserDataStore',
@@ -45,6 +39,13 @@ class _InvoiceStockMgntScreenState extends State<InvoiceStockMgntScreen> {
     userDataStore = getIt<UserDataStore>(
       instanceName: 'UserDataStore',
     );
+
+    if (!getIt.isRegistered<InvoiceStockStore>()) {
+      getIt.registerFactory<InvoiceStockStore>(() => InvoiceStockStore(
+            userDataStore,
+          ));
+    }
+    invoiceStockStore = getIt<InvoiceStockStore>();
 
     if (userDataStore.stockItemList.isNotEmpty) {
       invoiceStockStore.setInvoiceStockList(userDataStore.stockItemList);

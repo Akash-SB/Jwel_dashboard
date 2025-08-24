@@ -4,6 +4,7 @@ import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/app_enum.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/party_details/store/party_details_screen_store.dart';
+import 'package:sales_data_dashboard/screens/party_details/view/generate_ledger.dart';
 import 'package:sales_data_dashboard/widgets/common_dropdown.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
@@ -98,54 +99,67 @@ class ShowPartyInfoWidget extends StatelessWidget {
             height: 16.dp,
           ),
           Observer(builder: (context) {
-            return Container(
-              padding: EdgeInsets.all(16.dp),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color(0xFFE5E7EB),
-                  width: 1,
+            return InkWell(
+              onTap: () async {
+                await generateStyledLedgerPDF(
+                  party: partyDetailsStore.selectedParty!.value,
+                  allEntries: partyDetailsStore.partyLedgerList,
+                  fromDate: DateTime(2024, 4, 1),
+                  toDate: DateTime(2025, 9, 9),
+                  firmName: "ECONOMIC EXPERT LOGISTICS LLP",
+                  firmAddress:
+                      "2131, GANGAPUR HOUSE, GEE WALO KA RASTA, DHADA MARKET, JAIPUR",
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.all(16.dp),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xFFE5E7EB),
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(12.dp),
                 ),
-                borderRadius: BorderRadius.circular(12.dp),
-              ),
-              child: Table(
-                columnWidths: const {
-                  0: FlexColumnWidth(2),
-                  1: FlexColumnWidth(2),
-                  2: FlexColumnWidth(2),
-                  3: FlexColumnWidth(2),
-                },
-                children: [
-                  TableRow(children: [
-                    _infoTile('Party ID',
-                        partyDetailsStore.selectedParty?.value.id ?? 'N/A'),
-                    _infoTile('Party Name',
-                        partyDetailsStore.selectedParty?.value.name ?? 'N/A'),
-                    _infoTile(
-                        'Mobile Number',
-                        partyDetailsStore.selectedParty?.value.mobileNumber ??
-                            'N/A'),
-                    _infoTile(
-                        'GST Number',
-                        partyDetailsStore.selectedParty?.value.gstNumber ??
-                            'N/A'),
-                  ]),
-                  TableRow(children: [
-                    SizedBox(height: 16.dp),
-                    SizedBox(height: 16.dp),
-                    SizedBox(height: 16.dp),
-                    SizedBox(height: 16.dp),
-                  ]),
-                  TableRow(children: [
-                    _infoTile(
-                        'Party Type',
-                        partyDetailsStore.selectedParty?.value.partyType ??
-                            'N/A'),
-                    _infoTile('Firm Type',
-                        partyDetailsStore.selectedParty?.value.firm ?? 'N/A'),
-                    SizedBox(height: 16.dp),
-                    SizedBox(height: 16.dp),
-                  ]),
-                ],
+                child: Table(
+                  columnWidths: const {
+                    0: FlexColumnWidth(2),
+                    1: FlexColumnWidth(2),
+                    2: FlexColumnWidth(2),
+                    3: FlexColumnWidth(2),
+                  },
+                  children: [
+                    TableRow(children: [
+                      _infoTile('Party ID',
+                          partyDetailsStore.selectedParty?.value.id ?? 'N/A'),
+                      _infoTile('Party Name',
+                          partyDetailsStore.selectedParty?.value.name ?? 'N/A'),
+                      _infoTile(
+                          'Mobile Number',
+                          partyDetailsStore.selectedParty?.value.mobileNumber ??
+                              'N/A'),
+                      _infoTile(
+                          'GST Number',
+                          partyDetailsStore.selectedParty?.value.gstNumber ??
+                              'N/A'),
+                    ]),
+                    TableRow(children: [
+                      SizedBox(height: 16.dp),
+                      SizedBox(height: 16.dp),
+                      SizedBox(height: 16.dp),
+                      SizedBox(height: 16.dp),
+                    ]),
+                    TableRow(children: [
+                      _infoTile(
+                          'Party Type',
+                          partyDetailsStore.selectedParty?.value.partyType ??
+                              'N/A'),
+                      _infoTile('Firm Type',
+                          partyDetailsStore.selectedParty?.value.firm ?? 'N/A'),
+                      SizedBox(height: 16.dp),
+                      SizedBox(height: 16.dp),
+                    ]),
+                  ],
+                ),
               ),
             );
           }),
