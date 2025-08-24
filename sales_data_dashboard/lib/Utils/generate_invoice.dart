@@ -479,20 +479,20 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                 ],
               ),
               pw.SizedBox(height: 8),
-              pw.Container(
-                width: double.infinity,
-                padding: const pw.EdgeInsets.only(top: 8),
-                decoration: const pw.BoxDecoration(
-                  border: pw.Border(
-                    top: pw.BorderSide(width: 0.5, color: PdfColors.grey),
-                  ),
-                ),
-                child: pw.Text(
-                  'Bank Name : ${selectedParentCompany.bankName} | Bank Account No : ${selectedParentCompany.bankAccountNo} | Bank IFSC Code : ${selectedParentCompany.bankIfscCode} | Bank Branch : ${selectedParentCompany.bankBranch}',
-                  style: pw.TextStyle(fontSize: 8, font: robotoFont),
-                  textAlign: pw.TextAlign.center,
-                ),
-              ),
+              // pw.Container(
+              //   width: double.infinity,
+              //   padding: const pw.EdgeInsets.only(top: 8),
+              //   decoration: const pw.BoxDecoration(
+              //     border: pw.Border(
+              //       top: pw.BorderSide(width: 0.5, color: PdfColors.grey),
+              //     ),
+              //   ),
+              //   child: pw.Text(
+              //     'Bank Name : ${selectedParentCompany.bankName} | Bank Account No : ${selectedParentCompany.bankAccountNo} | Bank IFSC Code : ${selectedParentCompany.bankIfscCode} | Bank Branch : ${selectedParentCompany.bankBranch}',
+              //     style: pw.TextStyle(fontSize: 8, font: robotoFont),
+              //     textAlign: pw.TextAlign.center,
+              //   ),
+              // ),
             ],
           ),
         );

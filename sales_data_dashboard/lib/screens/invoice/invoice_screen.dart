@@ -33,16 +33,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   @override
   void initState() {
-    if (!getIt.isRegistered<InvoiceStore>()) {
-      getIt.registerSingleton<InvoiceStore>(InvoiceStore());
-    }
-
-    if (!getIt.isRegistered<InvoiceStockStore>()) {
-      getIt.registerSingleton<InvoiceStockStore>(InvoiceStockStore(
-        userDataStore,
-      ));
-    }
-
     if (!getIt.isRegistered<UserDataStore>(
       instanceName: 'UserDataStore',
     )) {
@@ -52,6 +42,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
     userDataStore = getIt<UserDataStore>(
       instanceName: 'UserDataStore',
     );
+
+    if (!getIt.isRegistered<InvoiceStore>()) {
+      getIt.registerSingleton<InvoiceStore>(InvoiceStore());
+    }
+
+    if (!getIt.isRegistered<InvoiceStockStore>()) {
+      getIt.registerSingleton<InvoiceStockStore>(InvoiceStockStore(
+        userDataStore,
+      ));
+    }
 
     invoiceStore = getIt<InvoiceStore>();
     invoiceStockStore = getIt<InvoiceStockStore>();
