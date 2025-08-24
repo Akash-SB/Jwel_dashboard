@@ -475,7 +475,15 @@ class _SalesScreenState extends State<SalesScreen> {
                         SnackBar(
                             content: Text('Sales data for ${sale.id} deleted')),
                       );
-                    });
+                    }).onError(
+                      (error, stackTrace) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  'Something went wrong while deleting Sales data: ${salesScreenStore.errorMessage}')),
+                        );
+                      },
+                    );
                     setState(() {});
                     Navigator.pop(ctx);
                   },

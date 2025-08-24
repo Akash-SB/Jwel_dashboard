@@ -254,6 +254,11 @@ abstract class _SalesScreenStore with Store {
   @observable
   String? errorMessage;
 
+  @action
+  void setErrorMessage(String? message) {
+    errorMessage = message;
+  }
+
   /// Firestore collection
   CollectionReference get _collection => _firestore.collection('sales');
 
@@ -270,7 +275,7 @@ abstract class _SalesScreenStore with Store {
 
       sales = ObservableList<Sale>.of(fetched);
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage(e.toString());
     } finally {
       isLoading = false;
     }
@@ -282,7 +287,7 @@ abstract class _SalesScreenStore with Store {
       await _collection.doc(sale.id).set(sale.toMap());
       sales.add(sale);
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage(e.toString());
     }
   }
 
@@ -295,7 +300,7 @@ abstract class _SalesScreenStore with Store {
         sales[index] = sale;
       }
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage(e.toString());
     }
   }
 
@@ -305,7 +310,7 @@ abstract class _SalesScreenStore with Store {
       await _collection.doc(id).delete();
       sales.removeWhere((s) => s.id == id);
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage(e.toString());
     }
   }
 }

@@ -429,9 +429,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 }).onError(
                   (error, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                           content: Text(
-                              'Something went wrong while updating invoice')),
+                              'Something went wrong while updating invoice: ${invoiceStore.errorMessage}')),
                     );
                   },
                 );
@@ -448,9 +448,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 }).onError(
                   (error, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                           content: Text(
-                              'Something went wrong while creating invoice')),
+                              'Something went wrong while creating invoice: ${invoiceStore.errorMessage}')),
                     );
                   },
                 );

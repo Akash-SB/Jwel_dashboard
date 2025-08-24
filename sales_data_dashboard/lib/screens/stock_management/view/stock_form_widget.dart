@@ -255,13 +255,43 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                                       .updateStockItem(stock)
                                       .then((_) {
                                     Navigator.pop(context);
-                                  });
+                                    widget.stockStore.setErrorMessage('');
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Stock data updated successfully')),
+                                    );
+                                  }).onError(
+                                    (error, stackTrace) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Something went wrong while updating Stock data: ${widget.stockStore.errorMessage}')),
+                                      );
+                                    },
+                                  );
                                 } else {
                                   widget.stockStore
                                       .addStockItem(stock)
                                       .then((_) {
+                                    widget.stockStore.setErrorMessage('');
                                     Navigator.pop(context);
-                                  });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Stock data added successfully')),
+                                    );
+                                  }).onError(
+                                    (error, stackTrace) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Something went wrong while adding Stock data: ${widget.stockStore.errorMessage}')),
+                                      );
+                                    },
+                                  );
                                 }
                               }
                             },

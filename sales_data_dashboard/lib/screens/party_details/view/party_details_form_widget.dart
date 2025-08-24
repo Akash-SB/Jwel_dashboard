@@ -226,6 +226,12 @@ class _PartyDetailsFormWidgetState extends State<PartyDetailsFormWidget> {
                                               'Party ${party.id} updated')),
                                     );
                                     Navigator.pop(context);
+                                  }).onError((error, stackTrace) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Something went wrong while updating party: ${widget.partyStore.errorMessage}')),
+                                    );
                                   });
                                 } else {
                                   widget.partyStore
@@ -237,6 +243,12 @@ class _PartyDetailsFormWidgetState extends State<PartyDetailsFormWidget> {
                                               'Party ${party.id} created')),
                                     );
                                     Navigator.pop(context);
+                                  }).onError((error, stackTrace) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'Something went wrong while creating party: ${widget.partyStore.errorMessage}')),
+                                    );
                                   });
                                 }
                               }

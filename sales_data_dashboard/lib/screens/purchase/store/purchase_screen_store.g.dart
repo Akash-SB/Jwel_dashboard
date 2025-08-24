@@ -288,6 +288,22 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     });
   }
 
+  late final _$errorMessageAtom =
+      Atom(name: '_PurchaseScreenStore.errorMessage', context: context);
+
+  @override
+  String? get errorMessage {
+    _$errorMessageAtom.reportRead();
+    return super.errorMessage;
+  }
+
+  @override
+  set errorMessage(String? value) {
+    _$errorMessageAtom.reportWrite(value, super.errorMessage, () {
+      super.errorMessage = value;
+    });
+  }
+
   late final _$selectedAgentDetailsAtom =
       Atom(name: '_PurchaseScreenStore.selectedAgentDetails', context: context);
 
@@ -449,22 +465,6 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
     });
   }
 
-  late final _$errorMessageAtom =
-      Atom(name: '_PurchaseScreenStore.errorMessage', context: context);
-
-  @override
-  String? get errorMessage {
-    _$errorMessageAtom.reportRead();
-    return super.errorMessage;
-  }
-
-  @override
-  set errorMessage(String? value) {
-    _$errorMessageAtom.reportWrite(value, super.errorMessage, () {
-      super.errorMessage = value;
-    });
-  }
-
   late final _$addPartyDetailsAsyncAction =
       AsyncAction('_PurchaseScreenStore.addPartyDetails', context: context);
 
@@ -600,6 +600,17 @@ mixin _$PurchaseScreenStore on _PurchaseScreenStore, Store {
         name: '_PurchaseScreenStore.isFiltersApplied');
     try {
       return super.isFiltersApplied();
+    } finally {
+      _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setErrorMessage(String? message) {
+    final _$actionInfo = _$_PurchaseScreenStoreActionController.startAction(
+        name: '_PurchaseScreenStore.setErrorMessage');
+    try {
+      return super.setErrorMessage(message);
     } finally {
       _$_PurchaseScreenStoreActionController.endAction(_$actionInfo);
     }
@@ -822,6 +833,7 @@ selectedParty: ${selectedParty},
 agentDetails: ${agentDetails},
 isAgentSelected: ${isAgentSelected},
 agentType: ${agentType},
+errorMessage: ${errorMessage},
 selectedAgentDetails: ${selectedAgentDetails},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
@@ -832,7 +844,6 @@ currentTablePage: ${currentTablePage},
 partiesList: ${partiesList},
 purchases: ${purchases},
 isLoading: ${isLoading},
-errorMessage: ${errorMessage},
 paginatedData: ${paginatedData},
 sortedData: ${sortedData},
 filteredData: ${filteredData}

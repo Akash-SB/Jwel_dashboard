@@ -459,6 +459,12 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                         SnackBar(
                             content: Text('Invoice ${purchase.id} deleted')),
                       );
+                    }).onError((error, stackTrace) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(
+                                'Error deleting invoice: ${purchaseScreenStore.errorMessage}')),
+                      );
                     });
                     Navigator.pop(ctx);
                     purchaseScreenStore.setShowLoader(false);

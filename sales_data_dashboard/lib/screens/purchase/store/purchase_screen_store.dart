@@ -112,6 +112,14 @@ abstract class _PurchaseScreenStore with Store {
   @observable
   String agentType = 'agent';
 
+  @observable
+  String? errorMessage;
+
+  @action
+  void setErrorMessage(String? message) {
+    errorMessage = message;
+  }
+
   @action
   void setIsAgentSelected(bool value) {
     isAgentSelected = value;
@@ -126,7 +134,6 @@ abstract class _PurchaseScreenStore with Store {
   void setAgentDetails(final Party agent) {
     agentDetails = Observable(agent);
   }
-
 
   @observable
   Party? selectedAgentDetails;
@@ -320,9 +327,6 @@ abstract class _PurchaseScreenStore with Store {
   @observable
   bool isLoading = false;
 
-  @observable
-  String? errorMessage;
-
   @action
   Future<void> addPurchase(Purchase purchase) async {
     try {
@@ -330,7 +334,7 @@ abstract class _PurchaseScreenStore with Store {
       purchases.add(purchase);
       userDataStore.purchaseList.add(purchase);
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage('Error adding purchase: $e');
     }
   }
 
@@ -341,7 +345,7 @@ abstract class _PurchaseScreenStore with Store {
       stockList.add(stock);
       userDataStore.stockList.add(stock);
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage('Error adding stock item: $e');
     }
   }
 
@@ -354,7 +358,7 @@ abstract class _PurchaseScreenStore with Store {
         stockList[index] = stock;
       }
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage('Error updating stock item: $e');
     }
   }
 
@@ -372,7 +376,7 @@ abstract class _PurchaseScreenStore with Store {
         userDataStore.purchaseList[userIndex] = purchase;
       }
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage('Error updating purchase: $e');
     }
   }
 
@@ -383,7 +387,7 @@ abstract class _PurchaseScreenStore with Store {
       purchases.removeWhere((p) => p.id == id);
       userDataStore.purchaseList.removeWhere((p) => p.id == id);
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage('Error deleting purchase: $e');
     }
   }
 

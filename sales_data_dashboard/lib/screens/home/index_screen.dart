@@ -60,7 +60,13 @@ class _IndexScreenState extends State<IndexScreen> {
   }
 
   Future<void> _fetchData() async {
-    await userDataStore.getAllData();
+    await userDataStore.getAllData().onError((error, stackTrace) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error fetching data: ${userDataStore.errorMessage}'),
+        ),
+      );
+    });
     await showNotification(userDataStore.notfList);
     userDataStore.setIsAllDataLoaded(true);
   }

@@ -657,7 +657,31 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                     double.tryParse(quantityController.text) ??
                                         0,
                               );
-                              widget.purchaseStore.addPurchase(purchase);
+                              widget.purchaseStore
+                                  .addPurchase(purchase)
+                                  .whenComplete(
+                                () {
+                                  if (widget.purchaseStore.errorMessage !=
+                                      null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            widget.purchaseStore.errorMessage!),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                    widget.purchaseStore.setErrorMessage(null);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content:
+                                            Text('Purchase added successfully'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  }
+                                },
+                              );
                               Navigator.pop(context);
                               widget.purchaseStore.setShowLoader(false);
                             } else {
@@ -704,7 +728,31 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                     double.tryParse(quantityController.text) ??
                                         0,
                               );
-                              widget.purchaseStore.updatePurchase(purchase);
+                              widget.purchaseStore
+                                  .updatePurchase(purchase)
+                                  .whenComplete(
+                                () {
+                                  if (widget.purchaseStore.errorMessage !=
+                                      null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            widget.purchaseStore.errorMessage!),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                    widget.purchaseStore.setErrorMessage(null);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                            'Purchase updated successfully'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  }
+                                },
+                              );
                               Navigator.pop(context);
                               widget.purchaseStore.setShowLoader(false);
                             }

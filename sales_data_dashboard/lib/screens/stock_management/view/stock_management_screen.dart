@@ -474,7 +474,15 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
                         SnackBar(
                             content: Text('Invoice ${stock.itemId} deleted')),
                       );
-                    });
+                    }).onError(
+                      (error, stackTrace) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  'Something went wrong while deleting Stock Item data: ${stockStore.errorMessage}')),
+                        );
+                      },
+                    );
                     Navigator.pop(ctx);
                     setState(() {});
                   },

@@ -61,6 +61,14 @@ abstract class _PartyDetailsStore with Store {
   @observable
   int totalinfoPages = 0;
 
+  @observable
+  String? errorMessage;
+
+  @action
+  void setErrorMessage(String? message) {
+    errorMessage = message;
+  }
+
   @action
   void setSelectedTransStatus(final value) {
     selectedTransStatus = value;
@@ -124,6 +132,8 @@ abstract class _PartyDetailsStore with Store {
       userDataStore.partiesList.add(party);
       partiesList.add(party);
     } catch (e) {
+      setErrorMessage('Error adding party: $e');
+
       print('Error adding party: $e');
     }
   }
@@ -204,7 +214,7 @@ abstract class _PartyDetailsStore with Store {
         userDataStore.partiesList[indexUserData] = party;
       }
     } catch (e) {
-      print('Error updating party: $e');
+      setErrorMessage('Error updating party: $e');
     }
   }
 
@@ -215,7 +225,7 @@ abstract class _PartyDetailsStore with Store {
       partiesList.removeWhere((s) => s.id == id);
       userDataStore.partiesList.removeWhere((s) => s.id == id);
     } catch (e) {
-      print('Error deleting party: $e');
+      setErrorMessage('Error deleting party: $e');
     }
   }
 

@@ -299,6 +299,11 @@ abstract class _StockStore with Store {
   @observable
   String? errorMessage;
 
+  @action
+  void setErrorMessage(String message) {
+    errorMessage = message;
+  }
+
   /// Firestore collection
   CollectionReference get _collection => _firestore.collection('StockItems');
 
@@ -309,7 +314,7 @@ abstract class _StockStore with Store {
       stockItemList.add(stock);
       userDataStore.stockList.add(stock);
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage(e.toString());
     }
   }
 
@@ -327,7 +332,7 @@ abstract class _StockStore with Store {
         userDataStore.stockList[indexUserData] = stock;
       }
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage(e.toString());
     }
   }
 
@@ -338,7 +343,7 @@ abstract class _StockStore with Store {
       stockItemList.removeWhere((s) => s.itemId == id);
       userDataStore.stockList.removeWhere((s) => s.itemId == id);
     } catch (e) {
-      errorMessage = e.toString();
+      setErrorMessage(e.toString());
     }
   }
 

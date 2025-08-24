@@ -583,6 +583,17 @@ mixin _$StockStore on _StockStore, Store {
   }
 
   @override
+  void setErrorMessage(String message) {
+    final _$actionInfo = _$_StockStoreActionController.startAction(
+        name: '_StockStore.setErrorMessage');
+    try {
+      return super.setErrorMessage(message);
+    } finally {
+      _$_StockStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void clearAllFilters() {
     final _$actionInfo = _$_StockStoreActionController.startAction(
         name: '_StockStore.clearAllFilters');

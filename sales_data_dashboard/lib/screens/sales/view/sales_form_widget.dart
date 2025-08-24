@@ -608,9 +608,9 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                             }).onError(
                               (error, stackTrace) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                       content: Text(
-                                          'Something went wrong while updating Sales data')),
+                                          'Something went wrong while updating Sales data: ${widget.salesScreenStore.errorMessage}')),
                                 );
                               },
                             );
@@ -629,9 +629,9 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                             }).onError(
                               (error, stackTrace) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                       content: Text(
-                                          'Something went wrong while creating Sales data')),
+                                          'Something went wrong while creating Sales data: ${widget.salesScreenStore.errorMessage}')),
                                 );
                               },
                             );

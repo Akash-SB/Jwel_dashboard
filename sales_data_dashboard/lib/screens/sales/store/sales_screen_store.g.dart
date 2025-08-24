@@ -547,6 +547,17 @@ mixin _$SalesScreenStore on _SalesScreenStore, Store {
   }
 
   @override
+  void setErrorMessage(String? message) {
+    final _$actionInfo = _$_SalesScreenStoreActionController.startAction(
+        name: '_SalesScreenStore.setErrorMessage');
+    try {
+      return super.setErrorMessage(message);
+    } finally {
+      _$_SalesScreenStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 sales: ${sales},

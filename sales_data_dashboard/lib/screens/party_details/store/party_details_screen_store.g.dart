@@ -223,6 +223,22 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
     });
   }
 
+  late final _$errorMessageAtom =
+      Atom(name: '_PartyDetailsStore.errorMessage', context: context);
+
+  @override
+  String? get errorMessage {
+    _$errorMessageAtom.reportRead();
+    return super.errorMessage;
+  }
+
+  @override
+  set errorMessage(String? value) {
+    _$errorMessageAtom.reportWrite(value, super.errorMessage, () {
+      super.errorMessage = value;
+    });
+  }
+
   late final _$selectedFilterTransactionTypeAtom = Atom(
       name: '_PartyDetailsStore.selectedFilterTransactionType',
       context: context);
@@ -423,6 +439,17 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
         name: '_PartyDetailsStore.setSelectedTransType');
     try {
       return super.setSelectedTransType(value);
+    } finally {
+      _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setErrorMessage(String? message) {
+    final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
+        name: '_PartyDetailsStore.setErrorMessage');
+    try {
+      return super.setErrorMessage(message);
     } finally {
       _$_PartyDetailsStoreActionController.endAction(_$actionInfo);
     }
@@ -695,6 +722,7 @@ selectedTransStatus: ${selectedTransStatus},
 isInfoFilterApplied: ${isInfoFilterApplied},
 currentInfoTablePage: ${currentInfoTablePage},
 totalinfoPages: ${totalinfoPages},
+errorMessage: ${errorMessage},
 selectedFilterTransactionType: ${selectedFilterTransactionType},
 showPartyInfo: ${showPartyInfo},
 isFilterApplied: ${isFilterApplied},
