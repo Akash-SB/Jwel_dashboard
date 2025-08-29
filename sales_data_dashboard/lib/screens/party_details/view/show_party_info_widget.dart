@@ -100,15 +100,21 @@ class ShowPartyInfoWidget extends StatelessWidget {
           ),
           Observer(builder: (context) {
             return InkWell(
-              onTap: () async {
-                await generateStyledLedgerPDF(
-                  party: partyDetailsStore.selectedParty!.value,
-                  allEntries: partyDetailsStore.partyLedgerList,
-                  fromDate: DateTime(2024, 4, 1),
-                  toDate: DateTime(2025, 9, 9),
-                  firmName: "ECONOMIC EXPERT LOGISTICS LLP",
-                  firmAddress:
-                      "2131, GANGAPUR HOUSE, GEE WALO KA RASTA, DHADA MARKET, JAIPUR",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LedgerPreviewScreen(
+                      buildPdf: () => buildLedgerPDFBytes(
+                        party: partyDetailsStore.selectedParty!.value,
+                        allEntries: partyDetailsStore.partyLedgerList,
+                        fromDate: DateTime(2025, 1, 1),
+                        toDate: DateTime(2025, 12, 31),
+                        firmName: "Your Firm",
+                        firmAddress: "123 Business Street",
+                      ),
+                    ),
+                  ),
                 );
               },
               child: Container(

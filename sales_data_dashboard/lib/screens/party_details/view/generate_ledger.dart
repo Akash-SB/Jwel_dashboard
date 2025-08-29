@@ -1,9 +1,9 @@
-import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
 import 'package:sales_data_dashboard/models/stock_party_ledger.dart';
 
@@ -12,7 +12,7 @@ class LedgerEntry {
   final DateTime date;
   final String particulars;
   final double? debit; // Money owed to you
-  final double? credit; // Money you paid or received
+  final double? credit; // Money paid/received
   final String voucherNo;
   final String voucherType;
 
@@ -24,15 +24,6 @@ class LedgerEntry {
     required this.voucherNo,
     required this.voucherType,
   });
-
-  Map<String, dynamic> toMap() => {
-        'date': date.toIso8601String(),
-        'particulars': particulars,
-        'debit': debit,
-        'credit': credit,
-        'voucherNo': voucherNo,
-        'voucherType': voucherType,
-      };
 }
 
 /// Ledger Model
@@ -54,21 +45,11 @@ class Ledger {
     this.closingBalance = 0.0,
     required this.entries,
   });
-
-  Map<String, dynamic> toMap() => {
-        'customerId': customerId,
-        'customerName': customerName,
-        'fromDate': fromDate.toIso8601String(),
-        'toDate': toDate.toIso8601String(),
-        'openingBalance': openingBalance,
-        'closingBalance': closingBalance,
-        'entries': entries.map((e) => e.toMap()).toList(),
-      };
 }
 
 /// Ledger Service
 class LedgerService {
-  /// Calculate opening balance before the given period
+  /// Calculate opening balance (includes partial payments before fromDate)
   static double calculateOpeningBalance({
     required String customerId,
     required DateTime fromDate,
@@ -82,7 +63,15 @@ class LedgerService {
 
       if (entry.transType == TransType.sale.name) {
         balance += amount;
-        if (entry.paymentStatus.toLowerCase() == "paid") {
+
+        if (entry.partialPaymentDetails != null) {
+          for (var partial in entry.partialPaymentDetails!) {
+            final partialDate = partial.paymentDate;
+            if (partialDate.isBefore(fromDate)) {
+              balance -= partial.amountPaid;
+            }
+          }
+        } else if (entry.paymentStatus.toLowerCase() == "paid") {
           balance -= amount;
         }
       } else if (entry.transType == TransType.purchase.name) {
@@ -93,7 +82,7 @@ class LedgerService {
     return balance;
   }
 
-  /// Generate ledger for a specific customer
+  /// Generate ledger with partial payments support
   static Ledger generateLedger({
     required String customerId,
     required String customerName,
@@ -126,7 +115,26 @@ class LedgerService {
           voucherType: "Sale",
         ));
 
-        if (entry.paymentStatus.toLowerCase() == "paid") {
+        // Partial payments (within fromDate-toDate)
+        if (entry.partialPaymentDetails != null) {
+          for (var partial in entry.partialPaymentDetails!) {
+            final partialDate = partial.paymentDate;
+            if (partialDate
+                    .isAfter(fromDate.subtract(const Duration(days: 1))) &&
+                partialDate.isBefore(toDate.add(const Duration(days: 1)))) {
+              final paidAmount = partial.amountPaid;
+              entries.add(LedgerEntry(
+                date: partialDate,
+                particulars:
+                    "Partial Payment (${partial.paymentMethod ?? 'N/A'})",
+                debit: null,
+                credit: paidAmount,
+                voucherNo: entry.id,
+                voucherType: "Partial Receipt",
+              ));
+            }
+          }
+        } else if (entry.paymentStatus.toLowerCase() == "paid") {
           entries.add(LedgerEntry(
             date: entry.createdAt,
             particulars: "Payment Received (${entry.paymentOption ?? 'N/A'})",
@@ -137,7 +145,6 @@ class LedgerService {
           ));
         }
       } else if (entry.transType == TransType.purchase.name) {
-        // Purchase → Credit
         entries.add(LedgerEntry(
           date: entry.createdAt,
           particulars: "Purchase: ${entry.productId}",
@@ -171,7 +178,8 @@ class LedgerService {
   }
 }
 
-Future<void> generateStyledLedgerPDF({
+/// PDF Builder
+Future<Uint8List> buildLedgerPDFBytes({
   required Party party,
   required List<StockPartyLedger> allEntries,
   required DateTime fromDate,
@@ -201,10 +209,10 @@ Future<void> generateStyledLedgerPDF({
     dateFormatter.format(fromDate),
     'Opening Balance',
     '',
-    runningBalance > 0 ? runningBalance.toStringAsFixed(2) : '',
-    runningBalance < 0 ? (-runningBalance).toStringAsFixed(2) : '',
     '',
     '',
+    '',
+    runningBalance.toStringAsFixed(2),
   ]);
 
   // Ledger entries
@@ -234,10 +242,10 @@ Future<void> generateStyledLedgerPDF({
     dateFormatter.format(toDate),
     'Closing Balance',
     '',
-    runningBalance > 0 ? runningBalance.toStringAsFixed(2) : '',
-    runningBalance < 0 ? (-runningBalance).toStringAsFixed(2) : '',
     '',
     '',
+    '',
+    runningBalance.toStringAsFixed(2),
   ]);
 
   pdf.addPage(
@@ -247,7 +255,6 @@ Future<void> generateStyledLedgerPDF({
         pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            // Header
             pw.Text(firmName,
                 style:
                     pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
@@ -260,8 +267,6 @@ Future<void> generateStyledLedgerPDF({
             pw.Text(
                 "${dateFormatter.format(fromDate)} to ${dateFormatter.format(toDate)}"),
             pw.SizedBox(height: 20),
-
-            // Table
             pw.Table.fromTextArray(
               border: pw.TableBorder.all(width: 0.5),
               headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
@@ -279,12 +284,11 @@ Future<void> generateStyledLedgerPDF({
               ],
               data: tableData,
               cellAlignments: {
-                2: pw.Alignment.centerRight, // Credit
-                3: pw.Alignment.centerRight, // Debit
-                6: pw.Alignment.centerRight, // Balance
+                2: pw.Alignment.centerRight,
+                3: pw.Alignment.centerRight,
+                6: pw.Alignment.centerRight,
               },
             ),
-
             pw.SizedBox(height: 15),
             pw.Text(
               "Total Debit: ${totalDebit.toStringAsFixed(2)}    |    Total Credit: ${totalCredit.toStringAsFixed(2)}",
@@ -300,9 +304,26 @@ Future<void> generateStyledLedgerPDF({
     ),
   );
 
-  final dir = await getTemporaryDirectory();
-  final file = File("${dir.path}/Ledger_${party.name}.pdf");
-  await file.writeAsBytes(await pdf.save());
-  await Printing.sharePdf(
-      bytes: await pdf.save(), filename: "Ledger_${party.name}.pdf");
+  return pdf.save();
+}
+
+/// PDF Preview Screen
+class LedgerPreviewScreen extends StatelessWidget {
+  final Future<Uint8List> Function() buildPdf;
+  const LedgerPreviewScreen({Key? key, required this.buildPdf})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Ledger Preview")),
+      body: PdfPreview(
+        build: (format) async => await buildPdf(),
+        allowPrinting: true,
+        allowSharing: true,
+        canChangePageFormat: false,
+        canChangeOrientation: false,
+      ),
+    );
+  }
 }

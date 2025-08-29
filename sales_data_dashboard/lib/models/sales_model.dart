@@ -12,21 +12,25 @@ enum PaymentOption { cash, bank, cheque, upi }
 class PartialPaymentDetails {
   final double amountPaid;
   final DateTime paymentDate;
+  final String? paymentMethod;
 
   PartialPaymentDetails({
     required this.amountPaid,
     required this.paymentDate,
+    this.paymentMethod,
   });
 
   Map<String, dynamic> toMap() => {
         'amountPaid': amountPaid,
         'paymentDate': paymentDate.toIso8601String(),
+        'paymentMethod': paymentMethod,
       };
 
   factory PartialPaymentDetails.fromMap(Map<String, dynamic> map) =>
       PartialPaymentDetails(
         amountPaid: map['amountPaid'] as double,
         paymentDate: DateTime.parse(map['paymentDate']),
+        paymentMethod: map['paymentMethod'] as String?,
       );
 }
 
