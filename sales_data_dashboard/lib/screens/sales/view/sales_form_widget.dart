@@ -37,6 +37,7 @@ class SalesFormWidget extends StatefulWidget {
 
 class _SalesFormWidgetState extends State<SalesFormWidget> {
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController salesDateController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController gstController = TextEditingController();
@@ -57,6 +58,25 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
   final TextEditingController agentGstController = TextEditingController();
   final TextEditingController agentBrokerageController =
       TextEditingController();
+  List<PartialPaymentDetails> partialPaymentDetails = [];
+  final TextEditingController partialPaymentAmountController =
+      TextEditingController();
+  final TextEditingController partialPaymentDateController =
+      TextEditingController();
+
+  void addPartialPaymentDetail() {
+    if (partialPaymentAmountController.text.isNotEmpty &&
+        partialPaymentDateController.text.isNotEmpty) {
+      partialPaymentDetails.add(PartialPaymentDetails(
+        amountPaid: double.tryParse(partialPaymentAmountController.text) ?? 0.0,
+        paymentDate: DateTime.tryParse(partialPaymentDateController.text) ??
+            DateTime.now(),
+      ));
+      partialPaymentAmountController.clear();
+      partialPaymentDateController.clear();
+      setState(() {});
+    }
+  }
 
   @override
   void initState() {
@@ -64,6 +84,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
     if (widget.existingSale != null) {
       final sale = widget.existingSale!;
       nameController.text = sale.partyDetails.name;
+      salesDateController.text = sale.createdAt.toString().split(' ')[0];
       addressController.text = sale.partyDetails.address ?? '';
       mobileController.text = sale.partyDetails.mobileNumber;
       gstController.text = sale.partyDetails.gstNumber ?? '';
@@ -84,6 +105,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       agentMobileController.text = sale.agentDetails?.mobileNumber ?? '';
       agentGstController.text = sale.agentDetails?.gstNumber ?? '';
       agentBrokerageController.text = sale.agentDetails?.brokerage ?? '';
+      partialPaymentDetails = sale.partialPaymentDetails ?? [];
       if (sale.agentDetails != null) {
         widget.salesScreenStore.setAgentDetails(sale.agentDetails!);
         widget.salesScreenStore.setIsAgentSelected(true);
@@ -116,13 +138,33 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                 Row(
                   children: [
                     Expanded(
-                      child: TextFormField(
-                        initialValue: DateTime.now().toString().split(' ')[0],
-                        decoration: InputDecoration(
-                          labelText: 'Date',
-                          suffixIcon: const Icon(Icons.calendar_today),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
+                      child: GestureDetector(
+                        onTap: () async {
+                          final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: salesDateController.text.isNotEmpty
+                                ? DateTime.tryParse(salesDateController.text) ??
+                                    DateTime.now()
+                                : DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (picked != null) {
+                            salesDateController.text =
+                                picked.toString().split(' ')[0];
+                            setState(() {});
+                          }
+                        },
+                        child: AbsorbPointer(
+                          child: TextFormField(
+                            controller: salesDateController,
+                            decoration: InputDecoration(
+                              labelText: 'Date',
+                              suffixIcon: const Icon(Icons.calendar_today),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -500,6 +542,85 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                             label: 'Due Days', controller: dueDaysController)),
                   ],
                 ),
+                SizedBox(height: 12.dp),
+                if (widget.existingSale != null) ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CommonTextField(
+                          label: 'Partial Payment Amount',
+                          controller: partialPaymentAmountController,
+                        ),
+                      ),
+                      SizedBox(width: 16.dp),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            final DateTime? picked = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (picked != null) {
+                              partialPaymentDateController.text =
+                                  picked.toString().split(' ')[0];
+                              setState(() {});
+                            }
+                          },
+                          child: AbsorbPointer(
+                            child: CommonTextField(
+                              label: 'Partial Payment Date',
+                              controller: partialPaymentDateController,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 16.dp),
+                      ElevatedButton(
+                        onPressed: addPartialPaymentDetail,
+                        child: const Text('Add'),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8.dp),
+                  if (partialPaymentDetails.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Partial Payment List:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: partialPaymentDetails.length,
+                          itemBuilder: (context, index) {
+                            final detail = partialPaymentDetails[index];
+                            return ListTile(
+                              title: Text(
+                                  'Amount: ${detail.amountPaid.toStringAsFixed(2)}'),
+                              subtitle: Text(
+                                  'Date: ${detail.paymentDate.toString().split(' ')[0]}'),
+                              trailing: IconButton(
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  setState(() {
+                                    partialPaymentDetails.removeAt(index);
+                                  });
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                ],
+                SizedBox(height: 12.dp),
                 CommonTextField(
                     label: 'Note (Optional)',
                     controller: noteController,
@@ -591,6 +712,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                     Firm.sahajanand.name
                                 ? Firm.sahajanand
                                 : Firm.harikrishnaEnterprise,
+                            partialPaymentDetails: partialPaymentDetails,
                           );
 
                           if (widget.existingSale != null) {
