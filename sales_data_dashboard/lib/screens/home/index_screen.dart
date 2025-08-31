@@ -153,7 +153,7 @@ class _IndexScreenState extends State<IndexScreen> {
                   Observer(builder: (context) {
                     return Expanded(
                       child: ListView.builder(
-                        itemCount: labels.length,
+                        itemCount: 6,
                         itemBuilder: (context, index) {
                           return _sidebarItem(
                               icons[index], labels[index], index);

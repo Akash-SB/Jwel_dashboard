@@ -152,14 +152,14 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
                                   ),
                                 ),
                                 const Spacer(),
-                                CustomImageButton(
-                                  imagePath: 'assets/icons/excel_icon.png',
-                                  text: 'Excel',
-                                  borderColor: const Color(0xffE5E7EB),
-                                  buttonColor: Colors.white,
-                                  onClicked: () {},
-                                  // onClicked: widget.onExportPDF,
-                                ),
+                                // CustomImageButton(
+                                //   imagePath: 'assets/icons/excel_icon.png',
+                                //   text: 'Excel',
+                                //   borderColor: const Color(0xffE5E7EB),
+                                //   buttonColor: Colors.white,
+                                //   onClicked: () {},
+                                //   // onClicked: widget.onExportPDF,
+                                // ),
                                 SizedBox(
                                   width: 12.dp,
                                 ),

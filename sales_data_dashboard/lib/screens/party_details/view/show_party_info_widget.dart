@@ -197,16 +197,16 @@ class ShowPartyInfoWidget extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  CustomImageButton(
-                    imagePath: 'assets/icons/excel_icon.png',
-                    text: 'Excel',
-                    borderColor: const Color(0xffE5E7EB),
-                    buttonColor: Colors.white,
-                    onClicked: () {},
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
+                  // CustomImageButton(
+                  //   imagePath: 'assets/icons/excel_icon.png',
+                  //   text: 'Excel',
+                  //   borderColor: const Color(0xffE5E7EB),
+                  //   buttonColor: Colors.white,
+                  //   onClicked: () {},
+                  // ),
+                  // SizedBox(
+                  //   width: 12.dp,
+                  // ),
                   Observer(builder: (context) {
                     return Container(
                       height: 30.dp,

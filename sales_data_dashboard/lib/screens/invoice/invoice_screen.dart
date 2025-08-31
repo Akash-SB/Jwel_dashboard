@@ -158,18 +158,18 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   ),
                 ),
                 const Spacer(),
-                CustomImageButton(
-                  imagePath: 'assets/icons/excel_icon.png',
-                  text: 'Excel',
-                  borderColor: const Color(0xffE5E7EB),
-                  buttonColor: Colors.white,
-                  onClicked: () {
-                    invoiceStore.exportExcel();
-                  },
-                ),
-                SizedBox(
-                  width: 12.dp,
-                ),
+                // CustomImageButton(
+                //   imagePath: 'assets/icons/excel_icon.png',
+                //   text: 'Excel',
+                //   borderColor: const Color(0xffE5E7EB),
+                //   buttonColor: Colors.white,
+                //   onClicked: () {
+                //     invoiceStore.exportExcel();
+                //   },
+                // ),
+                // SizedBox(
+                //   width: 12.dp,
+                // ),
                 Container(
                   height: 30.dp,
                   decoration: BoxDecoration(
@@ -285,30 +285,32 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                                 onTap: () async {
                                   final companies = [
                                     CompanyModel(
-                                      name: 'ABC Jewellers Pvt Ltd',
-                                      gstin: '27ABCDE1234F1Z5',
-                                      address: '123 Business Street, Mumbai',
-                                      phone: '+91-9999999999',
-                                      email: 'contact@abcjewellers.com',
-                                      bankName: 'Bank of India',
-                                      bankAccountNo: '987654321012',
-                                      bankIfscCode: 'BKID0009876',
-                                      bankBranch: 'Main Branch',
-                                      bankAddress: '123 Bank Street, Mumbai',
-                                      panNumber: 'ABCDE1234F',
+                                      name: 'SAHAJANAND GEMS',
+                                      gstin: '27BSXPP8815N1ZH',
+                                      address:
+                                          'Near Municipla Garden, B-709, Ramdev Park CHS LTD, Chandavarkar Road Mumbai - 400092',
+                                      phone: '+91-9029999829',
+                                      email: '-',
+                                      bankName: 'State Bank of India',
+                                      bankAccountNo: '41702974607',
+                                      bankIfscCode: 'SBIN0000347',
+                                      bankBranch: '-',
+                                      bankAddress: '-',
+                                      panNumber: '-',
                                     ),
                                     CompanyModel(
-                                      name: 'XYZ Gold Traders',
-                                      gstin: '27XYZ9876F1Z5',
-                                      address: '45 Market Road, Pune',
-                                      phone: '+91-8888888888',
-                                      email: 'contact@xyzgoldtraders.com',
-                                      bankName: 'Bank of Maharashtra',
-                                      bankAccountNo: '123456789012',
-                                      bankIfscCode: 'MAHB0001234',
-                                      bankBranch: 'Main Branch',
-                                      bankAddress: '123 Bank Street, Mumbai',
-                                      panNumber: 'ABCDE1234F',
+                                      name: 'Harikrishna Enterprises',
+                                      gstin: '24A0HPP0279F1ZZ',
+                                      address:
+                                          'G0781, Maniyarwado, Paniyari, khambhat, Gujarat 388620',
+                                      phone: '+91-9029999829',
+                                      email: '-',
+                                      bankName: 'HDFC Bank - KHAMBHAT',
+                                      bankAccountNo: '50200066523665',
+                                      bankIfscCode: 'HDFC0001685',
+                                      bankBranch: '-',
+                                      bankAddress: '-',
+                                      panNumber: '-',
                                     ),
                                   ];
                                   final selected = await showCompanyPicker(
