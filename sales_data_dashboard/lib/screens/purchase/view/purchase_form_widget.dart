@@ -35,7 +35,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
   final TextEditingController gstController = TextEditingController();
   final TextEditingController firmTypeController = TextEditingController();
   final TextEditingController itemNameController = TextEditingController();
-  final TextEditingController sizeController = TextEditingController();
+  final TextEditingController stockQuantController = TextEditingController();
   final TextEditingController rateController = TextEditingController();
   final TextEditingController caratController = TextEditingController();
   final TextEditingController quantityController = TextEditingController();
@@ -62,19 +62,17 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
       final purchase = widget.existingPurchase!;
       nameController.text = purchase.partyDetails.name;
       addressController.text = purchase.partyDetails.address ?? '';
-      mobileController.text = purchase.partyDetails.mobileNumber;
+      mobileController.text = purchase.partyDetails.mobileNumber ?? '';
       gstController.text = purchase.partyDetails.gstNumber ?? '';
-      firmTypeController.text = purchase.partyDetails.firm;
       itemIdController.text = purchase.stockDetails.itemId;
       itemNameController.text = purchase.stockDetails.itemName;
-      sizeController.text = purchase.stockDetails.size;
+      stockQuantController.text = purchase.stockDetails.quantity;
       rateController.text = purchase.stockDetails.rate.toString();
-      caratController.text = purchase.stockDetails.carat.toString();
       availableQuantController.text =
           purchase.stockDetails.availableQuantity.toString();
       quantityController.text = purchase.buyQuantity.toString();
       amountController.text = purchase.stockDetails.amount.toString();
-      descriptionController.text = purchase.stockDetails.description;
+      descriptionController.text = purchase.stockDetails.description ?? '';
       noteController.text = purchase.description;
       dateController.text =
           "${purchase.createdAt.day.toString().padLeft(2, '0')}-${purchase.createdAt.month.toString().padLeft(2, '0')}-${purchase.createdAt.year}";
@@ -204,9 +202,8 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                       widget.purchaseStore.setselectedParty(partyDetails);
                       nameController.text = partyDetails.name;
                       addressController.text = partyDetails.address ?? '';
-                      mobileController.text = partyDetails.mobileNumber;
+                      mobileController.text = partyDetails.mobileNumber ?? '';
                       gstController.text = partyDetails.gstNumber ?? '';
-                      firmTypeController.text = partyDetails.firm;
                       setAmount();
                     }
                   },
@@ -330,8 +327,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                           label: 'Search by Agent ID',
                           options: widget.purchaseStore.partiesList
                               .where((party) =>
-                                  party.firm ==
-                                      widget.purchaseStore.selectedFilterFirm &&
                                   party.partyType.toLowerCase() == 'agent')
                               .map((e) => e.name)
                               .toList(),
@@ -348,8 +343,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                           gstNumber: null,
                                           partyType:
                                               widget.purchaseStore.agentType,
-                                          firm: widget
-                                              .purchaseStore.selectedFilterFirm,
                                         )));
                             agentNameController.text = widget
                                     .purchaseStore.selectedAgentDetails?.name ??
@@ -451,7 +444,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                 itemIdController.clear();
                                 nameController.clear();
                                 itemNameController.clear();
-                                sizeController.clear();
+                                stockQuantController.clear();
                                 rateController.clear();
                                 caratController.clear();
                                 quantityController.clear();
@@ -471,7 +464,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                 itemIdController.clear();
                                 nameController.clear();
                                 itemNameController.clear();
-                                sizeController.clear();
+                                stockQuantController.clear();
                                 rateController.clear();
                                 caratController.clear();
                                 quantityController.clear();
@@ -576,17 +569,14 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                       double.tryParse(amountController.text) ??
                                           0.0,
                                   description: descriptionController.text,
-                                  firm: firmTypeController.text,
                                   itemId: selectedItem.itemId,
                                   itemName: itemNameController.text,
-                                  size: sizeController.text,
+                                  quantity: stockQuantController.text,
                                   rate: double.tryParse(rateController.text) ??
                                       0.0,
-                                  carat:
-                                      double.tryParse(caratController.text) ??
-                                          0.0,
-                                  availableQuantity:
-                                      selectedItem.availableQuantity +
+                                  availableQuantity: selectedItem
+                                          .availableQuantity ??
+                                      0 +
                                           (double.tryParse(
                                                   quantityController.text) ??
                                               0.0),
@@ -598,12 +588,9 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                 selectedItem = StockItem(
                                   itemId: itemIdController.text,
                                   itemName: itemNameController.text,
-                                  size: sizeController.text,
+                                  quantity: stockQuantController.text,
                                   rate: double.tryParse(rateController.text) ??
                                       0.0,
-                                  carat:
-                                      double.tryParse(caratController.text) ??
-                                          0.0,
                                   availableQuantity: double.tryParse(
                                           quantityController.text) ??
                                       0.0,
@@ -612,7 +599,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                       double.tryParse(amountController.text) ??
                                           0.0,
                                   description: descriptionController.text,
-                                  firm: firmTypeController.text,
                                 );
                                 widget.purchaseStore.addStockItem(
                                   selectedItem,
@@ -629,10 +615,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                   name: agentNameController.text,
                                   mobileNumber: agentMobileController.text,
                                   partyType: PartyTypeEnum.agent.name,
-                                  firm: widget.purchaseStore
-                                          .selectedAgentDetails?.firm ??
-                                      '',
-                                  brokerage: agentBrokerageController.text,
                                   address: agentAddressController.text,
                                   gstNumber: agentGstController.text,
                                 );
@@ -696,11 +678,9 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                               final selectedItem = StockItem(
                                 itemId: itemIdController.text,
                                 itemName: itemNameController.text,
-                                size: sizeController.text,
+                                quantity: stockQuantController.text,
                                 rate:
                                     double.tryParse(rateController.text) ?? 0.0,
-                                carat: double.tryParse(caratController.text) ??
-                                    0.0,
                                 availableQuantity:
                                     double.tryParse(quantityController.text) ??
                                         0.0,
@@ -709,7 +689,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                     double.tryParse(amountController.text) ??
                                         0.0,
                                 description: descriptionController.text,
-                                firm: firmTypeController.text,
                               );
                               final purchase = Purchase(
                                 createdAt: DateTime.parse(
@@ -785,9 +764,8 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 widget.purchaseStore.setSelectedStockItem(stockItem);
                 itemIdController.text = stockItem.itemId;
                 itemNameController.text = stockItem.itemName;
-                sizeController.text = stockItem.size;
+                stockQuantController.text = stockItem.quantity;
                 rateController.text = stockItem.rate.toString();
-                caratController.text = stockItem.carat.toString();
                 availableQuantController.text =
                     stockItem.availableQuantity.toString();
                 quantityController.clear();
@@ -840,7 +818,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
               Expanded(
                 child: CommonTextField(
                   label: 'Size',
-                  controller: sizeController,
+                  controller: stockQuantController,
                 ),
               ),
               SizedBox(
@@ -956,7 +934,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                   label: 'Item Name',
                   controller: itemNameController,
                   onChanged: (p0) {
-                    _setItemId(p0, sizeController.text);
+                    _setItemId(p0, stockQuantController.text);
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -980,7 +958,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
               Expanded(
                 child: CommonTextField(
                   label: 'Size',
-                  controller: sizeController,
+                  controller: stockQuantController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a size';

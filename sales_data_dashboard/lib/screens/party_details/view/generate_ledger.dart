@@ -137,7 +137,7 @@ class LedgerService {
         } else if (entry.paymentStatus.toLowerCase() == "paid") {
           entries.add(LedgerEntry(
             date: entry.createdAt,
-            particulars: "Payment Received (${entry.paymentOption ?? 'N/A'})",
+            particulars: "Payment Received",
             debit: null,
             credit: amount,
             voucherNo: entry.id,

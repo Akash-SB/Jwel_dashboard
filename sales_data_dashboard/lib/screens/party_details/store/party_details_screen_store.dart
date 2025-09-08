@@ -162,14 +162,13 @@ abstract class _PartyDetailsStore with Store {
               productId: sale.stockDetails.itemId,
               quantity: sale.stockDetails.availableQuantity.toString(),
               amount: sale.stockDetails.amount.toString(),
-              paymentStatus: sale.paymentStatus,
-              firm: sale.firm.name,
               transType: TransType.sale.name,
               description: sale.description,
               dueDays: sale.dueDays,
               agentName: sale.agentDetails?.name ?? 'NA',
-              brokerage: sale.agentDetails?.brokerage ?? 'NA',
               partialPaymentDetails: sale.partialPaymentDetails,
+              firm: '',
+              paymentStatus: '',
             ),
           ),
     );
@@ -186,13 +185,11 @@ abstract class _PartyDetailsStore with Store {
               productId: purchase.stockDetails.itemId,
               quantity: purchase.stockDetails.availableQuantity.toString(),
               amount: purchase.stockDetails.amount.toString(),
-              paymentStatus: purchase.paymentStatus,
               firm: purchase.firm,
               transType: TransType.purchase.name,
               description: purchase.description,
               agentName: purchase.agentDetails?.name ?? 'NA',
-              brokerage: purchase.agentDetails?.brokerage ?? 'NA',
-              paymentOption: purchase.paymentOption,
+              paymentStatus: '',
             ),
           ),
     );
@@ -272,11 +269,7 @@ abstract class _PartyDetailsStore with Store {
       final typeMatch = selectedTransType == 'All'
           ? true
           : item.transType == selectedTransType;
-      final statusType = selectedTransStatus == 'All'
-          ? true
-          : item.paymentStatus.toLowerCase() ==
-              selectedTransStatus.toLowerCase();
-      return typeMatch && statusType;
+      return typeMatch;
     }).toList();
   }
 
@@ -387,13 +380,12 @@ abstract class _PartyDetailsStore with Store {
       final matchesSearch = searchedText.toLowerCase();
       final searchItem = party.id.toLowerCase().contains(matchesSearch) ||
           party.name.toLowerCase().contains(matchesSearch) ||
-          party.mobileNumber.toLowerCase().contains(matchesSearch);
-      final matchesFirm =
-          selectedFilterFirm == 'All' ? true : party.firm == selectedFilterFirm;
+          (party.mobileNumber != null &&
+              party.mobileNumber!.contains(matchesSearch));
       final matchesPartyType = selectedFilterPartyType == 'All'
           ? true
           : party.partyType == selectedFilterPartyType;
-      return searchItem && matchesFirm && matchesPartyType;
+      return searchItem && matchesPartyType;
     }).toList();
   }
 

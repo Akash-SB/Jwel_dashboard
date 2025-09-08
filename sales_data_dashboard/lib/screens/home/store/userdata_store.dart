@@ -195,7 +195,7 @@ abstract class _UserDataStore with Store {
       final today = DateTime.now();
 
       for (final sale in salesList) {
-        final dueDate = sale.createdAt.add(Duration(days: sale.dueDays));
+        final dueDate = sale.createdAt.add(Duration(days: sale.dueDays ?? 0));
         final isDueToday = dueDate.isBefore(today) || dueDate == today;
         if (isDueToday && !notificationExists(sale.id)) {
           // Create notification model
@@ -206,7 +206,6 @@ abstract class _UserDataStore with Store {
             message:
                 'Invoice due on ${dueDate.day}/${dueDate.month}/${dueDate.year} for ${sale.partyDetails.name}',
             notifyDate: today,
-            isPaid: sale.paymentStatus == 'paid',
             isShown: false,
           );
 
@@ -246,8 +245,6 @@ abstract class _UserDataStore with Store {
           partyDetails: salesList[saleIndex].partyDetails,
           createdAt: salesList[saleIndex].createdAt,
           dueDays: salesList[saleIndex].dueDays,
-          paymentStatus: 'paid',
-          firm: salesList[saleIndex].firm,
           paymentOption: salesList[saleIndex].paymentOption,
           stockDetails: salesList[saleIndex].stockDetails,
           description: salesList[saleIndex].description,
@@ -448,8 +445,6 @@ abstract class _UserDataStore with Store {
           partyDetails: sale.partyDetails,
           createdAt: sale.createdAt,
           dueDays: sale.dueDays,
-          paymentStatus: 'paid',
-          firm: sale.firm,
           paymentOption: sale.paymentOption,
           stockDetails: sale.stockDetails,
           description: sale.description,

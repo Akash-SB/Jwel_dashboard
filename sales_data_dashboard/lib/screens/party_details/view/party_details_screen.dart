@@ -9,7 +9,6 @@ import 'package:sales_data_dashboard/screens/party_details/view/show_party_info_
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import '../../../models/firm_model.dart';
 import '../../../widgets/common_dropdown.dart';
-import '../../../widgets/custom_image_button.dart';
 import '../../../widgets/custom_searchbar.dart';
 import '../../../widgets/normal_button.dart';
 import '../store/party_details_screen_store.dart';
@@ -493,7 +492,7 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
       case 'name':
         return party.name;
       case 'mobileNumber':
-        return party.mobileNumber;
+        return party.mobileNumber ?? '';
       case 'gstNumber':
         return party.gstNumber ?? '';
       case 'address':
@@ -502,10 +501,6 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
         return party.partyType == PartyTypeEnum.agent.name
             ? 'Agent'
             : 'Company';
-      case 'firm':
-        return party.firm == Firm.sahajanand.name
-            ? Firm.sahajanand.name
-            : Firm.harikrishnaEnterprise.name;
       default:
         return '';
     }

@@ -4,8 +4,6 @@ import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/stock_party_ledger.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/stock_management/store/stock_mgmt_store.dart';
-import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
-
 import '../../../models/app_enum.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/custom_data_table.dart';
@@ -141,23 +139,22 @@ class ItemInfoScreen extends StatelessWidget {
                         stockStore.selectedStockItem?.value.itemName ?? 'N/A'),
                     _infoTile('HSN Code',
                         stockStore.selectedStockItem?.value.hsnCode ?? 'N/A'),
-                    _infoTile('Size',
-                        stockStore.selectedStockItem?.value.size ?? 'N/A'),
-                  ]),
-                  TableRow(children: [
-                    SizedBox(height: 16.dp),
-                    SizedBox(height: 16.dp),
-                    SizedBox(height: 16.dp),
-                    SizedBox(height: 16.dp),
-                  ]),
-                  TableRow(children: [
                     _infoTile(
                         'Rate',
                         stockStore.selectedStockItem?.value.rate.toString() ??
                             '0'),
+                  ]),
+                  TableRow(children: [
+                    SizedBox(height: 16.dp),
+                    SizedBox(height: 16.dp),
+                    SizedBox(height: 16.dp),
+                    SizedBox(height: 16.dp),
+                  ]),
+                  TableRow(children: [
                     _infoTile(
-                        'Carat',
-                        stockStore.selectedStockItem?.value.carat.toString() ??
+                        'Quantity',
+                        stockStore.selectedStockItem?.value.quantity
+                                .toString() ??
                             '0'),
                     _infoTile(
                         'Amount',
@@ -168,6 +165,7 @@ class ItemInfoScreen extends StatelessWidget {
                         stockStore.selectedStockItem?.value.availableQuantity
                                 .toString() ??
                             '0'),
+                    SizedBox(height: 16.dp),
                   ]),
                 ],
               ),
@@ -409,8 +407,6 @@ class ItemInfoScreen extends StatelessWidget {
         return info?.paymentStatus ?? 'N/A';
       case 'firm':
         return info?.firm ?? 'N/A';
-      case 'paymentOption':
-        return info?.paymentOption ?? 'N/A';
       case 'description':
         return info?.description ?? 'N/A';
       default:

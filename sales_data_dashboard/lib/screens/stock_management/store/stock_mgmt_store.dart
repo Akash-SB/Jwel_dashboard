@@ -200,20 +200,20 @@ abstract class _StockStore with Store {
               sale.stockDetails.itemId == selectedStockItem?.value.itemId)
           .map(
             (final sale) => StockPartyLedger(
-                id: sale.id,
-                createdAt: sale.createdAt,
-                customerId: sale.partyDetails.id,
-                customerName: sale.partyDetails.name,
-                productId: sale.stockDetails.itemId,
-                quantity: sale.stockDetails.availableQuantity.toString(),
-                amount: sale.stockDetails.amount.toString(),
-                paymentStatus: sale.paymentStatus,
-                firm: sale.firm.name,
-                transType: TransType.sale.name,
-                description: sale.description,
-                dueDays: sale.dueDays,
-                agentName: sale.agentDetails?.name ?? 'NA',
-                brokerage: sale.agentDetails?.brokerage ?? 'NA'),
+              id: sale.id,
+              createdAt: sale.createdAt,
+              customerId: sale.partyDetails.id,
+              customerName: sale.partyDetails.name,
+              productId: sale.stockDetails.itemId,
+              quantity: sale.stockDetails.availableQuantity.toString(),
+              amount: sale.stockDetails.amount.toString(),
+              transType: TransType.sale.name,
+              description: sale.description,
+              dueDays: sale.dueDays,
+              agentName: sale.agentDetails?.name ?? 'NA',
+              paymentStatus: '',
+              firm: '',
+            ),
           ),
     );
     ledgers.addAll(
@@ -234,8 +234,6 @@ abstract class _StockStore with Store {
               transType: TransType.purchase.name,
               description: purchase.description,
               agentName: purchase.agentDetails?.name ?? 'NA',
-              brokerage: purchase.agentDetails?.brokerage ?? 'NA',
-              paymentOption: purchase.paymentOption,
             ),
           ),
     );
@@ -266,11 +264,10 @@ abstract class _StockStore with Store {
     return filtered.where((item) {
       final query = searchedText.toLowerCase();
       final searchedItem = item.itemId.toLowerCase().contains(query) ||
-          item.hsnCode.toLowerCase().contains(query) ||
-          item.carat.toString().contains(query) ||
+          (item.hsnCode != null &&
+              item.hsnCode!.toLowerCase().contains(query)) ||
           item.amount.toString().contains(query);
-      final firmMatch = item.firm.toLowerCase() == selectedFirm.toLowerCase();
-      return searchedItem && firmMatch;
+      return searchedItem;
     }).toList();
   }
 

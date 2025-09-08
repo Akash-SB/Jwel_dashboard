@@ -546,7 +546,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
                                 _custAddressController.text =
                                     selection.address ?? '';
                                 _custPhoneController.text =
-                                    selection.mobileNumber;
+                                    selection.mobileNumber ?? '';
                                 _custGstController.text =
                                     selection.gstNumber.toString();
                               });

@@ -7,8 +7,6 @@ import 'package:sales_data_dashboard/models/stock_item.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/widgets/common_dropdown.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
-
-import '../../../widgets/custom_image_button.dart';
 import '../../../widgets/custom_searchbar.dart';
 import '../../../widgets/normal_button.dart';
 import '../store/stock_mgmt_store.dart';
@@ -528,21 +526,15 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
       case 'itemName':
         return row.itemName;
       case 'hsnCode':
-        return row.hsnCode;
-      case 'size':
-        return row.size;
-      case 'carat':
-        return row.carat.toString();
+        return row.hsnCode ?? '';
+      case 'quantity':
+        return row.quantity;
       case 'rate':
         return row.rate.toString();
       case 'availableQuant':
         return row.availableQuantity.toString();
-      case 'firm':
-        return row.firm == Firm.sahajanand.name
-            ? Firm.sahajanand.name
-            : Firm.harikrishnaEnterprise.name;
       case 'description':
-        return row.description;
+        return row.description ?? '';
       default:
         return '';
     }

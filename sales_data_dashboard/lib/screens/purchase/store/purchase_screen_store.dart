@@ -293,7 +293,7 @@ abstract class _PurchaseScreenStore with Store {
     return filtered.where((sale) {
       final matchesSearch = searchedText.toLowerCase();
       final searchItem = sale.id.toLowerCase().contains(matchesSearch) ||
-          sale.stockDetails.size.toLowerCase().contains(matchesSearch) ||
+          sale.stockDetails.quantity.toLowerCase().contains(matchesSearch) ||
           sale.paymentStatus.toLowerCase().contains(matchesSearch);
       final matchesFirm =
           sale.firm.toLowerCase() == selectedFilterFirm.toLowerCase();

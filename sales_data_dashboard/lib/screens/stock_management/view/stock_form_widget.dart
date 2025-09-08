@@ -27,7 +27,7 @@ class _StockFormWidgetState extends State<StockFormWidget> {
   final TextEditingController itemIdController = TextEditingController();
   final TextEditingController itemNameController = TextEditingController();
   final TextEditingController hsnController = TextEditingController();
-  final TextEditingController sizeController = TextEditingController();
+  final TextEditingController quantityController = TextEditingController();
   final TextEditingController rateController = TextEditingController();
   final TextEditingController caratController = TextEditingController();
   final TextEditingController quantController = TextEditingController();
@@ -49,13 +49,11 @@ class _StockFormWidgetState extends State<StockFormWidget> {
       itemIdController.text = stockItem?.itemId ?? '';
       itemNameController.text = stockItem?.itemName ?? '';
       hsnController.text = stockItem?.hsnCode ?? '';
-      sizeController.text = stockItem?.size ?? '';
+      quantityController.text = stockItem?.quantity ?? '';
       rateController.text = stockItem?.rate.toString() ?? '';
-      caratController.text = stockItem?.carat.toString() ?? '';
       quantController.text = stockItem?.availableQuantity.toString() ?? '';
       amountController.text = stockItem?.amount.toString() ?? '';
       descController.text = stockItem?.description ?? 'NA';
-      selectedFirm = stockItem?.firm ?? 'NA';
     }
   }
 
@@ -64,7 +62,7 @@ class _StockFormWidgetState extends State<StockFormWidget> {
     itemIdController.dispose();
     itemNameController.dispose();
     hsnController.dispose();
-    sizeController.dispose();
+    quantityController.dispose();
     rateController.dispose();
     caratController.dispose();
     quantController.dispose();
@@ -103,7 +101,7 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                             label: 'Item Name',
                             controller: itemNameController,
                             onChanged: (value) {
-                              _setItemId(value, sizeController.text);
+                              _setItemId(value, quantityController.text);
                             },
                             validator: (value) =>
                                 value == null || value.trim().isEmpty
@@ -154,7 +152,7 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                               itemNameController.text,
                               p0,
                             ),
-                            controller: sizeController,
+                            controller: quantityController,
                             validator: (value) =>
                                 value == null || value.trim().isEmpty
                                     ? 'Required'
@@ -235,12 +233,9 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                                   itemId: itemIdController.text,
                                   itemName: itemNameController.text,
                                   hsnCode: hsnController.text,
-                                  size: sizeController.text,
+                                  quantity: quantityController.text,
                                   rate: double.tryParse(rateController.text) ??
                                       0.0,
-                                  carat:
-                                      double.tryParse(caratController.text) ??
-                                          0.0,
                                   availableQuantity:
                                       double.tryParse(quantController.text) ??
                                           0.0,
@@ -248,7 +243,6 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                                       double.tryParse(amountController.text) ??
                                           0.0,
                                   description: descController.text,
-                                  firm: selectedFirm,
                                 );
                                 if (widget.existingStockItem != null) {
                                   widget.stockStore
@@ -257,7 +251,7 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                                     Navigator.pop(context);
                                     widget.stockStore.setErrorMessage('');
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
+                                      const SnackBar(
                                           content: Text(
                                               'Stock data updated successfully')),
                                     );
@@ -278,7 +272,7 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                                     widget.stockStore.setErrorMessage('');
                                     Navigator.pop(context);
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
+                                      const SnackBar(
                                           content: Text(
                                               'Stock data added successfully')),
                                     );

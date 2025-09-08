@@ -1,5 +1,3 @@
-import 'firm_model.dart';
-
 enum PartyTypeEnum {
   agent,
   all,
@@ -34,21 +32,17 @@ class Party {
   final String id;
   final String name;
   final String? address;
-  final String mobileNumber;
+  final String? mobileNumber;
   final String? gstNumber;
   final String partyType; // "company" or "agent"
-  final String firm;
-  final String? brokerage;
 
   Party({
     required this.id,
     required this.name,
     this.address,
-    required this.mobileNumber,
+    this.mobileNumber,
     this.gstNumber,
     required this.partyType,
-    required this.firm,
-    this.brokerage,
   });
 
   // SQLite
@@ -59,8 +53,6 @@ class Party {
         'mobileNumber': mobileNumber,
         'gstNumber': gstNumber,
         'partyType': partyType,
-        'firm': firm,
-        'brokerage': brokerage,
       };
 
   factory Party.fromMap(Map<String, dynamic> map) => Party(
@@ -70,8 +62,6 @@ class Party {
         mobileNumber: map['mobileNumber'],
         gstNumber: map['gstNumber'] ?? '',
         partyType: map['partyType'],
-        firm: map['firm'] ?? Firm.sahajanand.name,
-        brokerage: map['brokerage'],
       );
 
   // Firebase
@@ -82,7 +72,5 @@ class Party {
         'mobileNumber': mobileNumber,
         'gstNumber': gstNumber,
         'partyType': partyType,
-        'firm': firm,
-        'brokerage': brokerage,
       };
 }

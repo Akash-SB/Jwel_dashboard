@@ -5,7 +5,6 @@ import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/screens/purchase/view/purchase_form_widget.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
-import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 
 import '../../../models/app_enum.dart';
@@ -510,8 +509,8 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
         return row.createdAt.toIso8601String();
       case 'itemId':
         return row.stockDetails.itemId;
-      case 'size':
-        return row.stockDetails.size;
+      case 'quantity':
+        return row.stockDetails.quantity;
       case 'rate':
         return row.stockDetails.rate.toString();
       case 'amount':
@@ -520,9 +519,6 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
         return row.buyQuantity.toString();
       case 'firmType':
         return row.firm;
-      // == Firm.sahajanand
-      // ? Firm.sahajanand.name
-      // : Firm.harikrishnaEnterprise.name;
       case 'description':
         return row.description;
       case 'paymentOption':

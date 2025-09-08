@@ -347,10 +347,10 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
 
   Widget buildSummaryCards(List<Sale> salesList, List<Purchase> purchaseList) {
     final totalSales =
-        salesList.fold(0.0, (prev, e) => prev + e.stockDetails.amount);
+        salesList.fold(0.0, (prev, e) => prev + (e.stockDetails.amount ?? 0.0));
 
-    final totalPurchase =
-        purchaseList.fold(0.0, (prev, e) => prev + e.stockDetails.amount);
+    final totalPurchase = purchaseList.fold(
+        0.0, (prev, e) => prev + (e.stockDetails.amount ?? 0.0));
 
     final net = totalSales - totalPurchase;
 
@@ -477,7 +477,8 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
       final key = "${date.month.toString().padLeft(2, '0')}/${date.year}";
       if (result.containsKey(key)) {
         final type = "sell";
-        result[key]![type] = result[key]![type]! + tx.stockDetails.amount;
+        result[key]![type] =
+            result[key]![type]! + (tx.stockDetails.amount ?? 0.0);
       }
     }
 
@@ -486,8 +487,9 @@ class _DashboardSccreenState extends State<DashboardSccreen> {
 
       final key = "${date.month.toString().padLeft(2, '0')}/${date.year}";
       if (result.containsKey(key)) {
-        final type = "purchase";
-        result[key]![type] = result[key]![type]! + tx.stockDetails.amount;
+        const type = "purchase";
+        result[key]![type] =
+            result[key]![type]! + (tx.stockDetails.amount ?? 0.0);
       }
     }
 

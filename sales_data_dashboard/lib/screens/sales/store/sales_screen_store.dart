@@ -118,8 +118,7 @@ abstract class _SalesScreenStore with Store {
       return list;
     } else {
       for (int i = 0; i < partiesList.length; i++) {
-        if (partiesList[i].firm == selectedFilterFirm &&
-            partiesList[i].partyType == customerType) {
+        if (partiesList[i].partyType == customerType) {
           list.add(partiesList[i].name);
         }
       }
@@ -133,8 +132,7 @@ abstract class _SalesScreenStore with Store {
       return list;
     } else {
       for (int i = 0; i < stocks.length; i++) {
-        if (partiesList[i].firm == selectedFilterFirm &&
-            partiesList[i].partyType == customerType) {
+        if (partiesList[i].partyType == customerType) {
           list.add(partiesList[i].name);
         }
       }
@@ -234,13 +232,8 @@ abstract class _SalesScreenStore with Store {
     return filtered.where((sale) {
       final matchesSearch = searchedText.toLowerCase();
       final searchItem = sale.id.toLowerCase().contains(matchesSearch) ||
-          sale.stockDetails.size.toLowerCase().contains(matchesSearch) ||
-          sale.paymentStatus.toLowerCase().contains(matchesSearch);
-      final matchesFirm = sale.firm.name == selectedFilterFirm;
-      final matchesStatus = salectedStatus == 'All'
-          ? true
-          : sale.paymentStatus == salectedStatus.toLowerCase();
-      return searchItem && matchesFirm && matchesStatus;
+          sale.stockDetails.quantity.toLowerCase().contains(matchesSearch);
+      return searchItem;
     }).toList();
   }
 

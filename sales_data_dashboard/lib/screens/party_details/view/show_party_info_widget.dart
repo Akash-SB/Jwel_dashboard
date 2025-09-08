@@ -7,8 +7,6 @@ import 'package:sales_data_dashboard/screens/party_details/store/party_details_s
 import 'package:sales_data_dashboard/screens/party_details/view/generate_ledger.dart';
 import 'package:sales_data_dashboard/widgets/common_dropdown.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
-import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
-
 import '../../../models/stock_party_ledger.dart';
 
 class ShowPartyInfoWidget extends StatelessWidget {
@@ -159,8 +157,7 @@ class ShowPartyInfoWidget extends StatelessWidget {
                           'Party Type',
                           partyDetailsStore.selectedParty?.value.partyType ??
                               'N/A'),
-                      _infoTile('Firm Type',
-                          partyDetailsStore.selectedParty?.value.firm ?? 'N/A'),
+                      SizedBox(height: 16.dp),
                       SizedBox(height: 16.dp),
                       SizedBox(height: 16.dp),
                     ]),
@@ -406,8 +403,6 @@ class ShowPartyInfoWidget extends StatelessWidget {
         return info?.paymentStatus ?? 'N/A';
       case 'firm':
         return info?.firm ?? 'N/A';
-      case 'paymentOption':
-        return info?.paymentOption ?? 'N/A';
       case 'description':
         return info?.description ?? 'N/A';
       default:

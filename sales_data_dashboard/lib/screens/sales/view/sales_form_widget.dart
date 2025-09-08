@@ -86,15 +86,14 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       nameController.text = sale.partyDetails.name;
       salesDateController.text = sale.createdAt.toString().split(' ')[0];
       addressController.text = sale.partyDetails.address ?? '';
-      mobileController.text = sale.partyDetails.mobileNumber;
+      mobileController.text = sale.partyDetails.mobileNumber ?? '';
       gstController.text = sale.partyDetails.gstNumber ?? '';
       partyTypeController.text = sale.partyDetails.partyType;
       itemNameController.text = sale.stockDetails.itemName;
-      hsnCodeController.text = sale.stockDetails.hsnCode;
+      hsnCodeController.text = sale.stockDetails.hsnCode ?? '';
       itemNameController.text = sale.stockDetails.itemId;
-      sizeController.text = sale.stockDetails.size;
+      sizeController.text = sale.stockDetails.quantity;
       rateController.text = sale.stockDetails.rate.toString();
-      caratController.text = sale.stockDetails.carat.toString();
       quantityController.text = sale.stockDetails.amount.toString();
       amountController.text = sale.stockDetails.amount.toString();
       descriptionController.text = sale.description ?? '';
@@ -104,7 +103,6 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       agentAddressController.text = sale.agentDetails?.address ?? '';
       agentMobileController.text = sale.agentDetails?.mobileNumber ?? '';
       agentGstController.text = sale.agentDetails?.gstNumber ?? '';
-      agentBrokerageController.text = sale.agentDetails?.brokerage ?? '';
       partialPaymentDetails = sale.partialPaymentDetails ?? [];
       if (sale.agentDetails != null) {
         widget.salesScreenStore.setAgentDetails(sale.agentDetails!);
@@ -112,7 +110,6 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       } else {
         widget.salesScreenStore.setIsAgentSelected(false);
       }
-      widget.salesScreenStore.setSelectedFilterFirm(sale.firm.name);
     }
   }
 
@@ -215,12 +212,10 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                       gstNumber: null,
                                       partyType:
                                           widget.salesScreenStore.customerType,
-                                      firm: widget
-                                          .salesScreenStore.selectedFilterFirm,
                                     ));
                         nameController.text = party.name;
                         addressController.text = party.address ?? '';
-                        mobileController.text = party.mobileNumber;
+                        mobileController.text = party.mobileNumber ?? '';
                         gstController.text = party.gstNumber ?? '';
                         partyTypeController.text = party.partyType;
                         widget.salesScreenStore.setSelectedParty(party);
@@ -327,9 +322,6 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                             label: 'Search by Agent ID',
                             options: widget.partyList!
                                 .where((party) =>
-                                    party.firm ==
-                                        widget.salesScreenStore
-                                            .selectedFilterFirm &&
                                     party.partyType.toLowerCase() == 'agent')
                                 .map((e) => e.name)
                                 .toList(),
@@ -345,12 +337,11 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                             gstNumber: null,
                                             partyType: widget
                                                 .salesScreenStore.customerType,
-                                            firm: widget.salesScreenStore
-                                                .selectedFilterFirm,
                                           ));
                               agentNameController.text = party.name;
                               agentAddressController.text = party.address ?? '';
-                              agentMobileController.text = party.mobileNumber;
+                              agentMobileController.text =
+                                  party.mobileNumber ?? '';
                               agentGstController.text = party.gstNumber ?? '';
                             },
                           );
@@ -439,9 +430,8 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                         final item = widget.stockItemList
                             ?.firstWhere((element) => element.itemId == val);
                         itemNameController.text = item?.itemName ?? '';
-                        sizeController.text = item?.size ?? '';
+                        sizeController.text = item?.quantity ?? '';
                         rateController.text = item?.rate.toString() ?? '';
-                        caratController.text = item?.carat.toString() ?? '';
                         descriptionController.text = item?.description ?? '';
                         hsnCodeController.text = item?.hsnCode ?? '';
                         quantityController.text =
@@ -659,19 +649,15 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                   : gstController.text,
                               partyType: widget.salesScreenStore.customerType,
                               id: '${DateTime.now().millisecondsSinceEpoch}',
-                              firm: widget.salesScreenStore.selectedFilterFirm,
                             ),
                             stockDetails: StockItem(
                               itemId: itemNameController.text,
                               itemName: itemNameController.text,
                               hsnCode: hsnCodeController.text,
-                              size: sizeController.text,
+                              quantity: sizeController.text,
                               rate: rateController.text.isEmpty
                                   ? 0.0
                                   : double.parse(rateController.text),
-                              carat: caratController.text.isEmpty
-                                  ? 0.0
-                                  : double.parse(caratController.text),
                               amount: amountController.text.isEmpty
                                   ? 0.0
                                   : double.parse(amountController.text),
@@ -679,7 +665,6 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                   ? 0.0
                                   : double.parse(quantityController.text),
                               description: descriptionController.text,
-                              firm: widget.salesScreenStore.selectedFilterFirm,
                             ),
                             agentDetails: widget
                                     .salesScreenStore.isAgentSelected
@@ -690,28 +675,17 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                     gstNumber: agentGstController.text.isEmpty
                                         ? null
                                         : agentGstController.text,
-                                    brokerage:
-                                        agentBrokerageController.text.isEmpty
-                                            ? null
-                                            : agentBrokerageController.text,
                                     partyType:
                                         widget.salesScreenStore.customerType,
                                     id: '${DateTime.now().millisecondsSinceEpoch}',
-                                    firm: widget
-                                        .salesScreenStore.selectedFilterFirm,
                                   )
                                 : null,
                             paymentOption: 'cash',
-                            paymentStatus: PaymentStatus.unpaid.name,
                             dueDays: dueDaysController.text.isEmpty
                                 ? 60
                                 : int.parse(dueDaysController.text),
                             description: descriptionController.text,
                             createdAt: DateTime.now(),
-                            firm: widget.salesScreenStore.selectedFilterFirm ==
-                                    Firm.sahajanand.name
-                                ? Firm.sahajanand
-                                : Firm.harikrishnaEnterprise,
                             partialPaymentDetails: partialPaymentDetails,
                           );
 

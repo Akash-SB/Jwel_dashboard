@@ -9,7 +9,6 @@ import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/sales/store/sales_screen_store.dart';
 import 'package:sales_data_dashboard/widgets/common_dropdown.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
-import 'package:sales_data_dashboard/widgets/custom_image_button.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 
 import '../../../models/firm_model.dart';
@@ -528,24 +527,18 @@ class _SalesScreenState extends State<SalesScreen> {
         return row.createdAt.toIso8601String();
       case 'itemId':
         return row.stockDetails.itemId;
-      case 'size':
-        return row.stockDetails.size;
-      case 'carat':
-        return row.stockDetails.carat.toString();
+      case 'quantity':
+        return row.stockDetails.quantity;
       case 'rate':
         return row.stockDetails.rate.toString();
       case 'amount':
         return row.stockDetails.amount.toString();
-      case 'firmType':
-        return row.firm.name;
       case 'description':
         return row.description ?? '';
       case 'dueDays':
         return row.dueDays.toString();
       case 'paymentOption':
         return row.paymentOption.toString();
-      case 'paymentStatus':
-        return row.paymentStatus.toString();
       default:
         return '';
     }

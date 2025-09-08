@@ -40,10 +40,9 @@ class _PartyDetailsFormWidgetState extends State<PartyDetailsFormWidget> {
       idController.text = party.id;
       nameController.text = party.name;
       addressController.text = party.address ?? '';
-      mobileController.text = party.mobileNumber;
+      mobileController.text = party.mobileNumber ?? '';
       gstController.text = party.gstNumber ?? '';
       widget.partyStore.selectedFormPartyType = party.partyType;
-      widget.partyStore.selectedFormFirmType = party.firm;
     } else {
       idController.text = widget.partyStore.setPartyId(
         itemNameController.text,
@@ -211,8 +210,6 @@ class _PartyDetailsFormWidgetState extends State<PartyDetailsFormWidget> {
                                     mobileNumber: mobileController.text,
                                     partyType:
                                         widget.partyStore.selectedFormPartyType,
-                                    firm:
-                                        widget.partyStore.selectedFormFirmType,
                                     gstNumber: gstController.text.isEmpty
                                         ? null
                                         : gstController.text);

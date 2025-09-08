@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:sales_data_dashboard/models/firm_model.dart';
 import 'package:sales_data_dashboard/models/stock_item.dart';
 
 import 'party_model.dart';
@@ -39,11 +37,13 @@ class Sale {
   final Party partyDetails;
   final StockItem stockDetails;
   final String? paymentOption;
-  final String paymentStatus;
-  final int dueDays;
+  final double? interestPercent;
+  final double? interestAmount;
+  final double? brokeragePercent;
+  final double? brokerageAmount;
+  final int? dueDays;
   final String? description;
   final DateTime createdAt;
-  final Firm firm;
   final Party? agentDetails;
   final List<PartialPaymentDetails>? partialPaymentDetails;
 
@@ -52,13 +52,15 @@ class Sale {
     required this.partyDetails,
     required this.stockDetails,
     required this.paymentOption,
-    required this.paymentStatus,
-    this.dueDays = 60,
+    this.dueDays,
     this.description,
     required this.createdAt,
-    required this.firm,
     this.agentDetails,
     this.partialPaymentDetails,
+    this.interestPercent,
+    this.interestAmount,
+    this.brokeragePercent,
+    this.brokerageAmount,
   });
 
   Map<String, dynamic> toMap() => {
@@ -66,11 +68,13 @@ class Sale {
         'party': jsonEncode(partyDetails.toMap()),
         'stock': jsonEncode(stockDetails.toMap()),
         'paymentOption': paymentOption,
-        'paymentStatus': paymentStatus,
         'dueDays': dueDays,
         'description': description,
+        'interestPercent': interestPercent,
+        'interestAmount': interestAmount,
+        'brokeragePercent': brokeragePercent,
+        'brokerageAmount': brokerageAmount,
         'createdAt': createdAt.toIso8601String(),
-        'firm': Firm.firmTypeToString(firm),
         'agentDetails':
             agentDetails != null ? jsonEncode(agentDetails?.toMap()) : null,
         'partialPaymentDetails': partialPaymentDetails != null
@@ -83,11 +87,18 @@ class Sale {
         partyDetails: Party.fromMap(jsonDecode(map['party'])),
         stockDetails: StockItem.fromMap(jsonDecode(map['stock'])),
         paymentOption: map['paymentOption'],
-        paymentStatus: map['paymentStatus'],
         dueDays: map['dueDays'] as int,
+        interestPercent: map['interestPercent'] != null
+            ? (map['interestPercent'] as num).toDouble()
+            : null,
+        interestAmount: map['interestAmount'] != null
+            ? (map['interestAmount'] as num).toDouble()
+            : null,
+        brokeragePercent: map['brokeragePercent'] != null
+            ? (map['brokeragePercent'] as num).toDouble()
+            : null,
         description: map['description'],
         createdAt: DateTime.parse(map['createdAt']),
-        firm: Firm.fromString(map['firm']),
         agentDetails:
             map['agentDetails'] != null && !map['agentDetails'].contains('null')
                 ? Party.fromMap(jsonDecode(map['agentDetails']))
@@ -104,15 +115,16 @@ class Sale {
         'partyDetails': partyDetails,
         'stockDetails': stockDetails,
         'paymentOption': paymentOption,
-        'paymentStatus': paymentStatus,
         'dueDays': dueDays,
+        'interestPercent': interestPercent,
+        'interestAmount': interestAmount,
+        'brokeragePercent': brokeragePercent,
+        'brokerageAmount': brokerageAmount,
         'description': description,
         'createdAt': createdAt.toIso8601String(),
-        'firm': firm.toString(),
         'agentDetails': agentDetails?.toMap(),
-        'partialPaymentDetails': partialPaymentDetails != null
-            ? partialPaymentDetails?.map((e) => e.toMap()).toList()
-            : null,
+        'partialPaymentDetails':
+            partialPaymentDetails?.map((e) => e.toMap()).toList(),
       };
 
   /// For Firebase
@@ -128,12 +140,13 @@ class Sale {
       'Qty': stockDetails.availableQuantity,
       'Amount': stockDetails.amount,
       'Payment Option': paymentOption,
-      'Status': paymentStatus,
       'Due Days': dueDays,
+      'interestPercent': interestPercent,
+      'interestAmount': interestAmount,
+      'brokeragePercent': brokeragePercent,
+      'brokerageAmount': brokerageAmount,
       'Created': createdAt.toIso8601String(),
-      'Firm': firm.name,
       'Agent': agentDetails?.name ?? 'N/A',
-      'Agent Brokerage': agentDetails?.brokerage ?? 'N/A',
       'Partial Payments': partialPaymentDetails != null
           ? partialPaymentDetails?.map((e) =>
               {'Amount': e.amountPaid, 'Date': e.paymentDate.toIso8601String()})

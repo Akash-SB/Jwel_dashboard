@@ -9,7 +9,6 @@ class StockPartyLedger {
   final String quantity;
   final String amount;
   final String paymentStatus;
-  final String? paymentOption;
   final int? dueDays;
   final String? description;
   final String firm;
@@ -29,7 +28,6 @@ class StockPartyLedger {
     required this.paymentStatus,
     this.agentName,
     this.brokerage,
-    this.paymentOption,
     this.dueDays,
     this.description,
     required this.firm,
