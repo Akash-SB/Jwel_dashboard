@@ -9,6 +9,31 @@ enum PaymentStatus { paid, unpaid }
 
 enum PaymentOption { cash, bank, cheque, upi }
 
+class PartialPaymentDetails {
+  final double amountPaid;
+  final DateTime paymentDate;
+  final String? paymentMethod;
+
+  PartialPaymentDetails({
+    required this.amountPaid,
+    required this.paymentDate,
+    this.paymentMethod,
+  });
+
+  Map<String, dynamic> toMap() => {
+        'amountPaid': amountPaid,
+        'paymentDate': paymentDate.toIso8601String(),
+        'paymentMethod': paymentMethod,
+      };
+
+  factory PartialPaymentDetails.fromMap(Map<String, dynamic> map) =>
+      PartialPaymentDetails(
+        amountPaid: map['amountPaid'] as double,
+        paymentDate: DateTime.parse(map['paymentDate']),
+        paymentMethod: map['paymentMethod'] as String?,
+      );
+}
+
 class Sale {
   final String id;
   final Party partyDetails;
@@ -20,6 +45,7 @@ class Sale {
   final DateTime createdAt;
   final Firm firm;
   final Party? agentDetails;
+  final List<PartialPaymentDetails>? partialPaymentDetails;
 
   Sale({
     required this.id,
@@ -32,6 +58,7 @@ class Sale {
     required this.createdAt,
     required this.firm,
     this.agentDetails,
+    this.partialPaymentDetails,
   });
 
   Map<String, dynamic> toMap() => {
@@ -46,6 +73,9 @@ class Sale {
         'firm': Firm.firmTypeToString(firm),
         'agentDetails':
             agentDetails != null ? jsonEncode(agentDetails?.toMap()) : null,
+        'partialPaymentDetails': partialPaymentDetails != null
+            ? jsonEncode(partialPaymentDetails?.map((e) => e.toMap()).toList())
+            : null,
       };
 
   factory Sale.fromMap(Map<String, dynamic> map) => Sale(
@@ -62,6 +92,11 @@ class Sale {
             map['agentDetails'] != null && !map['agentDetails'].contains('null')
                 ? Party.fromMap(jsonDecode(map['agentDetails']))
                 : null,
+        partialPaymentDetails: map['partialPaymentDetails'] != null
+            ? (jsonDecode(map['partialPaymentDetails']) as List)
+                .map((e) => PartialPaymentDetails.fromMap(e))
+                .toList()
+            : null,
       );
 
   Map<String, dynamic> toFirestore() => {
@@ -75,6 +110,9 @@ class Sale {
         'createdAt': createdAt.toIso8601String(),
         'firm': firm.toString(),
         'agentDetails': agentDetails?.toMap(),
+        'partialPaymentDetails': partialPaymentDetails != null
+            ? partialPaymentDetails?.map((e) => e.toMap()).toList()
+            : null,
       };
 
   /// For Firebase
@@ -96,6 +134,10 @@ class Sale {
       'Firm': firm.name,
       'Agent': agentDetails?.name ?? 'N/A',
       'Agent Brokerage': agentDetails?.brokerage ?? 'N/A',
+      'Partial Payments': partialPaymentDetails != null
+          ? partialPaymentDetails?.map((e) =>
+              {'Amount': e.amountPaid, 'Date': e.paymentDate.toIso8601String()})
+          : [],
     };
   }
 }
