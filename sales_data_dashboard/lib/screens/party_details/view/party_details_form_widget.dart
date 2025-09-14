@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
-import 'package:sales_data_dashboard/models/firm_model.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
 import 'package:sales_data_dashboard/screens/party_details/store/party_details_screen_store.dart';
 
@@ -101,41 +100,6 @@ class _PartyDetailsFormWidgetState extends State<PartyDetailsFormWidget> {
                                     : null,
                           ),
                         ),
-                      ],
-                    );
-                  }),
-                  SizedBox(height: 16.dp),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CommonTextField(
-                          label: 'Address',
-                          controller: addressController,
-                        ),
-                      ),
-                      SizedBox(width: 16.dp),
-                      Expanded(
-                        child: CommonTextField(
-                          label: 'Mobile Number',
-                          controller: mobileController,
-                          validator: (value) =>
-                              value == null || value.trim().isEmpty
-                                  ? 'Required'
-                                  : null,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16.dp),
-                  Observer(builder: (context) {
-                    return Row(
-                      children: [
-                        Expanded(
-                          child: CommonTextField(
-                            label: 'GST Number',
-                            controller: gstController,
-                          ),
-                        ),
                         SizedBox(width: 16.dp),
                         Expanded(
                           child: CommonDropdown(
@@ -159,27 +123,39 @@ class _PartyDetailsFormWidgetState extends State<PartyDetailsFormWidget> {
                                     : null,
                           ),
                         ),
-                        SizedBox(width: 16.dp),
-                        Expanded(
-                          child: CommonDropdown(
-                            label: 'Firm Type',
-                            value: widget.partyStore.selectedFormFirmType,
-                            options: [
-                              Firm.sahajanand.name,
-                              Firm.harikrishnaEnterprise.name,
-                            ],
-                            onChanged: (final value) {
-                              widget.partyStore.setSelectedFormFirmType(value!);
-                            },
-                            validator: (value) =>
-                                value == null || value.trim().isEmpty
-                                    ? 'Required'
-                                    : null,
-                          ),
-                        ),
                       ],
                     );
                   }),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CommonTextField(
+                          label: 'Mobile Number',
+                          controller: mobileController,
+                        ),
+                      ),
+                      SizedBox(width: 16.dp),
+                      Expanded(
+                        child: CommonTextField(
+                          label: 'GST Number',
+                          controller: gstController,
+                        ),
+                      ),
+                      SizedBox(height: 16.dp),
+                      const Expanded(child: SizedBox())
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CommonTextField(
+                          label: 'Address',
+                          maxLines: 3,
+                          controller: addressController,
+                        ),
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 24.dp),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,

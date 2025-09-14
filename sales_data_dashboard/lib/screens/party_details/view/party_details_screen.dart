@@ -7,7 +7,6 @@ import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/party_details/view/party_details_form_widget.dart';
 import 'package:sales_data_dashboard/screens/party_details/view/show_party_info_widget.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
-import '../../../models/firm_model.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/custom_searchbar.dart';
 import '../../../widgets/normal_button.dart';
@@ -25,6 +24,7 @@ class PartyDetailsScreen extends StatefulWidget {
 class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
   late PartyDetailsStore partyDetailsStore;
   late UserDataStore userDataStore;
+  final ScrollController horizontalScrollController = ScrollController();
 
   @override
   void initState() {
@@ -56,7 +56,6 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
       TableColumn(label: 'GST Number', key: 'gstNumber'),
       TableColumn(label: 'Party Type', key: 'partyType', isSortable: true),
       TableColumn(label: 'Address', key: 'address', isSortable: true),
-      TableColumn(label: 'Firm', key: 'firm', isSortable: true),
       TableColumn(label: 'Actions', key: 'actions', isAction: true),
     ];
     return Observer(builder: (context) {
@@ -108,24 +107,6 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
                         children: [
                           IntrinsicWidth(
                             child: CommonDropdown(
-                              label: 'Firm Type',
-                              value: partyDetailsStore.selectedFilterFirm,
-                              onChanged: (p0) {
-                                partyDetailsStore.setSelectedFilterFirm(p0!);
-                                partyDetailsStore.isFiltersApplied();
-                              },
-                              options: [
-                                Firm.all.name,
-                                Firm.sahajanand.name,
-                                Firm.harikrishnaEnterprise.name
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: 12.dp,
-                          ),
-                          IntrinsicWidth(
-                            child: CommonDropdown(
                               label: 'Party Type',
                               value: partyDetailsStore.selectedFilterPartyType,
                               onChanged: (p0) {
@@ -156,17 +137,6 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
                             ),
                           ),
                           const Spacer(),
-                          // CustomImageButton(
-                          //   imagePath: 'assets/icons/excel_icon.png',
-                          //   text: 'Excel',
-                          //   borderColor: const Color(0xffE5E7EB),
-                          //   buttonColor: Colors.white,
-                          //   onClicked: () {},
-                          //   // onClicked: widget.onExportPDF,
-                          // ),
-                          // SizedBox(
-                          //   width: 12.dp,
-                          // ),
                           Container(
                             height: 30.dp,
                             decoration: BoxDecoration(
@@ -199,121 +169,181 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
                     );
                   }),
                   SizedBox(height: 12.dp),
-                  Observer(builder: (context) {
-                    return Expanded(
-                      child: SingleChildScrollView(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8.dp),
-                              border: Border.all(
-                                color: const Color(0xFFE5E7EB),
-                                width: 1.5.dp,
+                  Expanded(
+                    child: Observer(builder: (context) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              final controller = horizontalScrollController;
+                              controller.animateTo(
+                                (controller.offset - 200).clamp(
+                                    0.0, controller.position.maxScrollExtent),
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.ease,
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8.dp),
+                              alignment: Alignment.centerLeft,
+                              decoration: const BoxDecoration(
+                                color: Colors.black12,
+                                shape: BoxShape.circle,
                               ),
-                            ),
-                            child: DataTable(
-                              dividerThickness: 0.1.dp,
-                              headingRowHeight: 48,
-                              dataRowMinHeight: 48,
-                              headingRowColor: WidgetStateProperty.all(
-                                  const Color(0xFFF9FAFB)),
-                              dataRowColor: WidgetStateProperty.resolveWith(
-                                  (states) => Colors.white),
-                              showBottomBorder: false,
-                              columns: columns.map((col) {
-                                return DataColumn(
-                                  label: InkWell(
-                                    onTap: col.isSortable
-                                        ? () => partyDetailsStore
-                                            .setSortKey(col.key)
-                                        : null,
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          col.label,
-                                          style: TextStyle(
-                                            fontSize: 16.dp,
-                                            color: const Color(
-                                              0xFF4B5563,
-                                            ),
-                                          ),
-                                        ),
-                                        if (col.isSortable &&
-                                            partyDetailsStore.sortKey ==
-                                                col.key)
-                                          Icon(
-                                            partyDetailsStore.sortAsc
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
-                                            size: 14.dp,
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                              rows: partyDetailsStore.paginatedData.map((row) {
-                                return DataRow(
-                                  cells: columns.map((col) {
-                                    if (col.isAction) {
-                                      return DataCell(Row(
-                                        children: [
-                                          IconButton(
-                                            icon: Image.asset(
-                                              'assets/icons/edit_icon.png',
-                                            ),
-                                            onPressed: () {
-                                              _openPartyForm(
-                                                context,
-                                                row,
-                                              );
-                                            },
-                                          ),
-                                          IconButton(
-                                            icon: Image.asset(
-                                              'assets/icons/delete_icon.png',
-                                            ),
-                                            onPressed: () {
-                                              _confirmDelete(context, row);
-                                            },
-                                          ),
-                                        ],
-                                      ));
-                                    }
-                                    return DataCell(
-                                      Observer(builder: (context) {
-                                        return InkWell(
-                                          onTap: () {
-                                            partyDetailsStore
-                                                .setSelectedParty(row);
-                                            partyDetailsStore
-                                                .togglePartyInfo(true);
-                                            partyDetailsStore
-                                                .filterLedgerList();
-                                            partyDetailsStore
-                                                .calculateInfoTotalPages();
-                                          },
-                                          child: Text(
-                                            _getCellValue(row, col.key),
-                                            style: TextStyle(
-                                              fontSize: 14.dp,
-                                              color: const Color(0xFF111827),
-                                            ),
-                                          ),
-                                        );
-                                      }),
-                                    );
-                                  }).toList(),
-                                );
-                              }).toList(),
+                              child: const Icon(Icons.chevron_left),
                             ),
                           ),
-                        ),
-                      ),
-                    );
-                  }),
+                          SizedBox(
+                            width: 8.dp,
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: SingleChildScrollView(
+                                controller: horizontalScrollController,
+                                scrollDirection: Axis.horizontal,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8.dp),
+                                    border: Border.all(
+                                      color: const Color(0xFFE5E7EB),
+                                      width: 1.5.dp,
+                                    ),
+                                  ),
+                                  child: DataTable(
+                                    dividerThickness: 0.1.dp,
+                                    headingRowHeight: 48,
+                                    dataRowMinHeight: 48,
+                                    headingRowColor: WidgetStateProperty.all(
+                                        const Color(0xFFF9FAFB)),
+                                    dataRowColor:
+                                        WidgetStateProperty.resolveWith(
+                                            (states) => Colors.white),
+                                    showBottomBorder: false,
+                                    columns: columns.map((col) {
+                                      return DataColumn(
+                                        label: InkWell(
+                                          onTap: col.isSortable
+                                              ? () => partyDetailsStore
+                                                  .setSortKey(col.key)
+                                              : null,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                col.label,
+                                                style: TextStyle(
+                                                  fontSize: 16.dp,
+                                                  color: const Color(
+                                                    0xFF4B5563,
+                                                  ),
+                                                ),
+                                              ),
+                                              if (col.isSortable &&
+                                                  partyDetailsStore.sortKey ==
+                                                      col.key)
+                                                Icon(
+                                                  partyDetailsStore.sortAsc
+                                                      ? Icons.arrow_upward
+                                                      : Icons.arrow_downward,
+                                                  size: 14.dp,
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    rows: partyDetailsStore.paginatedData
+                                        .map((row) {
+                                      return DataRow(
+                                        cells: columns.map((col) {
+                                          if (col.isAction) {
+                                            return DataCell(Row(
+                                              children: [
+                                                IconButton(
+                                                  icon: Image.asset(
+                                                    'assets/icons/edit_icon.png',
+                                                  ),
+                                                  onPressed: () {
+                                                    _openPartyForm(
+                                                      context,
+                                                      row,
+                                                    );
+                                                  },
+                                                ),
+                                                IconButton(
+                                                  icon: Image.asset(
+                                                    'assets/icons/delete_icon.png',
+                                                  ),
+                                                  onPressed: () {
+                                                    _confirmDelete(
+                                                        context, row);
+                                                  },
+                                                ),
+                                              ],
+                                            ));
+                                          }
+                                          return DataCell(
+                                            Observer(builder: (context) {
+                                              return InkWell(
+                                                onTap: () {
+                                                  partyDetailsStore
+                                                      .setSelectedParty(row);
+                                                  partyDetailsStore
+                                                      .togglePartyInfo(true);
+                                                  partyDetailsStore
+                                                      .filterLedgerList();
+                                                  partyDetailsStore
+                                                      .calculateInfoTotalPages();
+                                                },
+                                                child: Text(
+                                                  _getCellValue(row, col.key),
+                                                  style: TextStyle(
+                                                    fontSize: 14.dp,
+                                                    color:
+                                                        const Color(0xFF111827),
+                                                  ),
+                                                ),
+                                              );
+                                            }),
+                                          );
+                                        }).toList(),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Right Scroll Button
+                          SizedBox(
+                            width: 8.dp,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              final controller = horizontalScrollController;
+                              controller.animateTo(
+                                (controller.offset + 200).clamp(
+                                    0.0, controller.position.maxScrollExtent),
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.ease,
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8.dp),
+                              alignment: Alignment.centerRight,
+                              decoration: const BoxDecoration(
+                                color: Colors.black12,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.chevron_right),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                  ),
+                  SizedBox(height: 12.dp),
                   Observer(builder: (context) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -353,15 +383,28 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.dp),
         ),
-        title: Text(
-          existingParty != null ? 'Edit Customer' : 'Create Customer',
-          style: TextStyle(
-            fontSize: 24.dp,
-            fontWeight: FontWeight.w600,
-            color: const Color(
-              0xFF111827,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              existingParty != null ? 'Edit Customer' : 'Create Customer',
+              style: TextStyle(
+                fontSize: 24.dp,
+                fontWeight: FontWeight.w600,
+                color: const Color(
+                  0xFF111827,
+                ),
+              ),
             ),
-          ),
+            InkWell(
+              onTap: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: Icon(
+                Icons.close,
+                size: 24.dp,
+                color: const Color(0xFF6B7280),
+              ),
+            ),
+          ],
         ),
         content: SingleChildScrollView(
           child: PartyDetailsFormWidget(

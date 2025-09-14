@@ -66,7 +66,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
       gstController.text = purchase.partyDetails.gstNumber ?? '';
       itemIdController.text = purchase.stockDetails.itemId;
       itemNameController.text = purchase.stockDetails.itemName;
-      stockQuantController.text = purchase.stockDetails.quantity;
+      stockQuantController.text = purchase.stockDetails.quantity ?? '0';
       rateController.text = purchase.stockDetails.rate.toString();
       availableQuantController.text =
           purchase.stockDetails.availableQuantity.toString();
@@ -581,6 +581,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                                   quantityController.text) ??
                                               0.0),
                                   hsnCode: hsnController.text,
+                                  size: '',
                                 );
                                 widget.purchaseStore
                                     .updateStockItem(updatedItem);
@@ -599,6 +600,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                       double.tryParse(amountController.text) ??
                                           0.0,
                                   description: descriptionController.text,
+                                  size: '',
                                 );
                                 widget.purchaseStore.addStockItem(
                                   selectedItem,
@@ -689,6 +691,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                     double.tryParse(amountController.text) ??
                                         0.0,
                                 description: descriptionController.text,
+                                size: '',
                               );
                               final purchase = Purchase(
                                 createdAt: DateTime.parse(
@@ -764,7 +767,7 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                 widget.purchaseStore.setSelectedStockItem(stockItem);
                 itemIdController.text = stockItem.itemId;
                 itemNameController.text = stockItem.itemName;
-                stockQuantController.text = stockItem.quantity;
+                stockQuantController.text = stockItem.quantity ?? '';
                 rateController.text = stockItem.rate.toString();
                 availableQuantController.text =
                     stockItem.availableQuantity.toString();

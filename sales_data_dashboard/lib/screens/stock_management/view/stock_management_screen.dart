@@ -26,6 +26,7 @@ class StockManagementScreen extends StatefulWidget {
 class _StockManagementScreenScreenState extends State<StockManagementScreen> {
   late StockStore stockStore;
   late UserDataStore userDataStore;
+  final ScrollController horizontalScrollController = ScrollController();
 
   @override
   void initState() {
@@ -59,13 +60,14 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
         label: 'Item Name',
         key: 'itemName',
       ),
+      TableColumn(
+        label: 'Item Size',
+        key: 'itemSize',
+      ),
       TableColumn(label: 'HSN Code', key: 'hsnCode'),
-      TableColumn(label: 'Size', key: 'size'),
-      TableColumn(label: 'Carat', key: 'carat', isSortable: true),
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
       TableColumn(
           label: 'Available Quantity', key: 'availableQuant', isSortable: true),
-      TableColumn(label: 'Firm', key: 'firm'),
       TableColumn(label: 'Description', key: 'description'),
       TableColumn(label: 'Actions', key: 'actions', isAction: true),
     ];
@@ -193,151 +195,223 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
                           );
                         }),
                         SizedBox(height: 12.dp),
-                        Observer(builder: (context) {
-                          return Expanded(
-                            child: stockStore.stockItemList.isEmpty
-                                ? Center(
-                                    child: Column(
-                                      children: [
-                                        Image.asset(
-                                          'assets/no_data_found.png',
-                                          width: 200.dp,
-                                          height: 200.dp,
-                                        ),
-                                        SizedBox(
-                                          height: 12.dp,
-                                        ),
-                                        Text(
-                                          'No Data Found',
-                                          style: TextStyle(
-                                              fontSize: 16.dp,
-                                              color: const Color(0xFF111827)),
-                                        )
-                                      ],
+                        Expanded(
+                          child: Observer(builder: (context) {
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    final controller =
+                                        horizontalScrollController;
+                                    controller.animateTo(
+                                      (controller.offset - 200).clamp(0.0,
+                                          controller.position.maxScrollExtent),
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.ease,
+                                    );
+                                  },
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.dp),
+                                    alignment: Alignment.centerLeft,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.black12,
+                                      shape: BoxShape.circle,
                                     ),
-                                  )
-                                : SingleChildScrollView(
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(8.dp),
-                                          border: Border.all(
-                                            color: const Color(0xFFE5E7EB),
-                                            width: 1.5.dp,
+                                    child: const Icon(Icons.chevron_left),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 8.dp,
+                                ),
+                                Expanded(
+                                  child: stockStore.stockItemList.isEmpty
+                                      ? Center(
+                                          child: Column(
+                                            children: [
+                                              Image.asset(
+                                                'assets/no_data_found.png',
+                                                width: 200.dp,
+                                                height: 200.dp,
+                                              ),
+                                              SizedBox(
+                                                height: 12.dp,
+                                              ),
+                                              Text(
+                                                'No Data Found',
+                                                style: TextStyle(
+                                                    fontSize: 16.dp,
+                                                    color: const Color(
+                                                        0xFF111827)),
+                                              )
+                                            ],
                                           ),
-                                        ),
-                                        child: DataTable(
-                                          dividerThickness: 0.1.dp,
-                                          headingRowHeight: 48,
-                                          dataRowMinHeight: 48,
-                                          headingRowColor:
-                                              WidgetStateProperty.all(
-                                                  const Color(0xFFF9FAFB)),
-                                          dataRowColor:
-                                              WidgetStateProperty.resolveWith(
-                                                  (states) => Colors.white),
-                                          showBottomBorder: false,
-                                          columns: columns.map((col) {
-                                            return DataColumn(
-                                              label: InkWell(
-                                                onTap: col.isSortable
-                                                    ? () => stockStore
-                                                        .setSortKey(col.key)
-                                                    : null,
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      col.label,
-                                                      style: TextStyle(
-                                                        fontSize: 16.dp,
-                                                        color: const Color(
-                                                          0xFF4B5563,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    if (col.isSortable &&
-                                                        stockStore.sortKey ==
-                                                            col.key)
-                                                      Icon(
-                                                        stockStore.sortAsc
-                                                            ? Icons.arrow_upward
-                                                            : Icons
-                                                                .arrow_downward,
-                                                        size: 14.dp,
-                                                      ),
-                                                  ],
+                                        )
+                                      : SingleChildScrollView(
+                                          child: SingleChildScrollView(
+                                            controller:
+                                                horizontalScrollController,
+                                            scrollDirection: Axis.horizontal,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(8.dp),
+                                                border: Border.all(
+                                                  color:
+                                                      const Color(0xFFE5E7EB),
+                                                  width: 1.5.dp,
                                                 ),
                                               ),
-                                            );
-                                          }).toList(),
-                                          rows: stockStore.paginatedData
-                                              .map((row) {
-                                            return DataRow(
-                                              cells: columns.map((col) {
-                                                if (col.isAction) {
-                                                  return DataCell(Row(
-                                                    children: [
-                                                      IconButton(
-                                                        icon: Image.asset(
-                                                          'assets/icons/edit_icon.png',
-                                                        ),
-                                                        onPressed: () {
-                                                          _openStockForm(
-                                                              context, row);
-                                                        },
-                                                        // _openForm(context, row),
+                                              child: DataTable(
+                                                dividerThickness: 0.1.dp,
+                                                headingRowHeight: 48,
+                                                dataRowMinHeight: 48,
+                                                headingRowColor:
+                                                    WidgetStateProperty.all(
+                                                        const Color(
+                                                            0xFFF9FAFB)),
+                                                dataRowColor:
+                                                    WidgetStateProperty
+                                                        .resolveWith((states) =>
+                                                            Colors.white),
+                                                showBottomBorder: false,
+                                                columns: columns.map((col) {
+                                                  return DataColumn(
+                                                    label: InkWell(
+                                                      onTap: col.isSortable
+                                                          ? () => stockStore
+                                                              .setSortKey(
+                                                                  col.key)
+                                                          : null,
+                                                      child: Row(
+                                                        children: [
+                                                          Text(
+                                                            col.label,
+                                                            style: TextStyle(
+                                                              fontSize: 16.dp,
+                                                              color:
+                                                                  const Color(
+                                                                0xFF4B5563,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          if (col.isSortable &&
+                                                              stockStore
+                                                                      .sortKey ==
+                                                                  col.key)
+                                                            Icon(
+                                                              stockStore.sortAsc
+                                                                  ? Icons
+                                                                      .arrow_upward
+                                                                  : Icons
+                                                                      .arrow_downward,
+                                                              size: 14.dp,
+                                                            ),
+                                                        ],
                                                       ),
-                                                      IconButton(
-                                                        icon: Image.asset(
-                                                          'assets/icons/delete_icon.png',
-                                                        ),
-                                                        onPressed: () {
-                                                          _confirmDelete(
-                                                              context, row);
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ));
-                                                }
-                                                return DataCell(
-                                                  Observer(builder: (context) {
-                                                    return InkWell(
-                                                      onTap: () {
-                                                        stockStore
-                                                            .setSelectedProduct(
-                                                                row);
-                                                        stockStore
-                                                            .toggleItemInfo(
-                                                                true);
-                                                        stockStore
-                                                            .filterLedgerList();
-                                                        stockStore
-                                                            .calculateInfoTotalPages();
-                                                      },
-                                                      child: Text(
-                                                        _getCellValue(
-                                                            row, col.key),
-                                                        style: TextStyle(
-                                                          fontSize: 14.dp,
-                                                          color: const Color(
-                                                              0xFF111827),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }),
-                                                );
-                                              }).toList(),
-                                            );
-                                          }).toList(),
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                                rows: stockStore.paginatedData
+                                                    .map((row) {
+                                                  return DataRow(
+                                                    cells: columns.map((col) {
+                                                      if (col.isAction) {
+                                                        return DataCell(Row(
+                                                          children: [
+                                                            IconButton(
+                                                              icon: Image.asset(
+                                                                'assets/icons/edit_icon.png',
+                                                              ),
+                                                              onPressed: () {
+                                                                _openStockForm(
+                                                                    context,
+                                                                    row);
+                                                              },
+                                                              // _openForm(context, row),
+                                                            ),
+                                                            IconButton(
+                                                              icon: Image.asset(
+                                                                'assets/icons/delete_icon.png',
+                                                              ),
+                                                              onPressed: () {
+                                                                _confirmDelete(
+                                                                    context,
+                                                                    row);
+                                                              },
+                                                            ),
+                                                          ],
+                                                        ));
+                                                      }
+                                                      return DataCell(
+                                                        Observer(
+                                                            builder: (context) {
+                                                          return InkWell(
+                                                            onTap: () {
+                                                              stockStore
+                                                                  .setSelectedProduct(
+                                                                      row);
+                                                              stockStore
+                                                                  .toggleItemInfo(
+                                                                      true);
+                                                              stockStore
+                                                                  .filterLedgerList();
+                                                              stockStore
+                                                                  .calculateInfoTotalPages();
+                                                            },
+                                                            child: Text(
+                                                              _getCellValue(
+                                                                  row, col.key),
+                                                              style: TextStyle(
+                                                                fontSize: 14.dp,
+                                                                color: const Color(
+                                                                    0xFF111827),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }),
+                                                      );
+                                                    }).toList(),
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                ),
+                                SizedBox(
+                                  width: 8.dp,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    final controller =
+                                        horizontalScrollController;
+                                    controller.animateTo(
+                                      (controller.offset + 200).clamp(0.0,
+                                          controller.position.maxScrollExtent),
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.ease,
+                                    );
+                                  },
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 8.dp),
+                                    alignment: Alignment.centerRight,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.black12,
+                                      shape: BoxShape.circle,
                                     ),
+                                    child: const Icon(Icons.chevron_right),
                                   ),
-                          );
-                        }),
+                                ),
+                              ],
+                            );
+                          }),
+                        ),
                         Observer(builder: (context) {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -377,15 +451,28 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.dp),
         ),
-        title: Text(
-          existingStock != null ? 'Edit Stock Item' : 'Create Stock Item',
-          style: TextStyle(
-            fontSize: 24.dp,
-            fontWeight: FontWeight.w600,
-            color: const Color(
-              0xFF111827,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              existingStock != null ? 'Edit Stock Item' : 'Create Stock Item',
+              style: TextStyle(
+                fontSize: 24.dp,
+                fontWeight: FontWeight.w600,
+                color: const Color(
+                  0xFF111827,
+                ),
+              ),
             ),
-          ),
+            InkWell(
+              onTap: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: Icon(
+                Icons.close,
+                size: 24.dp,
+                color: const Color(0xFF6B7280),
+              ),
+            ),
+          ],
         ),
         content: SingleChildScrollView(
           child: StockFormWidget(
@@ -527,8 +614,10 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
         return row.itemName;
       case 'hsnCode':
         return row.hsnCode ?? '';
+      case 'itemSize':
+        return row.size;
       case 'quantity':
-        return row.quantity;
+        return row.quantity ?? '';
       case 'rate':
         return row.rate.toString();
       case 'availableQuant':

@@ -37,6 +37,7 @@ class Sale {
   final Party partyDetails;
   final StockItem stockDetails;
   final String? paymentOption;
+  final String? paymentStatus;
   final double? interestPercent;
   final double? interestAmount;
   final double? brokeragePercent;
@@ -61,6 +62,7 @@ class Sale {
     this.interestAmount,
     this.brokeragePercent,
     this.brokerageAmount,
+    this.paymentStatus,
   });
 
   Map<String, dynamic> toMap() => {
@@ -74,6 +76,7 @@ class Sale {
         'interestAmount': interestAmount,
         'brokeragePercent': brokeragePercent,
         'brokerageAmount': brokerageAmount,
+        'paymentStatus': paymentStatus,
         'createdAt': createdAt.toIso8601String(),
         'agentDetails':
             agentDetails != null ? jsonEncode(agentDetails?.toMap()) : null,
@@ -87,6 +90,7 @@ class Sale {
         partyDetails: Party.fromMap(jsonDecode(map['party'])),
         stockDetails: StockItem.fromMap(jsonDecode(map['stock'])),
         paymentOption: map['paymentOption'],
+        paymentStatus: map['paymentStatus'],
         dueDays: map['dueDays'] as int,
         interestPercent: map['interestPercent'] != null
             ? (map['interestPercent'] as num).toDouble()
@@ -115,6 +119,7 @@ class Sale {
         'partyDetails': partyDetails,
         'stockDetails': stockDetails,
         'paymentOption': paymentOption,
+        'paymentStatus': paymentStatus,
         'dueDays': dueDays,
         'interestPercent': interestPercent,
         'interestAmount': interestAmount,
@@ -139,6 +144,7 @@ class Sale {
       'Item': stockDetails.itemId,
       'Qty': stockDetails.availableQuantity,
       'Amount': stockDetails.amount,
+      'paymentStatus': paymentStatus ?? 'unpaid',
       'Payment Option': paymentOption,
       'Due Days': dueDays,
       'interestPercent': interestPercent,

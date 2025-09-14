@@ -10,8 +10,6 @@ import 'package:sales_data_dashboard/screens/sales/store/sales_screen_store.dart
 import 'package:sales_data_dashboard/widgets/common_dropdown.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
-
-import '../../../models/firm_model.dart';
 import '../../../widgets/normal_button.dart';
 import 'sales_form_widget.dart';
 
@@ -28,6 +26,7 @@ class _SalesScreenState extends State<SalesScreen> {
   late SalesScreenStore salesScreenStore;
   late UserDataStore userDataStore;
   late DashboardStore activityStore;
+  final ScrollController horizontalScrollController = ScrollController();
 
   @override
   void initState() {
@@ -131,23 +130,6 @@ class _SalesScreenState extends State<SalesScreen> {
                 children: [
                   IntrinsicWidth(
                     child: CommonDropdown(
-                      label: 'Firm Type',
-                      value: salesScreenStore.selectedFilterFirm,
-                      onChanged: (p0) {
-                        salesScreenStore.setSelectedFilterFirm(p0!);
-                        salesScreenStore.isFiltersApplied();
-                      },
-                      options: [
-                        Firm.sahajanand.name,
-                        Firm.harikrishnaEnterprise.name
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  IntrinsicWidth(
-                    child: CommonDropdown(
                       label: 'Payment Status',
                       value: salesScreenStore.salectedStatus,
                       onChanged: (p0) {
@@ -177,17 +159,6 @@ class _SalesScreenState extends State<SalesScreen> {
                     ),
                   ),
                   const Spacer(),
-                  // CustomImageButton(
-                  //   imagePath: 'assets/icons/excel_icon.png',
-                  //   text: 'Excel',
-                  //   borderColor: const Color(0xffE5E7EB),
-                  //   buttonColor: Colors.white,
-                  //   onClicked: () {},
-                  //   // onClicked: widget.onExportPDF,
-                  // ),
-                  // SizedBox(
-                  //   width: 12.dp,
-                  // ),
                   Container(
                     height: 30.dp,
                     decoration: BoxDecoration(
@@ -220,125 +191,181 @@ class _SalesScreenState extends State<SalesScreen> {
             );
           }),
           SizedBox(height: 12.dp),
-          Observer(builder: (context) {
-            return Expanded(
-              child: salesScreenStore.sales.isEmpty
-                  ? Center(
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            'assets/no_data_found.png',
-                            width: 200.dp,
-                            height: 200.dp,
-                          ),
-                          SizedBox(
-                            height: 12.dp,
-                          ),
-                          Text(
-                            'No Data Found',
-                            style: TextStyle(
-                                fontSize: 16.dp,
-                                color: const Color(0xFF111827)),
-                          )
-                        ],
+          Expanded(
+            child: Observer(builder: (context) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      final controller = horizontalScrollController;
+                      controller.animateTo(
+                        (controller.offset - 200)
+                            .clamp(0.0, controller.position.maxScrollExtent),
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.ease,
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.dp),
+                      alignment: Alignment.centerLeft,
+                      decoration: const BoxDecoration(
+                        color: Colors.black12,
+                        shape: BoxShape.circle,
                       ),
-                    )
-                  : SingleChildScrollView(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8.dp),
-                            border: Border.all(
-                              color: const Color(0xFFE5E7EB),
-                              width: 1.5.dp,
+                      child: const Icon(Icons.chevron_left),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 8.dp,
+                  ),
+                  Expanded(
+                    child: salesScreenStore.sales.isEmpty
+                        ? Center(
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  'assets/no_data_found.png',
+                                  width: 200.dp,
+                                  height: 200.dp,
+                                ),
+                                SizedBox(
+                                  height: 12.dp,
+                                ),
+                                Text(
+                                  'No Data Found',
+                                  style: TextStyle(
+                                      fontSize: 16.dp,
+                                      color: const Color(0xFF111827)),
+                                )
+                              ],
                             ),
-                          ),
-                          child: DataTable(
-                            dividerThickness: 0.1.dp,
-                            headingRowHeight: 48,
-                            dataRowMinHeight: 48,
-                            headingRowColor: WidgetStateProperty.all(
-                                const Color(0xFFF9FAFB)),
-                            dataRowColor: WidgetStateProperty.resolveWith(
-                                (states) => Colors.white),
-                            showBottomBorder: false,
-                            columns: columns.map((col) {
-                              return DataColumn(
-                                label: InkWell(
-                                  onTap: col.isSortable
-                                      ? () =>
-                                          salesScreenStore.setSortKey(col.key)
-                                      : null,
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        col.label,
-                                        style: TextStyle(
-                                          fontSize: 16.dp,
-                                          color: const Color(
-                                            0xFF4B5563,
-                                          ),
-                                        ),
-                                      ),
-                                      if (col.isSortable &&
-                                          salesScreenStore.sortKey == col.key)
-                                        Icon(
-                                          salesScreenStore.sortAsc
-                                              ? Icons.arrow_upward
-                                              : Icons.arrow_downward,
-                                          size: 14.dp,
-                                        ),
-                                    ],
+                          )
+                        : SingleChildScrollView(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              controller: horizontalScrollController,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8.dp),
+                                  border: Border.all(
+                                    color: const Color(0xFFE5E7EB),
+                                    width: 1.5.dp,
                                   ),
                                 ),
-                              );
-                            }).toList(),
-                            rows: salesScreenStore.paginatedData.map((row) {
-                              return DataRow(
-                                cells: columns.map((col) {
-                                  if (col.isAction) {
-                                    return DataCell(Row(
-                                      children: [
-                                        IconButton(
-                                          icon: Image.asset(
-                                            'assets/icons/edit_icon.png',
-                                          ),
-                                          onPressed: () {
-                                            _openSalesForm(context, row);
-                                          },
-                                          // _openForm(context, row),
+                                child: DataTable(
+                                  dividerThickness: 0.1.dp,
+                                  headingRowHeight: 48,
+                                  dataRowMinHeight: 48,
+                                  headingRowColor: WidgetStateProperty.all(
+                                      const Color(0xFFF9FAFB)),
+                                  dataRowColor: WidgetStateProperty.resolveWith(
+                                      (states) => Colors.white),
+                                  showBottomBorder: false,
+                                  columns: columns.map((col) {
+                                    return DataColumn(
+                                      label: InkWell(
+                                        onTap: col.isSortable
+                                            ? () => salesScreenStore
+                                                .setSortKey(col.key)
+                                            : null,
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              col.label,
+                                              style: TextStyle(
+                                                fontSize: 16.dp,
+                                                color: const Color(
+                                                  0xFF4B5563,
+                                                ),
+                                              ),
+                                            ),
+                                            if (col.isSortable &&
+                                                salesScreenStore.sortKey ==
+                                                    col.key)
+                                              Icon(
+                                                salesScreenStore.sortAsc
+                                                    ? Icons.arrow_upward
+                                                    : Icons.arrow_downward,
+                                                size: 14.dp,
+                                              ),
+                                          ],
                                         ),
-                                        IconButton(
-                                          icon: Image.asset(
-                                            'assets/icons/delete_icon.png',
-                                          ),
-                                          onPressed: () {
-                                            _confirmDelete(context, row);
-                                          },
-                                        ),
-                                      ],
-                                    ));
-                                  }
-                                  return DataCell(
-                                    Text(
-                                      _getCellValue(row, col.key),
-                                      style: TextStyle(
-                                        fontSize: 14.dp,
-                                        color: const Color(0xFF111827),
                                       ),
-                                    ),
-                                  );
-                                }).toList(),
-                              );
-                            }).toList(),
+                                    );
+                                  }).toList(),
+                                  rows:
+                                      salesScreenStore.paginatedData.map((row) {
+                                    return DataRow(
+                                      cells: columns.map((col) {
+                                        if (col.isAction) {
+                                          return DataCell(Row(
+                                            children: [
+                                              IconButton(
+                                                icon: Image.asset(
+                                                  'assets/icons/edit_icon.png',
+                                                ),
+                                                onPressed: () {
+                                                  _openSalesForm(context, row);
+                                                },
+                                                // _openForm(context, row),
+                                              ),
+                                              IconButton(
+                                                icon: Image.asset(
+                                                  'assets/icons/delete_icon.png',
+                                                ),
+                                                onPressed: () {
+                                                  _confirmDelete(context, row);
+                                                },
+                                              ),
+                                            ],
+                                          ));
+                                        }
+                                        return DataCell(
+                                          Text(
+                                            _getCellValue(row, col.key),
+                                            style: TextStyle(
+                                              fontSize: 14.dp,
+                                              color: const Color(0xFF111827),
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                  ),
+                  SizedBox(
+                    width: 8.dp,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      final controller = horizontalScrollController;
+                      controller.animateTo(
+                        (controller.offset + 200)
+                            .clamp(0.0, controller.position.maxScrollExtent),
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.ease,
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.dp),
+                      alignment: Alignment.centerRight,
+                      decoration: const BoxDecoration(
+                        color: Colors.black12,
+                        shape: BoxShape.circle,
                       ),
+                      child: const Icon(Icons.chevron_right),
                     ),
-            );
-          }),
+                  ),
+                ],
+              );
+            }),
+          ),
           Observer(builder: (context) {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -377,15 +404,28 @@ class _SalesScreenState extends State<SalesScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.dp),
         ),
-        title: Text(
-          existingSale != null ? 'Edit Sales' : 'Create Sales',
-          style: TextStyle(
-            fontSize: 24.dp,
-            fontWeight: FontWeight.w600,
-            color: const Color(
-              0xFF111827,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              existingSale != null ? 'Edit Sales' : 'Create Sales',
+              style: TextStyle(
+                fontSize: 24.dp,
+                fontWeight: FontWeight.w600,
+                color: const Color(
+                  0xFF111827,
+                ),
+              ),
             ),
-          ),
+            InkWell(
+              onTap: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: Icon(
+                Icons.close,
+                size: 24.dp,
+                color: const Color(0xFF6B7280),
+              ),
+            ),
+          ],
         ),
         content: SingleChildScrollView(
           child: SalesFormWidget(
@@ -528,7 +568,7 @@ class _SalesScreenState extends State<SalesScreen> {
       case 'itemId':
         return row.stockDetails.itemId;
       case 'quantity':
-        return row.stockDetails.quantity;
+        return row.stockDetails.quantity ?? '0';
       case 'rate':
         return row.stockDetails.rate.toString();
       case 'amount':

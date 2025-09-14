@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
-import 'package:sales_data_dashboard/models/firm_model.dart';
 import 'package:sales_data_dashboard/models/stock_item.dart';
 import 'package:sales_data_dashboard/screens/stock_management/store/stock_mgmt_store.dart';
-import 'package:sales_data_dashboard/widgets/common_dropdown.dart';
 
 import '../../../widgets/common_textfield.dart';
 import '../../../widgets/normal_button.dart';
@@ -27,14 +25,11 @@ class _StockFormWidgetState extends State<StockFormWidget> {
   final TextEditingController itemIdController = TextEditingController();
   final TextEditingController itemNameController = TextEditingController();
   final TextEditingController hsnController = TextEditingController();
+  final TextEditingController sizeController = TextEditingController();
   final TextEditingController quantityController = TextEditingController();
   final TextEditingController rateController = TextEditingController();
-  final TextEditingController caratController = TextEditingController();
   final TextEditingController quantController = TextEditingController();
-  final TextEditingController amountController = TextEditingController();
   final TextEditingController descController = TextEditingController();
-
-  String selectedFirm = 'Sahajanand Gems';
 
   void _setItemId(final String itemName, final String size) {
     final id = '$itemName-$size';
@@ -49,10 +44,10 @@ class _StockFormWidgetState extends State<StockFormWidget> {
       itemIdController.text = stockItem?.itemId ?? '';
       itemNameController.text = stockItem?.itemName ?? '';
       hsnController.text = stockItem?.hsnCode ?? '';
+      sizeController.text = stockItem?.size ?? '';
       quantityController.text = stockItem?.quantity ?? '';
       rateController.text = stockItem?.rate.toString() ?? '';
       quantController.text = stockItem?.availableQuantity.toString() ?? '';
-      amountController.text = stockItem?.amount.toString() ?? '';
       descController.text = stockItem?.description ?? 'NA';
     }
   }
@@ -62,11 +57,10 @@ class _StockFormWidgetState extends State<StockFormWidget> {
     itemIdController.dispose();
     itemNameController.dispose();
     hsnController.dispose();
+    sizeController.dispose();
     quantityController.dispose();
     rateController.dispose();
-    caratController.dispose();
     quantController.dispose();
-    amountController.dispose();
     descController.dispose();
     super.dispose();
   }
@@ -113,50 +107,32 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                           width: 16.dp,
                         ),
                         Expanded(
-                          child: CommonDropdown(
-                            label: 'Firm',
-                            value: selectedFirm,
-                            options: Firm.values.map((e) => e.name).toList(),
+                          child: CommonTextField(
+                            label: 'Size',
+                            controller: sizeController,
                             validator: (value) =>
                                 value == null || value.trim().isEmpty
                                     ? 'Required'
                                     : null,
-                            onChanged: (value) {
-                              setState(() {
-                                selectedFirm = value ?? 'Sahajanand Gems';
-                              });
-                            },
                           ),
                         ),
                       ],
                     ),
                     Row(
                       children: [
-                        Expanded(
-                          child: CommonTextField(
-                            label: 'HSN Code',
-                            controller: hsnController,
-                            validator: (value) =>
-                                value == null || value.trim().isEmpty
-                                    ? 'Required'
-                                    : null,
-                          ),
-                        ),
                         SizedBox(
                           width: 16.dp,
                         ),
                         Expanded(
                           child: CommonTextField(
-                            label: 'Size',
-                            onChanged: (p0) => _setItemId(
-                              itemNameController.text,
-                              p0,
-                            ),
-                            controller: quantityController,
-                            validator: (value) =>
-                                value == null || value.trim().isEmpty
-                                    ? 'Required'
-                                    : null,
+                            label: 'HSN Code',
+                            controller: hsnController,
+                          ),
+                        ),
+                        Expanded(
+                          child: CommonTextField(
+                            label: 'Quantity',
+                            controller: quantController,
                           ),
                         ),
                         SizedBox(
@@ -166,38 +142,6 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                           child: CommonTextField(
                             label: 'Rate (₹)',
                             controller: rateController,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CommonTextField(
-                            label: 'Quantity',
-                            controller: quantController,
-                            validator: (value) =>
-                                value == null || value.trim().isEmpty
-                                    ? 'Required'
-                                    : null,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 16.dp,
-                        ),
-                        Expanded(
-                          child: CommonTextField(
-                            label: 'Carat',
-                            controller: caratController,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 16.dp,
-                        ),
-                        Expanded(
-                          child: CommonTextField(
-                            label: 'Amount',
-                            controller: amountController,
                           ),
                         ),
                       ],
@@ -239,10 +183,8 @@ class _StockFormWidgetState extends State<StockFormWidget> {
                                   availableQuantity:
                                       double.tryParse(quantController.text) ??
                                           0.0,
-                                  amount:
-                                      double.tryParse(amountController.text) ??
-                                          0.0,
                                   description: descController.text,
+                                  size: sizeController.text,
                                 );
                                 if (widget.existingStockItem != null) {
                                   widget.stockStore

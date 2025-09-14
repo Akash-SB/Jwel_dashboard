@@ -20,6 +20,8 @@ class ItemInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ScrollController horizontalScrollController = ScrollController();
+
     final List<TableColumn> columns = [
       TableColumn(label: 'Transaction ID', key: 'transId'),
       TableColumn(
@@ -69,10 +71,6 @@ class ItemInfoScreen extends StatelessWidget {
       TableColumn(
         label: 'Payment Option',
         key: 'paymentOption',
-      ),
-      TableColumn(
-        label: 'Firm',
-        key: 'firm',
       ),
       TableColumn(label: 'Description', key: 'description'),
     ];
@@ -219,16 +217,6 @@ class ItemInfoScreen extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  // CustomImageButton(
-                  //   imagePath: 'assets/icons/excel_icon.png',
-                  //   text: 'Excel',
-                  //   borderColor: const Color(0xffE5E7EB),
-                  //   buttonColor: Colors.white,
-                  //   onClicked: () {},
-                  // ),
-                  // SizedBox(
-                  //   width: 12.dp,
-                  // ),
                   Observer(builder: (context) {
                     return Container(
                       height: 30.dp,
@@ -264,90 +252,142 @@ class ItemInfoScreen extends StatelessWidget {
           }),
           SizedBox(height: 8.dp),
           Observer(builder: (context) {
-            return Expanded(
-              child: stockStore.ledgerList.isEmpty
-                  ? Center(
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            'assets/no_data_found.png',
-                            width: 200.dp,
-                            height: 200.dp,
-                          ),
-                          SizedBox(
-                            height: 12.dp,
-                          ),
-                          Text(
-                            'No Data Found',
-                            style: TextStyle(
-                                fontSize: 16.dp,
-                                color: const Color(0xFF111827)),
-                          )
-                        ],
+            return Row(
+              children: [
+                if (stockStore.ledgerList.isNotEmpty)
+                  InkWell(
+                    onTap: () {
+                      final controller = horizontalScrollController;
+                      controller.animateTo(
+                        (controller.offset - 200)
+                            .clamp(0.0, controller.position.maxScrollExtent),
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.ease,
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.dp),
+                      alignment: Alignment.centerLeft,
+                      decoration: const BoxDecoration(
+                        color: Colors.black12,
+                        shape: BoxShape.circle,
                       ),
-                    )
-                  : SingleChildScrollView(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8.dp),
-                            border: Border.all(
-                              color: const Color(0xFFE5E7EB),
-                              width: 1.5.dp,
-                            ),
+                      child: const Icon(Icons.chevron_left),
+                    ),
+                  ),
+                SizedBox(
+                  width: 8.dp,
+                ),
+                Expanded(
+                  child: stockStore.ledgerList.isEmpty
+                      ? Center(
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                'assets/no_data_found.png',
+                                width: 200.dp,
+                                height: 200.dp,
+                              ),
+                              SizedBox(
+                                height: 12.dp,
+                              ),
+                              Text(
+                                'No Data Found',
+                                style: TextStyle(
+                                    fontSize: 16.dp,
+                                    color: const Color(0xFF111827)),
+                              )
+                            ],
                           ),
-                          child: DataTable(
-                            dividerThickness: 0.1.dp,
-                            headingRowHeight: 48,
-                            dataRowMinHeight: 48,
-                            headingRowColor: WidgetStateProperty.all(
-                                const Color(0xFFF9FAFB)),
-                            dataRowColor: WidgetStateProperty.resolveWith(
-                                (states) => Colors.white),
-                            showBottomBorder: false,
-                            columns: columns.map((col) {
-                              return DataColumn(
-                                label: InkWell(
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        col.label,
-                                        style: TextStyle(
-                                          fontSize: 16.dp,
-                                          color: const Color(
-                                            0xFF4B5563,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                        )
+                      : SingleChildScrollView(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8.dp),
+                                border: Border.all(
+                                  color: const Color(0xFFE5E7EB),
+                                  width: 1.5.dp,
                                 ),
-                              );
-                            }).toList(),
-                            rows: stockStore.paginatedInfoData.map((row) {
-                              return DataRow(
-                                cells: columns.map((col) {
-                                  return DataCell(
-                                    Text(
-                                      getCellValue(
-                                        col.key,
-                                        row,
-                                      ),
-                                      style: TextStyle(
-                                        fontSize: 14.dp,
-                                        color: const Color(0xFF111827),
+                              ),
+                              child: DataTable(
+                                dividerThickness: 0.1.dp,
+                                headingRowHeight: 48,
+                                dataRowMinHeight: 48,
+                                headingRowColor: WidgetStateProperty.all(
+                                    const Color(0xFFF9FAFB)),
+                                dataRowColor: WidgetStateProperty.resolveWith(
+                                    (states) => Colors.white),
+                                showBottomBorder: false,
+                                columns: columns.map((col) {
+                                  return DataColumn(
+                                    label: InkWell(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            col.label,
+                                            style: TextStyle(
+                                              fontSize: 16.dp,
+                                              color: const Color(
+                                                0xFF4B5563,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   );
                                 }).toList(),
-                              );
-                            }).toList(),
+                                rows: stockStore.paginatedInfoData.map((row) {
+                                  return DataRow(
+                                    cells: columns.map((col) {
+                                      return DataCell(
+                                        Text(
+                                          getCellValue(
+                                            col.key,
+                                            row,
+                                          ),
+                                          style: TextStyle(
+                                            fontSize: 14.dp,
+                                            color: const Color(0xFF111827),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
                           ),
                         ),
+                ),
+                SizedBox(
+                  width: 8.dp,
+                ),
+                if (stockStore.ledgerList.isNotEmpty)
+                  InkWell(
+                    onTap: () {
+                      final controller = horizontalScrollController;
+                      controller.animateTo(
+                        (controller.offset + 200)
+                            .clamp(0.0, controller.position.maxScrollExtent),
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.ease,
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.dp),
+                      alignment: Alignment.centerRight,
+                      decoration: const BoxDecoration(
+                        color: Colors.black12,
+                        shape: BoxShape.circle,
                       ),
+                      child: const Icon(Icons.chevron_right),
                     ),
+                  ),
+              ],
             );
           }),
           Observer(builder: (context) {

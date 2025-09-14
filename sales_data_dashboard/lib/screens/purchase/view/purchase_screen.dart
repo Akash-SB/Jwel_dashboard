@@ -510,7 +510,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       case 'itemId':
         return row.stockDetails.itemId;
       case 'quantity':
-        return row.stockDetails.quantity;
+        return row.stockDetails.quantity ?? ' ';
       case 'rate':
         return row.stockDetails.rate.toString();
       case 'amount':

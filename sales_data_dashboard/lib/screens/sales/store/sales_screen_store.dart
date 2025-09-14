@@ -232,7 +232,9 @@ abstract class _SalesScreenStore with Store {
     return filtered.where((sale) {
       final matchesSearch = searchedText.toLowerCase();
       final searchItem = sale.id.toLowerCase().contains(matchesSearch) ||
-          sale.stockDetails.quantity.toLowerCase().contains(matchesSearch);
+          (sale.stockDetails.quantity ?? '0')
+              .toLowerCase()
+              .contains(matchesSearch);
       return searchItem;
     }).toList();
   }
