@@ -83,6 +83,17 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
     }
   }
 
+  void setBrokerageAmount() {
+    if (brokPerController.text.isNotEmpty &&
+        (amountController.text.isNotEmpty && amountController.text != '0.0')) {
+      final brokPer = double.tryParse(brokPerController.text) ?? 0.0;
+      final amount = double.tryParse(amountController.text) ?? 0.0;
+      brokAmountController.text = ((brokPer / 100) * amount).toStringAsFixed(2);
+    } else {
+      brokAmountController.text = '0.0';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -128,6 +139,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       final quantity = double.tryParse(sellQuantController.text) ?? 0.0;
       final rate = double.tryParse(rateController.text) ?? 0.0;
       amountController.text = (quantity * rate).toStringAsFixed(2);
+      setBrokerageAmount();
     } else {
       amountController.text = '0.0';
     }
@@ -333,6 +345,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                 Expanded(
                                   child: CommonTextField(
                                     label: 'Brokergae Percent',
+                                    onChanged: (p0) => setBrokerageAmount(),
                                     controller: brokPerController,
                                   ),
                                 ),
@@ -578,7 +591,10 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                         child: CommonTextField(
                           label: 'Sell Quantity',
                           controller: sellQuantController,
-                          onChanged: (p0) => setAmount(),
+                          onChanged: (p0) {
+                            setAmount();
+                            setBrokerageAmount();
+                          },
                           validator: (p0) {
                             if (p0 == null || p0.isEmpty) {
                               return 'Sell Quantity is required';
@@ -599,7 +615,10 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                         child: CommonTextField(
                           label: 'Rate',
                           controller: rateController,
-                          onChanged: (p0) => setAmount(),
+                          onChanged: (p0) {
+                            setAmount();
+                            setBrokerageAmount();
+                          },
                         ),
                       ),
                       SizedBox(width: 16.dp),
@@ -608,7 +627,10 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                         label: 'Amount',
                         enabled: false,
                         controller: amountController,
-                        onChanged: (p0) => setAmount(),
+                        onChanged: (p0) {
+                          amountController.text = p0;
+                          setAmount();
+                        },
                       )),
                     ],
                   ),
