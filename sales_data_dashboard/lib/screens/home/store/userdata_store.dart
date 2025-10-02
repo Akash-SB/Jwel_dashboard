@@ -342,39 +342,51 @@ abstract class _UserDataStore with Store {
         return Sale.fromMap(data);
       }).toList();
       salesList = ObservableList<Sale>.of(fetched);
-      for(int i=0;i<salesList.length;i++){
-        if(salesList[i].partyDetails.partyType.toLowerCase() == "company"){
-            final sale = salesList[i];
-            final dueDate = sale.createdAt.add(Duration(days: sale.dueDays ?? 0));
-            final today = DateTime.now();
-            if (dueDate.isBefore(today) || dueDate.isAtSameMomentAs(today)) {
+      for (int i = 0; i < salesList.length; i++) {
+        if (salesList[i].partyDetails.partyType.toLowerCase() == "company") {
+          final sale = salesList[i];
+          final dueDate = sale.createdAt.add(Duration(days: sale.dueDays ?? 0));
+          final today = DateTime.now();
+          if (dueDate.isBefore(today) || dueDate.isAtSameMomentAs(today)) {
             final overdueDays = today.difference(dueDate).inDays;
             // Only apply interest if overdueDays > 0
             if (overdueDays > 0 && sale.interestPercent != null) {
               double interestAmount = overdueDays * (sale.interestPercent ?? 0);
               salesList[i] = Sale(
-              id: sale.id,
-              partyDetails: sale.partyDetails,
-              createdAt: sale.createdAt,
-              dueDays: sale.dueDays,
-              paymentOption: sale.paymentOption,
-              stockDetails: sale.stockDetails,
-              description: sale.description,
-              interestAmount: interestAmount,
+                id: sale.id,
+                partyDetails: sale.partyDetails,
+                createdAt: sale.createdAt,
+                dueDays: sale.dueDays,
+                paymentOption: sale.paymentOption,
+                stockDetails: sale.stockDetails,
+                description: sale.description,
+                interestAmount: interestAmount,
+                brokerageAmount: (sale.brokerageAmount ?? 0),
+                paymentStatus: sale.paymentStatus,
+                agentDetails: sale.agentDetails,
+                partialPaymentDetails: sale.partialPaymentDetails,
+                interestPercent: sale.interestPercent,
+                brokeragePercent: sale.brokeragePercent,
               );
             } else {
               salesList[i] = Sale(
-              id: sale.id,
-              partyDetails: sale.partyDetails,
-              createdAt: sale.createdAt,
-              dueDays: sale.dueDays,
-              paymentOption: sale.paymentOption,
-              stockDetails: sale.stockDetails,
-              description: sale.description,
-              interestAmount: 0,
+                id: sale.id,
+                partyDetails: sale.partyDetails,
+                createdAt: sale.createdAt,
+                dueDays: sale.dueDays,
+                paymentOption: sale.paymentOption,
+                stockDetails: sale.stockDetails,
+                description: sale.description,
+                interestAmount: 0,
+                brokerageAmount: (sale.brokerageAmount ?? 0),
+                paymentStatus: sale.paymentStatus,
+                agentDetails: sale.agentDetails,
+                partialPaymentDetails: sale.partialPaymentDetails,
+                interestPercent: sale.interestPercent,
+                brokeragePercent: sale.brokeragePercent,
               );
             }
-            } else {
+          } else {
             salesList[i] = Sale(
               id: sale.id,
               partyDetails: sale.partyDetails,
@@ -385,7 +397,7 @@ abstract class _UserDataStore with Store {
               description: sale.description,
               interestAmount: 0,
             );
-            }
+          }
         }
       }
     } catch (e) {

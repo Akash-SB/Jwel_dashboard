@@ -18,6 +18,22 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
   final ByteData logoData = await rootBundle.load('assets/logo.png');
   final Uint8List logoBytes = logoData.buffer.asUint8List();
 
+  // Gems and Jwellary
+  final ByteData redStone = await rootBundle.load('assets/red_stone.png');
+  final Uint8List redStoneBytes = redStone.buffer.asUint8List();
+
+  final ByteData blueStone = await rootBundle.load('assets/blue_stone.png');
+  final Uint8List blueStoneBytes = blueStone.buffer.asUint8List();
+
+  final ByteData orangeStone = await rootBundle.load('assets/orange_stone.png');
+  final Uint8List orangeStoneBytes = orangeStone.buffer.asUint8List();
+
+  final ByteData purpleStone = await rootBundle.load('assets/purple_stone.png');
+  final Uint8List purpleStoneBytes = purpleStone.buffer.asUint8List();
+
+  final ByteData diamond = await rootBundle.load('assets/diamond.png');
+  final Uint8List diamondBytes = diamond.buffer.asUint8List();
+
   // Load font for ₹ symbol
   final robotoFont =
       pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto-Regular.ttf'));
@@ -45,7 +61,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
       header: (context) {
         // ✅ HEADER with logo and company name
         return pw.Container(
-          color: PdfColor.fromInt(0xFF5D639E), // Light navy blue shade
+          color: PdfColors.blue200, // Light navy blue shade
           padding: const pw.EdgeInsets.all(8),
           child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -82,7 +98,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                         style: pw.TextStyle(
                           fontSize: 7,
                           font: robotoFont,
-                          color: PdfColors.white,
+                          color: PdfColors.black,
                         )),
                   ],
                 ),
@@ -189,7 +205,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text("Detail of Recipient :",
+                      pw.Text("Detail of Recipient",
                           style: pw.TextStyle(
                               fontWeight: pw.FontWeight.bold,
                               font: robotoFont,
@@ -199,7 +215,6 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                           style: pw.TextStyle(
                             font: robotoFont,
                             fontSize: 9,
-                            fontWeight: pw.FontWeight.bold,
                           )),
                       pw.SizedBox(height: 4),
                       pw.SizedBox(
@@ -256,7 +271,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
           children: [
             // header
             pw.TableRow(
-              decoration: const pw.BoxDecoration(color: PdfColors.grey300),
+              decoration: const pw.BoxDecoration(color: PdfColors.blue300),
               children: [
                 headerCell('Sr. No', robotoFont),
                 headerCell('Description of Goods/Services', robotoFont),
@@ -270,6 +285,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
             ),
             // single row
             pw.TableRow(
+              decoration: const pw.BoxDecoration(color: PdfColors.blue100),
               children: [
                 dataCell(
                   '1',
@@ -323,6 +339,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
             ),
             // total row
             pw.TableRow(
+              decoration: const pw.BoxDecoration(color: PdfColors.blue300),
               children: [
                 dataCell('', robotoFont),
                 dataCell('', robotoFont),
@@ -347,65 +364,66 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Expanded(
-                child: pw.Column(children: [
-                  pw.Container(
-                    padding: const pw.EdgeInsets.all(4),
-                    decoration: pw.BoxDecoration(border: pw.Border.all()),
-                    child: pw.Text(
-                      "TOTAL INVOICE VALUE IN WORDS : ${convertNumberToWords(grandTotal)}",
-                      style: pw.TextStyle(font: robotoFont, fontSize: 9),
-                    ),
-                  ),
-                  pw.Container(
-                      width: double.infinity,
-                      padding: const pw.EdgeInsets.all(4),
-                      decoration: pw.BoxDecoration(border: pw.Border.all()),
-                      child: pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.start,
-                          children: [
-                            pw.Text('Bank Details:',
-                                style: pw.TextStyle(
-                                    font: robotoFont,
-                                    fontWeight: pw.FontWeight.bold,
-                                    fontSize: 9)),
-                            pw.Text(
-                                'Bank Name : ${selectedParentCompany.bankName}',
-                                style: pw.TextStyle(
-                                    font: robotoFont, fontSize: 9)),
-                            pw.Text(
-                                'Bank Account No : ${selectedParentCompany.bankAccountNo}',
-                                style: pw.TextStyle(
-                                    font: robotoFont, fontSize: 9)),
-                            pw.Text(
-                                'Bank IFSC Code : ${selectedParentCompany.bankIfscCode}',
-                                style: pw.TextStyle(
-                                    font: robotoFont, fontSize: 9)),
-                            pw.Text(
-                                'Bank Branch : ${selectedParentCompany.bankBranch}',
-                                style: pw.TextStyle(
-                                    font: robotoFont, fontSize: 9)),
-                          ])),
-                  pw.Container(
-                      width: double.infinity,
-                      padding: const pw.EdgeInsets.all(4),
-                      decoration: pw.BoxDecoration(border: pw.Border.all()),
-                      child: pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.start,
-                          children: [
-                            pw.Text('Terms & Conditions:',
-                                style: pw.TextStyle(
-                                  font: robotoFont,
-                                  fontWeight: pw.FontWeight.bold,
-                                  fontSize: 8,
-                                )),
-                            pw.SizedBox(height: 8),
-                            pw.Text(
-                              'Certified that the particulars in given above are true and correct\nSubject to MUMBAI Jurisdiction',
-                              style:
-                                  pw.TextStyle(fontSize: 8, font: robotoFont),
-                            ),
-                          ]))
-                ]),
+                child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Container(
+                        padding: const pw.EdgeInsets.all(4),
+                        child: pw.Text(
+                          "TOTAL INVOICE VALUE IN WORDS : ${convertNumberToWords(grandTotal)}",
+                          style: pw.TextStyle(font: robotoFont, fontSize: 9),
+                        ),
+                      ),
+                      pw.Container(
+                          width: double.infinity,
+                          padding: const pw.EdgeInsets.all(4),
+                          decoration: pw.BoxDecoration(border: pw.Border.all()),
+                          child: pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Text('Bank Details:',
+                                    style: pw.TextStyle(
+                                        font: robotoFont,
+                                        fontWeight: pw.FontWeight.bold,
+                                        fontSize: 9)),
+                                pw.Text(
+                                    'Bank Name : ${selectedParentCompany.bankName}',
+                                    style: pw.TextStyle(
+                                        font: robotoFont, fontSize: 9)),
+                                pw.Text(
+                                    'Bank Account No : ${selectedParentCompany.bankAccountNo}',
+                                    style: pw.TextStyle(
+                                        font: robotoFont, fontSize: 9)),
+                                pw.Text(
+                                    'Bank IFSC Code : ${selectedParentCompany.bankIfscCode}',
+                                    style: pw.TextStyle(
+                                        font: robotoFont, fontSize: 9)),
+                                pw.Text(
+                                    'Bank Branch : ${selectedParentCompany.bankBranch}',
+                                    style: pw.TextStyle(
+                                        font: robotoFont, fontSize: 9)),
+                              ])),
+                      pw.Container(
+                          width: double.infinity,
+                          padding: const pw.EdgeInsets.all(4),
+                          decoration: pw.BoxDecoration(border: pw.Border.all()),
+                          child: pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.start,
+                              children: [
+                                pw.Text('Terms & Conditions:',
+                                    style: pw.TextStyle(
+                                      font: robotoFont,
+                                      fontWeight: pw.FontWeight.bold,
+                                      fontSize: 8,
+                                    )),
+                                pw.SizedBox(height: 8),
+                                pw.Text(
+                                  'Certified that the particulars in given above are true and correct\nSubject to MUMBAI Jurisdiction',
+                                  style: pw.TextStyle(
+                                      fontSize: 8, font: robotoFont),
+                                ),
+                              ]))
+                    ]),
               ),
               pw.Container(
                 width: 200,
@@ -464,7 +482,22 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
-              pw.Text('${selectedParentCompany.address}',
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                children: [
+                  pw.Image(pw.MemoryImage(redStoneBytes),
+                      width: 30, height: 30),
+                  pw.Image(pw.MemoryImage(blueStoneBytes),
+                      width: 20, height: 20),
+                  pw.Image(pw.MemoryImage(purpleStoneBytes),
+                      width: 20, height: 20),
+                  pw.Image(pw.MemoryImage(orangeStoneBytes),
+                      width: 20, height: 20),
+                  pw.Image(pw.MemoryImage(diamondBytes), width: 30, height: 30),
+                ],
+              ),
+              pw.SizedBox(height: 8),
+              pw.Text(selectedParentCompany.address,
                   style: pw.TextStyle(
                       fontSize: 9, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 4),

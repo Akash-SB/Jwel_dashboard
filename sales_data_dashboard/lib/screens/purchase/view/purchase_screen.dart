@@ -26,6 +26,7 @@ class PurchaseScreen extends StatefulWidget {
 class _PurchaseScreenState extends State<PurchaseScreen> {
   late PurchaseScreenStore purchaseScreenStore;
   late UserDataStore userDataStore;
+  final ScrollController horizontalScrollController = ScrollController();
 
   @override
   void initState() {
@@ -224,105 +225,158 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                     );
                   }),
                   SizedBox(height: 12.dp),
-                  Observer(builder: (context) {
-                    return Expanded(
-                      child: SingleChildScrollView(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8.dp),
-                              border: Border.all(
-                                color: const Color(0xFFE5E7EB),
-                                width: 1.5.dp,
-                              ),
-                            ),
-                            child: DataTable(
-                              dividerThickness: 0.1.dp,
-                              headingRowHeight: 48,
-                              dataRowMinHeight: 48,
-                              headingRowColor: WidgetStateProperty.all(
-                                  const Color(0xFFF9FAFB)),
-                              dataRowColor: WidgetStateProperty.resolveWith(
-                                  (states) => Colors.white),
-                              showBottomBorder: false,
-                              columns: columns.map((col) {
-                                return DataColumn(
-                                  label: InkWell(
-                                    onTap: col.isSortable
-                                        ? () => purchaseScreenStore
-                                            .setSortKey(col.key)
-                                        : null,
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          col.label,
-                                          style: TextStyle(
-                                            fontSize: 16.dp,
-                                            color: const Color(
-                                              0xFF4B5563,
-                                            ),
-                                          ),
-                                        ),
-                                        if (col.isSortable &&
-                                            purchaseScreenStore.sortKey ==
-                                                col.key)
-                                          Icon(
-                                            purchaseScreenStore.sortAsc
-                                                ? Icons.arrow_upward
-                                                : Icons.arrow_downward,
-                                            size: 14.dp,
-                                          ),
-                                      ],
-                                    ),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          final controller = horizontalScrollController;
+                          controller.animateTo(
+                            (controller.offset - 200).clamp(
+                                0.0, controller.position.maxScrollExtent),
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.ease,
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8.dp),
+                          alignment: Alignment.centerLeft,
+                          decoration: const BoxDecoration(
+                            color: Colors.black12,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.chevron_left),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 8.dp,
+                      ),
+                      Observer(builder: (context) {
+                        return Expanded(
+                          child: SingleChildScrollView(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              controller: horizontalScrollController,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8.dp),
+                                  border: Border.all(
+                                    color: const Color(0xFFE5E7EB),
+                                    width: 1.5.dp,
                                   ),
-                                );
-                              }).toList(),
-                              rows:
-                                  purchaseScreenStore.paginatedData.map((row) {
-                                return DataRow(
-                                  cells: columns.map((col) {
-                                    if (col.isAction) {
-                                      return DataCell(Row(
-                                        children: [
-                                          IconButton(
-                                            icon: Image.asset(
-                                              'assets/icons/edit_icon.png',
+                                ),
+                                child: DataTable(
+                                  dividerThickness: 0.1.dp,
+                                  headingRowHeight: 48,
+                                  dataRowMinHeight: 48,
+                                  headingRowColor: WidgetStateProperty.all(
+                                      const Color(0xFFF9FAFB)),
+                                  dataRowColor: WidgetStateProperty.resolveWith(
+                                      (states) => Colors.white),
+                                  showBottomBorder: false,
+                                  columns: columns.map((col) {
+                                    return DataColumn(
+                                      label: InkWell(
+                                        onTap: col.isSortable
+                                            ? () => purchaseScreenStore
+                                                .setSortKey(col.key)
+                                            : null,
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              col.label,
+                                              style: TextStyle(
+                                                fontSize: 16.dp,
+                                                color: const Color(
+                                                  0xFF4B5563,
+                                                ),
+                                              ),
                                             ),
-                                            onPressed: () {
-                                              _openPurchaseForm(context, row);
-                                            },
-                                          ),
-                                          IconButton(
-                                            icon: Image.asset(
-                                              'assets/icons/delete_icon.png',
-                                            ),
-                                            onPressed: () {
-                                              _confirmDelete(context, row);
-                                            },
-                                          ),
-                                        ],
-                                      ));
-                                    }
-                                    return DataCell(
-                                      Text(
-                                        _getCellValue(row, col.key),
-                                        style: TextStyle(
-                                          fontSize: 14.dp,
-                                          color: const Color(0xFF111827),
+                                            if (col.isSortable &&
+                                                purchaseScreenStore.sortKey ==
+                                                    col.key)
+                                              Icon(
+                                                purchaseScreenStore.sortAsc
+                                                    ? Icons.arrow_upward
+                                                    : Icons.arrow_downward,
+                                                size: 14.dp,
+                                              ),
+                                          ],
                                         ),
                                       ),
                                     );
                                   }).toList(),
-                                );
-                              }).toList(),
+                                  rows: purchaseScreenStore.paginatedData
+                                      .map((row) {
+                                    return DataRow(
+                                      cells: columns.map((col) {
+                                        if (col.isAction) {
+                                          return DataCell(Row(
+                                            children: [
+                                              IconButton(
+                                                icon: Image.asset(
+                                                  'assets/icons/edit_icon.png',
+                                                ),
+                                                onPressed: () {
+                                                  _openPurchaseForm(
+                                                      context, row);
+                                                },
+                                              ),
+                                              IconButton(
+                                                icon: Image.asset(
+                                                  'assets/icons/delete_icon.png',
+                                                ),
+                                                onPressed: () {
+                                                  _confirmDelete(context, row);
+                                                },
+                                              ),
+                                            ],
+                                          ));
+                                        }
+                                        return DataCell(
+                                          Text(
+                                            _getCellValue(row, col.key),
+                                            style: TextStyle(
+                                              fontSize: 14.dp,
+                                              color: const Color(0xFF111827),
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
                             ),
                           ),
+                        );
+                      }),
+                      SizedBox(
+                        width: 8.dp,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          final controller = horizontalScrollController;
+                          controller.animateTo(
+                            (controller.offset + 200).clamp(
+                                0.0, controller.position.maxScrollExtent),
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.ease,
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8.dp),
+                          alignment: Alignment.centerRight,
+                          decoration: const BoxDecoration(
+                            color: Colors.black12,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.chevron_right),
                         ),
                       ),
-                    );
-                  }),
+                    ],
+                  ),
+                  const Spacer(),
                   Observer(builder: (context) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
