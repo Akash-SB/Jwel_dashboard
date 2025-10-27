@@ -3,41 +3,10 @@ import 'package:sales_data_dashboard/models/stock_item.dart';
 
 import 'party_model.dart';
 
-enum PaymentStatus { paid, unpaid }
-
-enum PaymentOption { cash, bank, cheque, upi }
-
-class PartialPaymentDetails {
-  final double amountPaid;
-  final DateTime paymentDate;
-  final String? paymentMethod;
-
-  PartialPaymentDetails({
-    required this.amountPaid,
-    required this.paymentDate,
-    this.paymentMethod,
-  });
-
-  Map<String, dynamic> toMap() => {
-        'amountPaid': amountPaid,
-        'paymentDate': paymentDate.toIso8601String(),
-        'paymentMethod': paymentMethod,
-      };
-
-  factory PartialPaymentDetails.fromMap(Map<String, dynamic> map) =>
-      PartialPaymentDetails(
-        amountPaid: map['amountPaid'] as double,
-        paymentDate: DateTime.parse(map['paymentDate']),
-        paymentMethod: map['paymentMethod'] as String?,
-      );
-}
-
 class Sale {
   final String id;
   final Party partyDetails;
   final StockItem stockDetails;
-  final String? paymentOption;
-  final String? paymentStatus;
   final double? interestPercent;
   final double? interestAmount;
   final double? brokeragePercent;
@@ -46,51 +15,40 @@ class Sale {
   final String? description;
   final DateTime createdAt;
   final Party? agentDetails;
-  final List<PartialPaymentDetails>? partialPaymentDetails;
 
   Sale({
     required this.id,
     required this.partyDetails,
     required this.stockDetails,
-    required this.paymentOption,
     this.dueDays,
     this.description,
     required this.createdAt,
     this.agentDetails,
-    this.partialPaymentDetails,
     this.interestPercent,
     this.interestAmount,
     this.brokeragePercent,
     this.brokerageAmount,
-    this.paymentStatus,
   });
 
   Map<String, dynamic> toMap() => {
         'id': id,
         'party': jsonEncode(partyDetails.toMap()),
         'stock': jsonEncode(stockDetails.toMap()),
-        'paymentOption': paymentOption,
         'dueDays': dueDays,
         'description': description,
         'interestPercent': interestPercent,
         'interestAmount': interestAmount,
         'brokeragePercent': brokeragePercent,
         'brokerageAmount': brokerageAmount,
-        'paymentStatus': paymentStatus,
         'createdAt': createdAt.toIso8601String(),
         'agentDetails':
             agentDetails != null ? jsonEncode(agentDetails?.toMap()) : null,
-        'partialPaymentDetails': partialPaymentDetails != null
-            ? jsonEncode(partialPaymentDetails?.map((e) => e.toMap()).toList())
-            : null,
       };
 
   factory Sale.fromMap(Map<String, dynamic> map) => Sale(
         id: map['id'],
         partyDetails: Party.fromMap(jsonDecode(map['party'])),
         stockDetails: StockItem.fromMap(jsonDecode(map['stock'])),
-        paymentOption: map['paymentOption'],
-        paymentStatus: map['paymentStatus'],
         dueDays: map['dueDays'] as int,
         interestPercent: map['interestPercent'] != null
             ? (map['interestPercent'] as num).toDouble()
@@ -107,19 +65,12 @@ class Sale {
             map['agentDetails'] != null && !map['agentDetails'].contains('null')
                 ? Party.fromMap(jsonDecode(map['agentDetails']))
                 : null,
-        partialPaymentDetails: map['partialPaymentDetails'] != null
-            ? (jsonDecode(map['partialPaymentDetails']) as List)
-                .map((e) => PartialPaymentDetails.fromMap(e))
-                .toList()
-            : null,
       );
 
   Map<String, dynamic> toFirestore() => {
         'id': id,
         'partyDetails': partyDetails,
         'stockDetails': stockDetails,
-        'paymentOption': paymentOption,
-        'paymentStatus': paymentStatus,
         'dueDays': dueDays,
         'interestPercent': interestPercent,
         'interestAmount': interestAmount,
@@ -128,8 +79,6 @@ class Sale {
         'description': description,
         'createdAt': createdAt.toIso8601String(),
         'agentDetails': agentDetails?.toMap(),
-        'partialPaymentDetails':
-            partialPaymentDetails?.map((e) => e.toMap()).toList(),
       };
 
   /// For Firebase
@@ -144,8 +93,6 @@ class Sale {
       'Item': stockDetails.itemId,
       'Qty': stockDetails.availableQuantity,
       'Amount': stockDetails.amount,
-      'paymentStatus': paymentStatus ?? 'unpaid',
-      'Payment Option': paymentOption,
       'Due Days': dueDays,
       'interestPercent': interestPercent,
       'interestAmount': interestAmount,
@@ -153,10 +100,6 @@ class Sale {
       'brokerageAmount': brokerageAmount,
       'Created': createdAt.toIso8601String(),
       'Agent': agentDetails?.name ?? 'N/A',
-      'Partial Payments': partialPaymentDetails != null
-          ? partialPaymentDetails?.map((e) =>
-              {'Amount': e.amountPaid, 'Date': e.paymentDate.toIso8601String()})
-          : [],
     };
   }
 }

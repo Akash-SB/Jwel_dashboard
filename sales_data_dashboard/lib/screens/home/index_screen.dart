@@ -71,25 +71,6 @@ class _IndexScreenState extends State<IndexScreen> {
     userDataStore.setIsAllDataLoaded(true);
   }
 
-  final icons = [
-    Icons.dashboard,
-    Icons.receipt_long,
-    Icons.bar_chart,
-    Icons.shopping_cart,
-    Icons.people,
-    Icons.inventory,
-    Icons.inventory_2,
-  ];
-  final labels = [
-    "Dashboard",
-    "Invoices",
-    "Sales",
-    "Purchase",
-    "Party Details",
-    "Stock Management",
-    "Invoice Stock Management"
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,10 +134,10 @@ class _IndexScreenState extends State<IndexScreen> {
                   Observer(builder: (context) {
                     return Expanded(
                       child: ListView.builder(
-                        itemCount: 6,
+                        itemCount: userDataStore.sidebarItems.length,
                         itemBuilder: (context, index) {
                           return _sidebarItem(
-                              icons[index], labels[index], index);
+                              userDataStore.sidebarItems[index], index);
                         },
                       ),
                     );
@@ -187,34 +168,100 @@ class _IndexScreenState extends State<IndexScreen> {
     _navigatorKey.currentState?.pushReplacementNamed(route);
   }
 
-  Widget _sidebarItem(IconData icon, String label, int index) {
+  Widget _sidebarItem(SidebarItem item, int index) {
     return Observer(
       builder: (context) {
         final isSelected = userDataStore.tabIndex == index;
-        return ListTile(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          leading: Icon(
-            icon,
-            color: isSelected ? const Color(0xFF2563EB) : AppColors.grey,
-          ),
-          title: Text(
-            label,
-            softWrap: true,
-            overflow: TextOverflow.fade,
-            maxLines: 1,
-            style: TextStyle(
-              color: isSelected ? const Color(0xFF2563EB) : AppColors.grey,
+        return Column(
+          children: [
+            ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              leading: Icon(
+                item.icon,
+                color: isSelected ? const Color(0xFF2563EB) : AppColors.grey,
+              ),
+              title: Text(
+                item.label,
+                softWrap: true,
+                overflow: TextOverflow.fade,
+                maxLines: 1,
+                style: TextStyle(
+                  color: isSelected ? const Color(0xFF2563EB) : AppColors.grey,
+                ),
+              ),
+              trailing: item.subItems != null
+                  ? Icon(
+                      item.isExpanded
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      color:
+                          isSelected ? const Color(0xFF2563EB) : AppColors.grey,
+                    )
+                  : null,
+              hoverColor: AppColors.primary.withOpacity(0.1),
+              onTap: () {
+                userDataStore.setTab(index);
+                userDataStore.setSidebarExpanded(index, item.isExpanded);
+                if (item.subItems == null) {
+                  _navigateTo(AppRoutes.tabRoutes[index]);
+                }
+              },
+              selected: isSelected,
+              selectedTileColor: const Color(0xFFEFF6FF),
             ),
-          ),
-          hoverColor: AppColors.primary.withOpacity(0.1),
-          onTap: () {
-            userDataStore.setTab(index);
-            _navigateTo(AppRoutes.tabRoutes[index]);
-          },
-          selected: isSelected,
-          selectedTileColor: const Color(0xFFEFF6FF),
+            if (item.subItems != null && item.isExpanded)
+              Padding(
+                padding: EdgeInsets.only(left: 32.dp),
+                child: Column(
+                  children: item.subItems!.asMap().entries.map((entry) {
+                    final subIndex = entry.key;
+                    final subItem = entry.value;
+                    final isSubItemSelected =
+                        userDataStore.tabIndex == index + subIndex + 1;
+                    return ListTile(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      leading: Icon(
+                        subItem.icon,
+                        color: isSubItemSelected
+                            ? const Color(0xFF2563EB)
+                            : AppColors.grey,
+                      ),
+                      title: Text(
+                        subItem.label,
+                        softWrap: true,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        style: TextStyle(
+                          color: isSubItemSelected
+                              ? const Color(0xFF2563EB)
+                              : AppColors.grey,
+                        ),
+                      ),
+                      hoverColor: AppColors.primary.withOpacity(0.1),
+                      onTap: () {
+                        userDataStore.setTab(index + subIndex + 1);
+                        switch (subItem.label) {
+                          case "Invoices":
+                            _navigateTo(AppRoutes.invoices);
+                            break;
+                          case "Invoice Stock":
+                            _navigateTo(AppRoutes.invoiceStock);
+                            break;
+                          default:
+                            break;
+                        }
+                      },
+                      selected: isSubItemSelected,
+                      selectedTileColor: const Color(0xFFEFF6FF),
+                    );
+                  }).toList(),
+                ),
+              ),
+          ],
         );
       },
     );

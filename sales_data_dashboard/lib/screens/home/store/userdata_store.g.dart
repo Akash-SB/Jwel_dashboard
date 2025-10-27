@@ -73,6 +73,22 @@ mixin _$UserDataStore on _UserDataStore, Store {
     });
   }
 
+  late final _$sidebarItemsAtom =
+      Atom(name: '_UserDataStore.sidebarItems', context: context);
+
+  @override
+  List<SidebarItem> get sidebarItems {
+    _$sidebarItemsAtom.reportRead();
+    return super.sidebarItems;
+  }
+
+  @override
+  set sidebarItems(List<SidebarItem> value) {
+    _$sidebarItemsAtom.reportWrite(value, super.sidebarItems, () {
+      super.sidebarItems = value;
+    });
+  }
+
   late final _$invoicesAtom =
       Atom(name: '_UserDataStore.invoices', context: context);
 
@@ -317,6 +333,17 @@ mixin _$UserDataStore on _UserDataStore, Store {
   }
 
   @override
+  void setSidebarExpanded(int index, bool isExpanded) {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.setSidebarExpanded');
+    try {
+      return super.setSidebarExpanded(index, isExpanded);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setTab(int index) {
     final _$actionInfo = _$_UserDataStoreActionController.startAction(
         name: '_UserDataStore.setTab');
@@ -444,6 +471,7 @@ isLoading: ${isLoading},
 isAllDataLoaded: ${isAllDataLoaded},
 errorMessage: ${errorMessage},
 tabIndex: ${tabIndex},
+sidebarItems: ${sidebarItems},
 invoices: ${invoices},
 sixMonthSalesList: ${sixMonthSalesList},
 sixMonthPurchaseList: ${sixMonthPurchaseList},

@@ -42,11 +42,10 @@ class AppRoutes {
 
   static List<String> tabRoutes = [
     dashboard,
-    invoices,
-    sales,
-    purchase,
     partyDetails,
     stockMgmt,
-    invoiceStock,
+    sales,
+    purchase,
+    invoices,
   ];
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobx/mobx.dart';
@@ -66,6 +67,29 @@ abstract class _UserDataStore with Store {
 
   @observable
   int tabIndex = 0;
+
+  @observable
+  List<SidebarItem> sidebarItems = [
+    SidebarItem(icon: Icons.dashboard, label: "Dashboard"),
+    SidebarItem(icon: Icons.people, label: "Party Details"),
+    SidebarItem(icon: Icons.inventory, label: "Item Details"),
+    SidebarItem(icon: Icons.bar_chart, label: "Sales"),
+    SidebarItem(icon: Icons.shopping_cart, label: "Purchase"),
+    SidebarItem(
+      icon: Icons.receipt_long,
+      label: "Bill Management",
+      subItems: [
+        SidebarItem(icon: Icons.receipt, label: "Invoices"),
+        SidebarItem(icon: Icons.store, label: "Invoice Stock"),
+      ],
+    ),
+  ];
+
+  @action
+  void setSidebarExpanded(int index, bool isExpanded) {
+    sidebarItems.forEach((item) => item.isExpanded = false);
+    sidebarItems[index].isExpanded = !isExpanded;
+  }
 
   @action
   void setTab(int index) {
@@ -245,7 +269,6 @@ abstract class _UserDataStore with Store {
           partyDetails: salesList[saleIndex].partyDetails,
           createdAt: salesList[saleIndex].createdAt,
           dueDays: salesList[saleIndex].dueDays,
-          paymentOption: salesList[saleIndex].paymentOption,
           stockDetails: salesList[saleIndex].stockDetails,
           description: salesList[saleIndex].description,
         );
@@ -357,14 +380,11 @@ abstract class _UserDataStore with Store {
                 partyDetails: sale.partyDetails,
                 createdAt: sale.createdAt,
                 dueDays: sale.dueDays,
-                paymentOption: sale.paymentOption,
                 stockDetails: sale.stockDetails,
                 description: sale.description,
                 interestAmount: interestAmount,
                 brokerageAmount: (sale.brokerageAmount ?? 0),
-                paymentStatus: sale.paymentStatus,
                 agentDetails: sale.agentDetails,
-                partialPaymentDetails: sale.partialPaymentDetails,
                 interestPercent: sale.interestPercent,
                 brokeragePercent: sale.brokeragePercent,
               );
@@ -374,14 +394,11 @@ abstract class _UserDataStore with Store {
                 partyDetails: sale.partyDetails,
                 createdAt: sale.createdAt,
                 dueDays: sale.dueDays,
-                paymentOption: sale.paymentOption,
                 stockDetails: sale.stockDetails,
                 description: sale.description,
                 interestAmount: 0,
                 brokerageAmount: (sale.brokerageAmount ?? 0),
-                paymentStatus: sale.paymentStatus,
                 agentDetails: sale.agentDetails,
-                partialPaymentDetails: sale.partialPaymentDetails,
                 interestPercent: sale.interestPercent,
                 brokeragePercent: sale.brokeragePercent,
               );
@@ -392,7 +409,6 @@ abstract class _UserDataStore with Store {
               partyDetails: sale.partyDetails,
               createdAt: sale.createdAt,
               dueDays: sale.dueDays,
-              paymentOption: sale.paymentOption,
               stockDetails: sale.stockDetails,
               description: sale.description,
               interestAmount: 0,
@@ -503,7 +519,6 @@ abstract class _UserDataStore with Store {
           partyDetails: sale.partyDetails,
           createdAt: sale.createdAt,
           dueDays: sale.dueDays,
-          paymentOption: sale.paymentOption,
           stockDetails: sale.stockDetails,
           description: sale.description,
         );
@@ -561,4 +576,14 @@ abstract class _UserDataStore with Store {
   void setInvoiceStockList(List<InvoiceStockModel> stockItems) {
     stockItemList = ObservableList.of(stockItems);
   }
+}
+
+class SidebarItem {
+  final IconData icon;
+  final String label;
+  final List<SidebarItem>? subItems;
+  bool isExpanded;
+
+  SidebarItem({required this.icon, required this.label, this.subItems})
+      : isExpanded = false;
 }

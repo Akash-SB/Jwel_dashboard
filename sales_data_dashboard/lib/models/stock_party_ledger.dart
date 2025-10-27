@@ -1,5 +1,3 @@
-import 'package:sales_data_dashboard/models/sales_model.dart';
-
 class StockPartyLedger {
   final String id;
   final DateTime createdAt;
@@ -15,7 +13,6 @@ class StockPartyLedger {
   final String? agentName;
   final String? brokerage;
   final String transType;
-  final List<PartialPaymentDetails>? partialPaymentDetails;
 
   StockPartyLedger({
     required this.id,
@@ -32,7 +29,6 @@ class StockPartyLedger {
     this.description,
     required this.firm,
     required this.transType,
-    this.partialPaymentDetails,
   });
 }
 

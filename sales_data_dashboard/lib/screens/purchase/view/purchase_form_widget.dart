@@ -7,7 +7,6 @@ import 'package:sales_data_dashboard/screens/purchase/store/purchase_screen_stor
 import '../../../models/firm_model.dart';
 import '../../../models/party_model.dart';
 import '../../../models/purchase_model.dart';
-import '../../../models/sales_model.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/common_textfield.dart';
 import '../../../widgets/custom_radio_button.dart';
@@ -494,40 +493,6 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                     color: Color(0XFF111827),
                     fontWeight: FontWeight.w600,
                   )),
-              Observer(builder: (context) {
-                return Row(
-                  children: [
-                    Expanded(
-                      child: CommonDropdown(
-                        label: 'Payment Status',
-                        value: widget.purchaseStore.selectedPaymentStatus,
-                        options: [
-                          PaymentStatus.paid.name,
-                          PaymentStatus.unpaid.name
-                        ],
-                        onChanged: (value) => widget.purchaseStore
-                            .setSelectedPaymentStatus(value),
-                      ),
-                    ),
-                    SizedBox(width: 16.dp),
-                    Expanded(
-                      child: CommonDropdown(
-                        label: 'Payment Type',
-                        options: [
-                          PaymentOption.bank.name,
-                          PaymentOption.cash.name,
-                          PaymentOption.cheque.name,
-                          PaymentOption.upi.name,
-                        ],
-                        onChanged: (value) =>
-                            widget.purchaseStore.setSelectedPaymentType(value),
-                      ),
-                    ),
-                    SizedBox(width: 16.dp),
-                    const Expanded(child: SizedBox.shrink())
-                  ],
-                );
-              }),
               CommonTextField(
                   label: 'Note (Optional)',
                   controller: noteController,

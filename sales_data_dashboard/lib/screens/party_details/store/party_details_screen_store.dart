@@ -166,7 +166,6 @@ abstract class _PartyDetailsStore with Store {
               description: sale.description,
               dueDays: sale.dueDays,
               agentName: sale.agentDetails?.name ?? 'NA',
-              partialPaymentDetails: sale.partialPaymentDetails,
               firm: '',
               paymentStatus: '',
             ),

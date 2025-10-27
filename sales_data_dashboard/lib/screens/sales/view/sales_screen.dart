@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/Utils/common_utils.dart';
 import 'package:sales_data_dashboard/models/app_enum.dart';
 import 'package:sales_data_dashboard/models/sales_model.dart';
 import 'package:sales_data_dashboard/screens/dashboard/store/activity_store.dart';
@@ -67,8 +68,7 @@ class _SalesScreenState extends State<SalesScreen> {
     final List<TableColumn> columns = [
       TableColumn(label: 'Date', key: 'date', isSortable: true),
       TableColumn(label: 'Item Id', key: 'itemId', isSortable: true),
-      TableColumn(label: 'Pcs/Size', key: 'size'),
-      TableColumn(label: 'Carat', key: 'carat', isSortable: true),
+      TableColumn(label: 'Quantity', key: 'quantity', isSortable: true),
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
       TableColumn(
         label: 'Firm',
@@ -76,14 +76,6 @@ class _SalesScreenState extends State<SalesScreen> {
       ),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
       TableColumn(label: 'Due Days', key: 'dueDays', isSortable: true),
-      TableColumn(
-        label: 'Payment Status',
-        key: 'paymentStatus',
-      ),
-      TableColumn(
-        label: 'Payment Option',
-        key: 'paymentOption',
-      ),
       TableColumn(label: 'Description', key: 'description'),
       TableColumn(label: 'Actions', key: 'actions', isAction: true),
     ];
@@ -564,7 +556,7 @@ class _SalesScreenState extends State<SalesScreen> {
   String _getCellValue(Sale row, String key) {
     switch (key) {
       case 'date':
-        return row.createdAt.toIso8601String();
+        return CommonUtils.formatDate(row.createdAt);
       case 'itemId':
         return row.stockDetails.itemId;
       case 'quantity':
@@ -577,8 +569,6 @@ class _SalesScreenState extends State<SalesScreen> {
         return row.description ?? '';
       case 'dueDays':
         return row.dueDays.toString();
-      case 'paymentOption':
-        return row.paymentOption.toString();
       default:
         return '';
     }

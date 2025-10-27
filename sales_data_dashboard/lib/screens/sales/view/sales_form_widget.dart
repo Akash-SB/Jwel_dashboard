@@ -61,27 +61,9 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
   final TextEditingController agentGstController = TextEditingController();
   final TextEditingController agentBrokerageController =
       TextEditingController();
-  List<PartialPaymentDetails> partialPaymentDetails = [];
-  final TextEditingController partialPaymentAmountController =
-      TextEditingController();
-  final TextEditingController partialPaymentDateController =
-      TextEditingController();
+
   String paymentStatus = '';
   String paymentOption = '';
-
-  void addPartialPaymentDetail() {
-    if (partialPaymentAmountController.text.isNotEmpty &&
-        partialPaymentDateController.text.isNotEmpty) {
-      partialPaymentDetails.add(PartialPaymentDetails(
-        amountPaid: double.tryParse(partialPaymentAmountController.text) ?? 0.0,
-        paymentDate: DateTime.tryParse(partialPaymentDateController.text) ??
-            DateTime.now(),
-      ));
-      partialPaymentAmountController.clear();
-      partialPaymentDateController.clear();
-      setState(() {});
-    }
-  }
 
   void setBrokerageAmount() {
     if (brokPerController.text.isNotEmpty &&
@@ -122,9 +104,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       agentAddressController.text = sale.agentDetails?.address ?? '';
       agentMobileController.text = sale.agentDetails?.mobileNumber ?? '';
       agentGstController.text = sale.agentDetails?.gstNumber ?? '';
-      partialPaymentDetails = sale.partialPaymentDetails ?? [];
-      paymentStatus = sale.paymentStatus == 'paid' ? 'paid' : 'unpaid';
-      paymentOption = sale.paymentOption ?? '';
+
       if (sale.agentDetails != null) {
         widget.salesScreenStore.setAgentDetails(sale.agentDetails!);
         widget.salesScreenStore.setIsAgentSelected(true);
@@ -645,130 +625,16 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                         color: Color(0XFF111827),
                         fontWeight: FontWeight.w600,
                       )),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CommonDropdown(
-                          label: 'Payment Status',
-                          value: paymentStatus.isNotEmpty &&
-                                  ['paid', 'unpaid'].contains(paymentStatus)
-                              ? paymentStatus
-                              : null,
-                          options: [
-                            PaymentStatus.paid.name,
-                            PaymentStatus.unpaid.name
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 16.dp),
-                      Expanded(
-                        child: CommonDropdown(
-                          label: 'Payment Type',
-                          value: paymentOption.isNotEmpty &&
-                                  ['bank', 'cash', 'cheque', 'upi']
-                                      .contains(paymentOption)
-                              ? paymentOption
-                              : null,
-                          options: [
-                            PaymentOption.bank.name,
-                            PaymentOption.cash.name,
-                            PaymentOption.cheque.name,
-                            PaymentOption.upi.name,
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 16.dp),
-                      Expanded(
-                        child: CommonDropdown(
-                          label: 'Due Days',
-                          value: ['0', '30', '60', '45', '90', '120']
-                                  .contains(dueDaysController.text)
-                              ? dueDaysController.text
-                              : null,
-                          options: const ['0', '30', '60', '45', '90', '120'],
-                        ),
-                      ),
-                    ],
+                  SizedBox(height: 8.dp),
+                  CommonDropdown(
+                    label: 'Due Days',
+                    value: ['0', '30', '60', '45', '90', '120']
+                            .contains(dueDaysController.text)
+                        ? dueDaysController.text
+                        : null,
+                    options: const ['0', '30', '60', '45', '90', '120'],
                   ),
-                  SizedBox(height: 12.dp),
-                  if (widget.existingSale != null) ...[
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CommonTextField(
-                            label: 'Partial Payment Amount',
-                            controller: partialPaymentAmountController,
-                          ),
-                        ),
-                        SizedBox(width: 16.dp),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () async {
-                              final DateTime? picked = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                              );
-                              if (picked != null) {
-                                partialPaymentDateController.text =
-                                    picked.toString().split(' ')[0];
-                                setState(() {});
-                              }
-                            },
-                            child: AbsorbPointer(
-                              child: CommonTextField(
-                                label: 'Partial Payment Date',
-                                controller: partialPaymentDateController,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 16.dp),
-                        ElevatedButton(
-                          onPressed: addPartialPaymentDetail,
-                          child: const Text('Add'),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8.dp),
-                    if (partialPaymentDetails.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Partial Payment List:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: partialPaymentDetails.length,
-                            itemBuilder: (context, index) {
-                              final detail = partialPaymentDetails[index];
-                              return ListTile(
-                                title: Text(
-                                    'Amount: ${detail.amountPaid.toStringAsFixed(2)}'),
-                                subtitle: Text(
-                                    'Date: ${detail.paymentDate.toString().split(' ')[0]}'),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete,
-                                      color: Colors.red),
-                                  onPressed: () {
-                                    setState(() {
-                                      partialPaymentDetails.removeAt(index);
-                                    });
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                  ],
-                  SizedBox(height: 12.dp),
+                  SizedBox(height: 8.dp),
                   CommonTextField(
                       label: 'Note (Optional)',
                       controller: noteController,
@@ -842,13 +708,11 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                         id: '${DateTime.now().millisecondsSinceEpoch}',
                                       )
                                     : null,
-                                paymentOption: 'cash',
                                 dueDays: dueDaysController.text.isEmpty
                                     ? 60
                                     : int.parse(dueDaysController.text),
                                 description: descriptionController.text,
                                 createdAt: DateTime.now(),
-                                partialPaymentDetails: partialPaymentDetails,
                               );
 
                               if (widget.existingSale != null) {

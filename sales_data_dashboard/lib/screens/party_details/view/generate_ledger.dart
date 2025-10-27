@@ -57,27 +57,27 @@ class LedgerService {
   }) {
     double balance = 0.0;
 
-    for (var entry in allEntries.where(
-        (e) => e.customerId == customerId && e.createdAt.isBefore(fromDate))) {
-      final amount = double.tryParse(entry.amount) ?? 0.0;
+    // for (var entry in allEntries.where(
+    //     (e) => e.customerId == customerId && e.createdAt.isBefore(fromDate))) {
+    //   final amount = double.tryParse(entry.amount) ?? 0.0;
 
-      if (entry.transType == TransType.sale.name) {
-        balance += amount;
+    //   if (entry.transType == TransType.sale.name) {
+    //     balance += amount;
 
-        if (entry.partialPaymentDetails != null) {
-          for (var partial in entry.partialPaymentDetails!) {
-            final partialDate = partial.paymentDate;
-            if (partialDate.isBefore(fromDate)) {
-              balance -= partial.amountPaid;
-            }
-          }
-        } else if (entry.paymentStatus.toLowerCase() == "paid") {
-          balance -= amount;
-        }
-      } else if (entry.transType == TransType.purchase.name) {
-        balance -= amount;
-      }
-    }
+    //     if (entry.partialPaymentDetails != null) {
+    //       for (var partial in entry.partialPaymentDetails!) {
+    //         final partialDate = partial.paymentDate;
+    //         if (partialDate.isBefore(fromDate)) {
+    //           balance -= partial.amountPaid;
+    //         }
+    //       }
+    //     } else if (entry.paymentStatus.toLowerCase() == "paid") {
+    //       balance -= amount;
+    //     }
+    //   } else if (entry.transType == TransType.purchase.name) {
+    //     balance -= amount;
+    //   }
+    // }
 
     return balance;
   }
@@ -116,25 +116,26 @@ class LedgerService {
         ));
 
         // Partial payments (within fromDate-toDate)
-        if (entry.partialPaymentDetails != null) {
-          for (var partial in entry.partialPaymentDetails!) {
-            final partialDate = partial.paymentDate;
-            if (partialDate
-                    .isAfter(fromDate.subtract(const Duration(days: 1))) &&
-                partialDate.isBefore(toDate.add(const Duration(days: 1)))) {
-              final paidAmount = partial.amountPaid;
-              entries.add(LedgerEntry(
-                date: partialDate,
-                particulars:
-                    "Partial Payment (${partial.paymentMethod ?? 'N/A'})",
-                debit: null,
-                credit: paidAmount,
-                voucherNo: entry.id,
-                voucherType: "Partial Receipt",
-              ));
-            }
-          }
-        } else if (entry.paymentStatus.toLowerCase() == "paid") {
+        // if (entry.partialPaymentDetails != null) {
+        //   for (var partial in entry.partialPaymentDetails!) {
+        //     final partialDate = partial.paymentDate;
+        //     if (partialDate
+        //             .isAfter(fromDate.subtract(const Duration(days: 1))) &&
+        //         partialDate.isBefore(toDate.add(const Duration(days: 1)))) {
+        //       final paidAmount = partial.amountPaid;
+        //       entries.add(LedgerEntry(
+        //         date: partialDate,
+        //         particulars:
+        //             "Partial Payment (${partial.paymentMethod ?? 'N/A'})",
+        //         debit: null,
+        //         credit: paidAmount,
+        //         voucherNo: entry.id,
+        //         voucherType: "Partial Receipt",
+        //       ));
+        //     }
+        //   }
+        // } else
+        if (entry.paymentStatus.toLowerCase() == "paid") {
           entries.add(LedgerEntry(
             date: entry.createdAt,
             particulars: "Payment Received",
