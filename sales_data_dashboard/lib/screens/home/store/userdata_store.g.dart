@@ -234,6 +234,22 @@ mixin _$UserDataStore on _UserDataStore, Store {
     });
   }
 
+  late final _$paymentListAtom =
+      Atom(name: '_UserDataStore.paymentList', context: context);
+
+  @override
+  ObservableList<PaymentModel> get paymentList {
+    _$paymentListAtom.reportRead();
+    return super.paymentList;
+  }
+
+  @override
+  set paymentList(ObservableList<PaymentModel> value) {
+    _$paymentListAtom.reportWrite(value, super.paymentList, () {
+      super.paymentList = value;
+    });
+  }
+
   late final _$setNotificationListAsyncAction =
       AsyncAction('_UserDataStore.setNotificationList', context: context);
 
@@ -465,6 +481,17 @@ mixin _$UserDataStore on _UserDataStore, Store {
   }
 
   @override
+  void setPaymentList(List<PaymentModel> payments) {
+    final _$actionInfo = _$_UserDataStoreActionController.startAction(
+        name: '_UserDataStore.setPaymentList');
+    try {
+      return super.setPaymentList(payments);
+    } finally {
+      _$_UserDataStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 isLoading: ${isLoading},
@@ -480,7 +507,8 @@ salesList: ${salesList},
 purchaseList: ${purchaseList},
 partiesList: ${partiesList},
 notfList: ${notfList},
-stockItemList: ${stockItemList}
+stockItemList: ${stockItemList},
+paymentList: ${paymentList}
     ''';
   }
 }

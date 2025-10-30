@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/models/invoice_notification_model.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
+import 'package:sales_data_dashboard/models/payment_model.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/stock_item.dart';
 import 'package:sqflite/sqflite.dart';
@@ -46,6 +47,9 @@ abstract class _UserDataStore with Store {
   final CollectionReference stockInvoiceItemRefs =
       FirebaseFirestore.instance.collection('InvoiceStockItems');
 
+  final CollectionReference paymentItemRefs =
+      FirebaseFirestore.instance.collection('payments');
+
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -75,6 +79,7 @@ abstract class _UserDataStore with Store {
     SidebarItem(icon: Icons.inventory, label: "Item Details"),
     SidebarItem(icon: Icons.bar_chart, label: "Sales"),
     SidebarItem(icon: Icons.shopping_cart, label: "Purchase"),
+    SidebarItem(icon: Icons.attach_money, label: "Payments"),
     SidebarItem(
       icon: Icons.receipt_long,
       label: "Bill Management",
@@ -193,6 +198,9 @@ abstract class _UserDataStore with Store {
 
   @observable
   ObservableList<InvoiceStockModel> stockItemList = ObservableList.of([]);
+
+  @observable
+  ObservableList<PaymentModel> paymentList = ObservableList.of([]);
 
   @action
   void fillNotificationList(List<InvoiceNotificationModel> list) {
@@ -575,6 +583,11 @@ abstract class _UserDataStore with Store {
   @action
   void setInvoiceStockList(List<InvoiceStockModel> stockItems) {
     stockItemList = ObservableList.of(stockItems);
+  }
+
+  @action
+  void setPaymentList(List<PaymentModel> payments) {
+    paymentList = ObservableList.of(payments);
   }
 }
 

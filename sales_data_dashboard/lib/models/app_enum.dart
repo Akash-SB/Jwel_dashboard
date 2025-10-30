@@ -26,3 +26,5 @@ enum PaymentStatusEnum {
 enum PaymentTypeEnum { cash, cheque, online, all }
 
 enum LedgerTransactionType { credit, debit, openingBalance }
+
+enum PaymentNature { credit, debit }
