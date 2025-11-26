@@ -301,6 +301,14 @@ mixin _$UserDataStore on _UserDataStore, Store {
     return _$fetchPartyListAsyncAction.run(() => super.fetchPartyList());
   }
 
+  late final _$fetchPaymentsAsyncAction =
+      AsyncAction('_UserDataStore.fetchPayments', context: context);
+
+  @override
+  Future<void> fetchPayments() {
+    return _$fetchPaymentsAsyncAction.run(() => super.fetchPayments());
+  }
+
   late final _$fetchSalesListAsyncAction =
       AsyncAction('_UserDataStore.fetchSalesList', context: context);
 
@@ -349,11 +357,11 @@ mixin _$UserDataStore on _UserDataStore, Store {
   }
 
   @override
-  void setSidebarExpanded(int index, bool isExpanded) {
+  void toggleSidebarItemExpansion(int index) {
     final _$actionInfo = _$_UserDataStoreActionController.startAction(
-        name: '_UserDataStore.setSidebarExpanded');
+        name: '_UserDataStore.toggleSidebarItemExpansion');
     try {
-      return super.setSidebarExpanded(index, isExpanded);
+      return super.toggleSidebarItemExpansion(index);
     } finally {
       _$_UserDataStoreActionController.endAction(_$actionInfo);
     }

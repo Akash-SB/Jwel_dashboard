@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/app_routes.dart';
+import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
 import 'package:sales_data_dashboard/theme.dart';
 
 import '../../models/invoice_notification_model.dart';
@@ -150,7 +151,7 @@ class _IndexScreenState extends State<IndexScreen> {
                 child: userDataStore.isAllDataLoaded.value
                     ? Navigator(
                         key: _navigatorKey,
-                        initialRoute: AppRoutes.dashboard,
+                        initialRoute: AppRoutes.home,
                         onGenerateRoute: AppRoutes.generateRoute,
                       )
                     : const Center(
@@ -164,8 +165,11 @@ class _IndexScreenState extends State<IndexScreen> {
     );
   }
 
-  void _navigateTo(String route) {
-    _navigatorKey.currentState?.pushReplacementNamed(route);
+  void _navigateTo(String route, {dynamic args}) {
+    _navigatorKey.currentState?.pushReplacementNamed(
+      route,
+      arguments: args,
+    );
   }
 
   Widget _sidebarItem(SidebarItem item, int index) {
@@ -180,46 +184,62 @@ class _IndexScreenState extends State<IndexScreen> {
               ),
               leading: Icon(
                 item.icon,
-                color: isSelected ? const Color(0xFF2563EB) : AppColors.grey,
+                color: isSelected ||
+                        (userDataStore.tabIndex
+                            .toString()
+                            .startsWith('${index + 1}0'))
+                    ? const Color(0xFF2563EB)
+                    : AppColors.grey,
               ),
               title: Text(
                 item.label,
                 softWrap: true,
                 overflow: TextOverflow.fade,
-                maxLines: 1,
+                maxLines: 2,
                 style: TextStyle(
-                  color: isSelected ? const Color(0xFF2563EB) : AppColors.grey,
+                  color: isSelected ||
+                          (userDataStore.tabIndex
+                              .toString()
+                              .startsWith('${index + 1}0'))
+                      ? const Color(0xFF2563EB)
+                      : AppColors.grey,
                 ),
               ),
               trailing: item.subItems != null
                   ? Icon(
-                      item.isExpanded
-                          ? Icons.keyboard_arrow_up
-                          : Icons.keyboard_arrow_down,
-                      color:
-                          isSelected ? const Color(0xFF2563EB) : AppColors.grey,
+                      Icons.keyboard_arrow_down,
+                      color: isSelected ||
+                              (userDataStore.tabIndex
+                                  .toString()
+                                  .startsWith('${index + 1}0'))
+                          ? const Color(0xFF2563EB)
+                          : AppColors.grey,
                     )
                   : null,
               hoverColor: AppColors.primary.withOpacity(0.1),
               onTap: () {
                 userDataStore.setTab(index);
-                userDataStore.setSidebarExpanded(index, item.isExpanded);
                 if (item.subItems == null) {
-                  _navigateTo(AppRoutes.tabRoutes[index]);
+                  _navigateTo(item.route ?? AppRoutes.dashboard,
+                      args: item.args);
                 }
               },
               selected: isSelected,
               selectedTileColor: const Color(0xFFEFF6FF),
             ),
-            if (item.subItems != null && item.isExpanded)
+            if (item.subItems != null &&
+                ((userDataStore.tabIndex
+                        .toString()
+                        .startsWith('${index + 1}0')) ||
+                    userDataStore.tabIndex == index))
               Padding(
                 padding: EdgeInsets.only(left: 32.dp),
                 child: Column(
                   children: item.subItems!.asMap().entries.map((entry) {
                     final subIndex = entry.key;
                     final subItem = entry.value;
-                    final isSubItemSelected =
-                        userDataStore.tabIndex == index + subIndex + 1;
+                    final isSubItemSelected = userDataStore.tabIndex ==
+                        int.parse('${(index + 1)}0${(subIndex)}');
                     return ListTile(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -243,17 +263,10 @@ class _IndexScreenState extends State<IndexScreen> {
                       ),
                       hoverColor: AppColors.primary.withOpacity(0.1),
                       onTap: () {
-                        userDataStore.setTab(index + subIndex + 1);
-                        switch (subItem.label) {
-                          case "Invoices":
-                            _navigateTo(AppRoutes.invoices);
-                            break;
-                          case "Invoice Stock":
-                            _navigateTo(AppRoutes.invoiceStock);
-                            break;
-                          default:
-                            break;
-                        }
+                        userDataStore
+                            .setTab(int.parse('${(index + 1)}0${(subIndex)}'));
+                        _navigateTo(subItem.route ?? AppRoutes.dashboard,
+                            args: subItem.args);
                       },
                       selected: isSubItemSelected,
                       selectedTileColor: const Color(0xFFEFF6FF),

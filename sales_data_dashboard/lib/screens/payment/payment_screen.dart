@@ -47,8 +47,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
     paymentStore = getIt<PaymentScreenStore>();
 
     if (userDataStore.paymentList.isEmpty) {
-      paymentStore.fetchPayments();
-      userDataStore.setPaymentList(paymentStore.paymentList);
+      paymentStore.fetchPayments().then((final _) {
+        userDataStore.setPaymentList(paymentStore.paymentList);
+      });
     } else {
       paymentStore.setPaymentList(userDataStore.paymentList);
     }

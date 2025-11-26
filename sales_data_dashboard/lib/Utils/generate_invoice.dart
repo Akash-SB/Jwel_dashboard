@@ -61,7 +61,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
       header: (context) {
         // ✅ HEADER with logo and company name
         return pw.Container(
-          color: PdfColors.blue200, // Light navy blue shade
+          color: PdfColors.grey300,
           padding: const pw.EdgeInsets.all(8),
           child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -112,7 +112,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
         pw.Container(
           padding: const pw.EdgeInsets.all(8),
           decoration: pw.BoxDecoration(
-            border: pw.Border.all(),
+            border: pw.Border.all(color: PdfColors.grey300),
           ),
           child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -130,7 +130,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
         pw.Container(
           padding: const pw.EdgeInsets.all(8),
           decoration: pw.BoxDecoration(
-            border: pw.Border.all(),
+            border: pw.Border.all(color: PdfColors.grey300),
           ),
           child: pw.Center(
             child: pw.Text('Cash / Credit',
@@ -140,7 +140,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
 
         // ✅ INVOICE INFO BLOCK
         pw.Container(
-          decoration: pw.BoxDecoration(border: pw.Border.all()),
+          decoration:
+              pw.BoxDecoration(border: pw.Border.all(color: PdfColors.grey300)),
           child: pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
@@ -150,7 +151,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                   padding: const pw.EdgeInsets.all(4),
                   decoration: pw.BoxDecoration(
                       border: pw.Border(
-                          right: pw.BorderSide(color: PdfColors.black))),
+                          right: pw.BorderSide(color: PdfColors.grey300))),
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
@@ -192,7 +193,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
         ),
         // ✅ RECIPIENT BLOCK
         pw.Container(
-          decoration: pw.BoxDecoration(border: pw.Border.all()),
+          decoration:
+              pw.BoxDecoration(border: pw.Border.all(color: PdfColors.grey300)),
           child: pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
@@ -201,7 +203,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                   padding: const pw.EdgeInsets.all(4),
                   decoration: pw.BoxDecoration(
                       border: pw.Border(
-                          right: pw.BorderSide(color: PdfColors.black))),
+                          right: pw.BorderSide(color: PdfColors.grey300))),
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
@@ -257,7 +259,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
         ),
         // ✅ TABLE
         pw.Table(
-          border: pw.TableBorder.all(width: 0.8),
+          border: pw.TableBorder.all(width: 0.8, color: PdfColors.grey700),
           columnWidths: {
             0: const pw.FlexColumnWidth(0.6),
             1: const pw.FlexColumnWidth(3),
@@ -271,7 +273,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
           children: [
             // header
             pw.TableRow(
-              decoration: const pw.BoxDecoration(color: PdfColors.blue300),
+              decoration: const pw.BoxDecoration(color: PdfColors.grey200),
               children: [
                 headerCell('Sr. No', robotoFont),
                 headerCell('Description of Goods/Services', robotoFont),
@@ -285,7 +287,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
             ),
             // single row
             pw.TableRow(
-              decoration: const pw.BoxDecoration(color: PdfColors.blue100),
+              decoration: const pw.BoxDecoration(color: PdfColors.grey100),
               children: [
                 dataCell(
                   '1',
@@ -339,7 +341,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
             ),
             // total row
             pw.TableRow(
-              decoration: const pw.BoxDecoration(color: PdfColors.blue300),
+              decoration: const pw.BoxDecoration(color: PdfColors.grey200),
               children: [
                 dataCell('', robotoFont),
                 dataCell('', robotoFont),
@@ -356,10 +358,14 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
         pw.Container(
           height: 20,
           width: double.infinity,
-          decoration: pw.BoxDecoration(border: pw.Border.all()),
+          decoration: pw.BoxDecoration(
+              border: pw.Border.symmetric(
+                  vertical:
+                      pw.BorderSide(width: 0.8, color: PdfColors.grey300))),
         ),
         pw.Container(
-          decoration: pw.BoxDecoration(border: pw.Border.all()),
+          decoration:
+              pw.BoxDecoration(border: pw.Border.all(color: PdfColors.grey300)),
           child: pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
@@ -377,7 +383,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                       pw.Container(
                           width: double.infinity,
                           padding: const pw.EdgeInsets.all(4),
-                          decoration: pw.BoxDecoration(border: pw.Border.all()),
+                          decoration: pw.BoxDecoration(
+                              border: pw.Border.all(color: PdfColors.grey300)),
                           child: pw.Column(
                               crossAxisAlignment: pw.CrossAxisAlignment.start,
                               children: [
@@ -406,7 +413,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                       pw.Container(
                           width: double.infinity,
                           padding: const pw.EdgeInsets.all(4),
-                          decoration: pw.BoxDecoration(border: pw.Border.all()),
+                          decoration: pw.BoxDecoration(
+                              border: pw.Border.all(color: PdfColors.grey300)),
                           child: pw.Column(
                               crossAxisAlignment: pw.CrossAxisAlignment.start,
                               children: [
@@ -446,7 +454,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                     pw.Container(
                       height: 80,
                       padding: const pw.EdgeInsets.all(4),
-                      decoration: pw.BoxDecoration(border: pw.Border.all()),
+                      decoration: pw.BoxDecoration(
+                          border: pw.Border.all(color: PdfColors.grey300)),
                       child: pw.Column(
                         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -476,26 +485,26 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
           padding: const pw.EdgeInsets.only(top: 8),
           decoration: const pw.BoxDecoration(
             border: pw.Border(
-              top: pw.BorderSide(width: 0.5, color: PdfColors.grey),
+              top: pw.BorderSide(width: 0.5, color: PdfColors.grey300),
             ),
           ),
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-                children: [
-                  pw.Image(pw.MemoryImage(redStoneBytes),
-                      width: 30, height: 30),
-                  pw.Image(pw.MemoryImage(blueStoneBytes),
-                      width: 20, height: 20),
-                  pw.Image(pw.MemoryImage(purpleStoneBytes),
-                      width: 20, height: 20),
-                  pw.Image(pw.MemoryImage(orangeStoneBytes),
-                      width: 20, height: 20),
-                  pw.Image(pw.MemoryImage(diamondBytes), width: 30, height: 30),
-                ],
-              ),
+              // pw.Row(
+              //   mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+              //   children: [
+              //     pw.Image(pw.MemoryImage(redStoneBytes),
+              //         width: 30, height: 30),
+              //     pw.Image(pw.MemoryImage(blueStoneBytes),
+              //         width: 20, height: 20),
+              //     pw.Image(pw.MemoryImage(purpleStoneBytes),
+              //         width: 20, height: 20),
+              //     pw.Image(pw.MemoryImage(orangeStoneBytes),
+              //         width: 20, height: 20),
+              //     pw.Image(pw.MemoryImage(diamondBytes), width: 30, height: 30),
+              //   ],
+              // ),
               pw.SizedBox(height: 8),
               pw.Text(selectedParentCompany.address,
                   style: pw.TextStyle(
@@ -506,9 +515,9 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                 children: [
                   pw.Text('Phone: ${selectedParentCompany.phone}',
                       style: pw.TextStyle(fontSize: 9)),
-                  pw.SizedBox(width: 20),
-                  pw.Text('Email: ${selectedParentCompany.email}',
-                      style: pw.TextStyle(fontSize: 9)),
+                  // pw.SizedBox(width: 20),
+                  // pw.Text('Email: ${selectedParentCompany.email}',
+                  //     style: pw.TextStyle(fontSize: 9)),
                 ],
               ),
               pw.SizedBox(height: 8),
@@ -565,7 +574,8 @@ pw.Widget rowTax(String label, String value, pw.Font font,
     {bool bold = false}) {
   return pw.Container(
     padding: const pw.EdgeInsets.all(4),
-    decoration: pw.BoxDecoration(border: pw.Border.all()),
+    decoration:
+        pw.BoxDecoration(border: pw.Border.all(color: PdfColors.grey300)),
     child: pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [

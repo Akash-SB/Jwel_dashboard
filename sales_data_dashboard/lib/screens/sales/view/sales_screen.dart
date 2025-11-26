@@ -70,10 +70,6 @@ class _SalesScreenState extends State<SalesScreen> {
       TableColumn(label: 'Item Id', key: 'itemId', isSortable: true),
       TableColumn(label: 'Quantity', key: 'quantity', isSortable: true),
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
-      TableColumn(
-        label: 'Firm',
-        key: 'firmType',
-      ),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
       TableColumn(label: 'Due Days', key: 'dueDays', isSortable: true),
       TableColumn(label: 'Description', key: 'description'),

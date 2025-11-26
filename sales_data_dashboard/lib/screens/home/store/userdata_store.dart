@@ -6,12 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobx/mobx.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sales_data_dashboard/app_routes.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/models/invoice_notification_model.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
 import 'package:sales_data_dashboard/models/payment_model.dart';
 import 'package:sales_data_dashboard/models/purchase_model.dart';
 import 'package:sales_data_dashboard/models/stock_item.dart';
+import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tzdata;
@@ -74,26 +76,95 @@ abstract class _UserDataStore with Store {
 
   @observable
   List<SidebarItem> sidebarItems = [
-    SidebarItem(icon: Icons.dashboard, label: "Dashboard"),
-    SidebarItem(icon: Icons.people, label: "Party Details"),
-    SidebarItem(icon: Icons.inventory, label: "Item Details"),
-    SidebarItem(icon: Icons.bar_chart, label: "Sales"),
-    SidebarItem(icon: Icons.shopping_cart, label: "Purchase"),
-    SidebarItem(icon: Icons.attach_money, label: "Payments"),
     SidebarItem(
       icon: Icons.receipt_long,
-      label: "Bill Management",
+      label: "Sahajanand Jwellers Bills",
+      isExpanded: true,
       subItems: [
-        SidebarItem(icon: Icons.receipt, label: "Invoices"),
-        SidebarItem(icon: Icons.store, label: "Invoice Stock"),
+        SidebarItem(
+            icon: Icons.receipt,
+            label: "Invoices",
+            route: AppRoutes.invoices,
+            args: CompanyModel(
+              name: 'SAHAJANAND GEMS',
+              gstin: '27BSXPP8815N1ZH',
+              address:
+                  'Near Municipla Garden, B-709, Ramdev Park CHS LTD, Chandavarkar Road Mumbai - 400092',
+              phone: '+91-9029999829',
+              email: '-',
+              bankName: 'State Bank of India',
+              bankAccountNo: '41702974607',
+              bankIfscCode: 'SBIN0000347',
+              bankBranch: '-',
+              bankAddress: '-',
+              panNumber: '-',
+            )),
+        SidebarItem(
+          icon: Icons.store,
+          label: "Invoice Stock",
+          route: AppRoutes.invoiceStock,
+        ),
       ],
+    ),
+    SidebarItem(
+      icon: Icons.receipt_long,
+      label: "Harikrishna Int. Bills",
+      subItems: [
+        SidebarItem(
+          icon: Icons.receipt,
+          label: "Invoices",
+          route: AppRoutes.invoices,
+          args: CompanyModel(
+            name: 'Harikrishna Enterprises',
+            gstin: '24A0HPP0279F1ZZ',
+            address: 'G0781, Maniyarwado, Paniyari, khambhat, Gujarat 388620',
+            phone: '+91-9029999829',
+            email: '-',
+            bankName: 'HDFC Bank - KHAMBHAT',
+            bankAccountNo: '50200066523665',
+            bankIfscCode: 'HDFC0001685',
+            bankBranch: '-',
+            bankAddress: '-',
+            panNumber: '-',
+          ),
+        ),
+      ],
+    ),
+    SidebarItem(
+      icon: Icons.dashboard,
+      label: "Dashboard",
+      route: AppRoutes.dashboard,
+    ),
+    SidebarItem(
+      icon: Icons.people,
+      label: "Party Details",
+      route: AppRoutes.partyDetails,
+    ),
+    SidebarItem(
+      icon: Icons.inventory,
+      label: "Item Details",
+      route: AppRoutes.stockMgmt,
+    ),
+    SidebarItem(
+      icon: Icons.bar_chart,
+      label: "Sales",
+      route: AppRoutes.sales,
+    ),
+    SidebarItem(
+      icon: Icons.shopping_cart,
+      label: "Purchase",
+      route: AppRoutes.purchase,
+    ),
+    SidebarItem(
+      icon: Icons.attach_money,
+      label: "Payments",
+      route: AppRoutes.payments,
     ),
   ];
 
   @action
-  void setSidebarExpanded(int index, bool isExpanded) {
-    sidebarItems.forEach((item) => item.isExpanded = false);
-    sidebarItems[index].isExpanded = !isExpanded;
+  void toggleSidebarItemExpansion(int index) {
+    sidebarItems[index].isExpanded = !sidebarItems[index].isExpanded;
   }
 
   @action
@@ -365,6 +436,21 @@ abstract class _UserDataStore with Store {
   }
 
   @action
+  Future<void> fetchPayments() async {
+    try {
+      final querySnapshot = await paymentItemRefs.get();
+      final fetched = querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return PaymentModel.fromMap(data);
+      }).toList();
+
+      paymentList = ObservableList<PaymentModel>.of(fetched);
+    } catch (e) {
+      errorMessage = e.toString();
+    }
+  }
+
+  @action
   Future<void> fetchSalesList() async {
     try {
       final querySnapshot = await salesRefs.get();
@@ -453,6 +539,7 @@ abstract class _UserDataStore with Store {
     await fetchPartyList();
     await fetchInvoices();
     await fetchStockItemList();
+    await fetchPayments();
     await setNotificationList(salesList);
     isLoading = false;
     getLastSixMonthsTxns(salesList, purchaseList);
@@ -596,7 +683,14 @@ class SidebarItem {
   final String label;
   final List<SidebarItem>? subItems;
   bool isExpanded;
+  final String? route;
+  final dynamic args;
 
-  SidebarItem({required this.icon, required this.label, this.subItems})
-      : isExpanded = false;
+  SidebarItem(
+      {required this.icon,
+      required this.label,
+      this.subItems,
+      this.route,
+      this.args,
+      this.isExpanded = false});
 }

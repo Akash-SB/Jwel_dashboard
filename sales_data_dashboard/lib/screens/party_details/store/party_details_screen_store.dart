@@ -150,44 +150,22 @@ abstract class _PartyDetailsStore with Store {
   void filterLedgerList() {
     List<StockPartyLedger> ledgers = [];
     ledgers.addAll(
-      userDataStore.salesList
-          .where((final sale) =>
-              sale.partyDetails.name == selectedParty?.value.name)
-          .map(
-            (final sale) => StockPartyLedger(
-              id: sale.id,
-              createdAt: sale.createdAt,
-              customerId: sale.partyDetails.id,
-              customerName: sale.partyDetails.name,
-              productId: sale.stockDetails.itemId,
-              quantity: sale.stockDetails.availableQuantity.toString(),
-              amount: sale.stockDetails.amount.toString(),
-              transType: TransType.sale.name,
-              description: sale.description,
-              dueDays: sale.dueDays,
-              agentName: sale.agentDetails?.name ?? 'NA',
-              firm: '',
-              paymentStatus: '',
-            ),
-          ),
-    );
-    ledgers.addAll(
-      userDataStore.purchaseList
+      userDataStore.paymentList
           .where((final purchase) =>
-              purchase.partyDetails.name == selectedParty?.value.name)
+              purchase.party.name == selectedParty?.value.name)
           .map(
             (final purchase) => StockPartyLedger(
               id: purchase.id,
-              createdAt: purchase.createdAt,
-              customerId: purchase.partyDetails.id,
-              customerName: purchase.partyDetails.name,
+              createdAt: purchase.date ?? DateTime.now(),
+              customerId: purchase.party.id,
+              customerName: purchase.party.name,
               productId: purchase.stockDetails.itemId,
               quantity: purchase.stockDetails.availableQuantity.toString(),
-              amount: purchase.stockDetails.amount.toString(),
-              firm: purchase.firm,
+              amount: purchase.amount.toString(),
+              firm: '',
               transType: TransType.purchase.name,
-              description: purchase.description,
-              agentName: purchase.agentDetails?.name ?? 'NA',
+              description: '',
+              agentName: '',
               paymentStatus: '',
             ),
           ),

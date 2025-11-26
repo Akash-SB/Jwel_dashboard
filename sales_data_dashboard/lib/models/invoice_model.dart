@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
 import 'app_enum.dart';
 
 class InvoiceModel {
@@ -10,8 +13,6 @@ class InvoiceModel {
   final TransactionTypeEnum transactionType;
   final UsertypeEnum custType;
   final String custName;
-  final PaymentStatusEnum paymentStatus;
-  final PaymentTypeEnum? paymentType;
   final String? note;
   final String? productName;
   final String hsnCode;
@@ -20,6 +21,7 @@ class InvoiceModel {
   final String? custPhone;
   final String? custGst;
   final String? itemId;
+  final CompanyModel selectedFirm;
 
   InvoiceModel({
     required this.invoiceId,
@@ -31,8 +33,6 @@ class InvoiceModel {
     required this.transactionType,
     required this.custType,
     required this.custName,
-    required this.paymentStatus,
-    this.paymentType,
     this.note,
     this.hsnCode = '',
     this.interestDays,
@@ -40,6 +40,7 @@ class InvoiceModel {
     this.custPhone,
     this.custGst,
     this.itemId,
+    required this.selectedFirm,
   });
 
   /// Convert to Firestore map
@@ -53,8 +54,6 @@ class InvoiceModel {
         'transactionType': transactionType.name,
         'custType': custType.name,
         'custName': custName,
-        'paymentStatus': paymentStatus.name,
-        'paymentType': paymentType?.name,
         'createdAt': FieldValue.serverTimestamp(),
         'note': note,
         'hsnCode': hsnCode,
@@ -63,44 +62,43 @@ class InvoiceModel {
         'custPhone': custPhone,
         'custGst': custGst,
         'itemId': itemId,
+        'selectedFirmName': jsonEncode(selectedFirm.toMap()),
       };
 
   /// Construct from Firestore map
   factory InvoiceModel.fromMap(Map<String, dynamic> map) {
     return InvoiceModel(
-      invoiceId: map['invoiceId'] ?? '',
-      date: map['date'] ?? '',
-      size: map['carat'] ?? '',
-      rate: map['rate'] ?? '',
-      amount: map['amount'] ?? '',
-      productName: map['productName'] ?? '',
-      transactionType: TransactionTypeEnum.values.firstWhere(
-        (e) => e.name == map['transactionType'],
-        orElse: () => TransactionTypeEnum.sell,
-      ),
-      custType: UsertypeEnum.values.firstWhere(
-        (e) => e.name == map['custType'],
-        orElse: () => UsertypeEnum.broker,
-      ),
-      custName: map['custName'] ?? '',
-      paymentStatus: PaymentStatusEnum.values.firstWhere(
-        (e) => e.name == map['paymentStatus'],
-        orElse: () => PaymentStatusEnum.unpaid,
-      ),
-      paymentType: map['paymentType'] != null
-          ? PaymentTypeEnum.values.firstWhere(
-              (e) => e.name == map['paymentType'],
-              orElse: () => PaymentTypeEnum.cash,
-            )
-          : null,
-      note: map['note'],
-      hsnCode: map['hsnCode'] ?? '',
-      interestDays: map['interestDays'] ?? '',
-      custAddress: map['custAddress'],
-      custPhone: map['custPhone'],
-      custGst: map['custGst'],
-      itemId: map['itemId'],
-    );
+        invoiceId: map['invoiceId'] ?? '',
+        date: map['date'] ?? '',
+        size: map['carat'] ?? '',
+        rate: map['rate'] ?? '',
+        amount: map['amount'] ?? '',
+        productName: map['productName'] ?? '',
+        transactionType: TransactionTypeEnum.values.firstWhere(
+          (e) => e.name == map['transactionType'],
+          orElse: () => TransactionTypeEnum.sell,
+        ),
+        custType: UsertypeEnum.values.firstWhere(
+          (e) => e.name == map['custType'],
+          orElse: () => UsertypeEnum.broker,
+        ),
+        custName: map['custName'] ?? '',
+        note: map['note'],
+        hsnCode: map['hsnCode'] ?? '',
+        interestDays: map['interestDays'] ?? '',
+        custAddress: map['custAddress'],
+        custPhone: map['custPhone'],
+        custGst: map['custGst'],
+        itemId: map['itemId'],
+        selectedFirm: CompanyModel(
+          name:
+              jsonDecode(map['selectedFirmName'])['name'] ?? 'Default Company',
+          gstin: jsonDecode(map['selectedFirmName'])['gstin'] ?? '',
+          address: jsonDecode(map['selectedFirmName'])['address'] ?? '',
+          phone: jsonDecode(map['selectedFirmName'])['phone'] ?? '',
+          email: jsonDecode(map['selectedFirmName'])['email'] ?? '',
+          panNumber: jsonDecode(map['selectedFirmName'])['panNumber'] ?? '',
+        ));
   }
 
   /// Construct from Firestore document snapshot
@@ -121,8 +119,6 @@ class InvoiceModel {
       transactionType: transactionType,
       custType: custType,
       custName: custName,
-      paymentStatus: paymentStatus,
-      paymentType: paymentType,
       note: note,
       hsnCode: hsnCode,
       interestDays: interestDays,
@@ -130,6 +126,7 @@ class InvoiceModel {
       custPhone: custPhone,
       custGst: custGst,
       itemId: itemId,
+      selectedFirm: selectedFirm,
     );
   }
 

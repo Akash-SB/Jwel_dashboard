@@ -713,6 +713,9 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                     : int.parse(dueDaysController.text),
                                 description: descriptionController.text,
                                 createdAt: DateTime.now(),
+                                quantity:
+                                    double.tryParse(sellQuantController.text) ??
+                                        0.0,
                               );
 
                               if (widget.existingSale != null) {

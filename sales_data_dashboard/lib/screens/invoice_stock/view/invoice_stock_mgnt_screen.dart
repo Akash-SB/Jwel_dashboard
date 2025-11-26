@@ -9,7 +9,6 @@ import 'package:sales_data_dashboard/screens/invoice_stock/view/invoice_stock_le
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 
 import '../../../models/firm_model.dart';
-import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/custom_data_table.dart';
 import '../../../widgets/custom_image_button.dart';
 
@@ -118,23 +117,20 @@ class _InvoiceStockMgntScreenState extends State<InvoiceStockMgntScreen> {
                           return SizedBox(
                             child: Row(
                               children: [
-                                IntrinsicWidth(
-                                  child: CommonDropdown(
-                                    label: 'Firm',
-                                    value: invoiceStockStore.selectedFirm,
-                                    onChanged: (p0) {
-                                      invoiceStockStore.setSelectedFirm(p0!);
-                                      invoiceStockStore.isFiltersApplied();
-                                    },
-                                    options: [
-                                      Firm.sahajanand.name,
-                                      Firm.harikrishnaEnterprise.name,
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 12.dp,
-                                ),
+                                // IntrinsicWidth(
+                                //   child: CommonDropdown(
+                                //     label: 'Firm',
+                                //     value: invoiceStockStore.selectedFirm,
+                                //     onChanged: (p0) {
+                                //       invoiceStockStore.setSelectedFirm(p0!);
+                                //       invoiceStockStore.isFiltersApplied();
+                                //     },
+                                //     options: [
+                                //       Firm.sahajanand.name,
+                                //       Firm.harikrishnaEnterprise.name,
+                                //     ],
+                                //   ),
+                                // ),
                                 SizedBox(
                                   width: 300.dp,
                                   child: CustomSearchBar(

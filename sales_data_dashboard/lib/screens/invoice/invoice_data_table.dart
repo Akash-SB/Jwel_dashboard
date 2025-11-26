@@ -46,20 +46,7 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
       final matchesSearch = item.invoiceId.toLowerCase().contains(query) ||
           item.custName.toLowerCase().contains(query);
 
-      final paymentStatusStr =
-          item.paymentStatus.toString().split('.').last.toLowerCase();
-      final paymentTypeStr =
-          (item.paymentType?.toString().split('.').last.toLowerCase()) ?? '';
-
-      final matchesStatus = selectedPaymentStatus.toLowerCase() == 'all'
-          ? true
-          : paymentStatusStr == selectedPaymentStatus.toLowerCase();
-
-      final matchesType = selectedPaymentType.toLowerCase() == 'all'
-          ? true
-          : paymentTypeStr == selectedPaymentType.toLowerCase();
-
-      return matchesSearch && matchesStatus && matchesType;
+      return matchesSearch;
     }).toList();
   }
 
@@ -104,10 +91,6 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
         return item.transactionType.name;
       case 'custType':
         return item.custType.name;
-      case 'paymentStatus':
-        return item.paymentStatus.name;
-      case 'paymentType':
-        return item.paymentType?.name ?? '';
       case 'note':
         return item.note ?? 'NA';
       default:
@@ -177,8 +160,6 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
                     item.custName,
                     item.transactionType.toString().split('.').last,
                     item.custType.toString().split('.').last,
-                    item.paymentStatus.toString().split('.').last,
-                    item.paymentType?.toString().split('.').last ?? '',
                     item.note ?? '',
                   ]),
             ],
@@ -222,8 +203,6 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
         item.custName,
         item.transactionType.toString().split('.').last,
         item.custType.toString().split('.').last,
-        item.paymentStatus.toString().split('.').last,
-        item.paymentType?.toString().split('.').last ?? '',
         item.note ?? '',
       ]);
     }
@@ -364,10 +343,6 @@ class _InvoiceDataTableState extends State<InvoiceDataTable> {
                       DataCell(Text(
                           item.transactionType.toString().split('.').last)),
                       DataCell(Text(item.custType.toString().split('.').last)),
-                      DataCell(
-                          Text(item.paymentStatus.toString().split('.').last)),
-                      DataCell(Text(
-                          item.paymentType?.toString().split('.').last ?? '')),
                       DataCell(Text(item.note ?? '-')),
                     ]))
                 .toList(),

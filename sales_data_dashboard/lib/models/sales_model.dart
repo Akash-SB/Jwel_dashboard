@@ -15,6 +15,7 @@ class Sale {
   final String? description;
   final DateTime createdAt;
   final Party? agentDetails;
+  final double? quantity;
 
   Sale({
     required this.id,
@@ -28,6 +29,7 @@ class Sale {
     this.interestAmount,
     this.brokeragePercent,
     this.brokerageAmount,
+    this.quantity,
   });
 
   Map<String, dynamic> toMap() => {
@@ -43,6 +45,7 @@ class Sale {
         'createdAt': createdAt.toIso8601String(),
         'agentDetails':
             agentDetails != null ? jsonEncode(agentDetails?.toMap()) : null,
+        'quantity': quantity,
       };
 
   factory Sale.fromMap(Map<String, dynamic> map) => Sale(
@@ -65,6 +68,9 @@ class Sale {
             map['agentDetails'] != null && !map['agentDetails'].contains('null')
                 ? Party.fromMap(jsonDecode(map['agentDetails']))
                 : null,
+        quantity: map['quantity'] != null
+            ? (map['quantity'] as num).toDouble()
+            : null,
       );
 
   Map<String, dynamic> toFirestore() => {
@@ -79,6 +85,7 @@ class Sale {
         'description': description,
         'createdAt': createdAt.toIso8601String(),
         'agentDetails': agentDetails?.toMap(),
+        'quantity': quantity,
       };
 
   /// For Firebase
@@ -100,6 +107,7 @@ class Sale {
       'brokerageAmount': brokerageAmount,
       'Created': createdAt.toIso8601String(),
       'Agent': agentDetails?.name ?? 'N/A',
+      'Quantity': quantity,
     };
   }
 }

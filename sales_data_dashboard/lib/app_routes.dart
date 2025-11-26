@@ -9,6 +9,8 @@ import 'package:sales_data_dashboard/screens/purchase/view/purchase_screen.dart'
 import 'package:sales_data_dashboard/screens/sales/view/sales_screen.dart';
 import 'package:sales_data_dashboard/screens/stock_management/view/stock_management_screen.dart';
 
+import 'screens/home/home_screen.dart';
+
 class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String index = '/index';
@@ -19,15 +21,18 @@ class AppRoutes {
   static const String stockMgmt = '/stockMgmt';
   static const String invoiceStock = '/invoiceStock';
   static const String payments = '/payments';
+  static const String home = '/home';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final selectedRoute = switch (settings.name) {
       index => const IndexScreen(),
       dashboard => const DashboardSccreen(),
-      invoices => const InvoiceScreen(),
+      invoices =>
+        InvoiceScreen(selectedFirm: settings.arguments as CompanyModel?),
       sales => const SalesScreen(),
       purchase => const PurchaseScreen(),
       partyDetails => const PartyDetailsScreen(),
+      home => const HomeScreen(),
       stockMgmt => const StockManagementScreen(),
       payments => const PaymentScreen(),
       invoiceStock => const InvoiceStockMgntScreen(),
@@ -42,14 +47,4 @@ class AppRoutes {
       transitionDuration: const Duration(milliseconds: 300),
     );
   }
-
-  static List<String> tabRoutes = [
-    dashboard,
-    partyDetails,
-    stockMgmt,
-    sales,
-    purchase,
-    payments,
-    invoices,
-  ];
 }

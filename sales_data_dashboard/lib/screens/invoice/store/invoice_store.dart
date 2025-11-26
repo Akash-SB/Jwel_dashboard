@@ -162,21 +162,7 @@ abstract class _InvoiceStore with Store {
       final query = searchQuery.toLowerCase();
       final matchesSearch = item.invoiceId.toLowerCase().contains(query) ||
           item.custName.toLowerCase().contains(query);
-
-      final paymentStatusStr =
-          item.paymentStatus.toString().split('.').last.toLowerCase();
-      final paymentTypeStr =
-          (item.paymentType?.toString().split('.').last.toLowerCase()) ?? '';
-
-      final matchesStatus = selectedPaymentStatus.toLowerCase() == 'all'
-          ? true
-          : paymentStatusStr == selectedPaymentStatus.toLowerCase();
-
-      final matchesType = selectedPaymentType.toLowerCase() == 'all'
-          ? true
-          : paymentTypeStr == selectedPaymentType.toLowerCase();
-
-      return matchesSearch && matchesStatus && matchesType;
+      return matchesSearch;
     }).toList();
   }
 
@@ -213,10 +199,6 @@ abstract class _InvoiceStore with Store {
         return item.transactionType.name;
       case 'custType':
         return item.custType.name;
-      case 'paymentStatus':
-        return item.paymentStatus.name;
-      case 'paymentType':
-        return item.paymentType?.name ?? '';
       case 'note':
         return item.note ?? 'NA';
       case 'interestDays':
@@ -270,8 +252,6 @@ abstract class _InvoiceStore with Store {
                 'Customer Name',
                 'Transaction Type',
                 'Customer Type',
-                'Payment Status',
-                'Payment Type',
                 'Note',
               ],
               ...filteredData.map((item) => [
@@ -283,8 +263,6 @@ abstract class _InvoiceStore with Store {
                     item.custName,
                     item.transactionType.toString().split('.').last,
                     item.custType.toString().split('.').last,
-                    item.paymentStatus.toString().split('.').last,
-                    item.paymentType?.toString().split('.').last ?? '',
                     item.note ?? '',
                   ]),
             ],
@@ -326,8 +304,6 @@ abstract class _InvoiceStore with Store {
         item.custName,
         item.transactionType.toString().split('.').last,
         item.custType.toString().split('.').last,
-        item.paymentStatus.toString().split('.').last,
-        item.paymentType?.toString().split('.').last ?? '',
         item.note ?? '',
       ]);
     }

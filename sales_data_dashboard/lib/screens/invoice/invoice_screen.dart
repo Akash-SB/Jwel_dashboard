@@ -11,7 +11,6 @@ import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
 import 'package:sales_data_dashboard/screens/invoice_stock/store/invoice_stock_store.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import '../../widgets/common_dropdown.dart';
-import '../../widgets/custom_image_button.dart';
 import '../../widgets/custom_searchbar.dart';
 import '../../widgets/invoice_form_widget.dart';
 import '../../widgets/normal_button.dart';
@@ -19,7 +18,11 @@ import '../../widgets/normal_button.dart';
 final getIt = GetIt.instance;
 
 class InvoiceScreen extends StatefulWidget {
-  const InvoiceScreen({super.key});
+  const InvoiceScreen({
+    super.key,
+    this.selectedFirm,
+  });
+  final CompanyModel? selectedFirm;
 
   @override
   State<InvoiceScreen> createState() => _InvoiceScreenState();
@@ -76,17 +79,14 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
       TableColumn(label: 'Customer Name', key: 'custName'),
-      TableColumn(
-        label: 'Days of Interest',
-        key: 'interestDays',
-      ),
       TableColumn(label: 'Customer Type', key: 'custType'),
       TableColumn(label: 'Transaction Type', key: 'transactionType'),
-      TableColumn(label: 'Payment Status', key: 'paymentStatus'),
-      TableColumn(label: 'Payment Type', key: 'paymentType'),
+      // TableColumn(label: 'Payment Status', key: 'paymentStatus'),
+      // TableColumn(label: 'Payment Type', key: 'paymentType'),
       TableColumn(label: 'Note', key: 'note'),
       TableColumn(label: 'Actions', key: 'actions', isAction: true),
     ];
+
     return Container(
       color: Colors.white,
       padding: EdgeInsets.all(24.dp),
@@ -97,8 +97,8 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Invoice Management',
+                Text(
+                  'Invoice Management - ${widget.selectedFirm?.name}',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -256,7 +256,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           ),
                         );
                       }).toList(),
-                      rows: invoiceStore.paginatedData.map((row) {
+                      rows: invoiceStore.paginatedData
+                          .where(
+                        (element) =>
+                            element.selectedFirm.name ==
+                            widget.selectedFirm?.name,
+                      )
+                          .map((row) {
                         return DataRow(
                           cells: columns.map((col) {
                             if (col.isAction) {
@@ -283,41 +289,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             return DataCell(
                               InkWell(
                                 onTap: () async {
-                                  final companies = [
-                                    CompanyModel(
-                                      name: 'SAHAJANAND GEMS',
-                                      gstin: '27BSXPP8815N1ZH',
-                                      address:
-                                          'Near Municipla Garden, B-709, Ramdev Park CHS LTD, Chandavarkar Road Mumbai - 400092',
-                                      phone: '+91-9029999829',
-                                      email: '-',
-                                      bankName: 'State Bank of India',
-                                      bankAccountNo: '41702974607',
-                                      bankIfscCode: 'SBIN0000347',
-                                      bankBranch: '-',
-                                      bankAddress: '-',
-                                      panNumber: '-',
-                                    ),
-                                    CompanyModel(
-                                      name: 'Harikrishna Enterprises',
-                                      gstin: '24A0HPP0279F1ZZ',
-                                      address:
-                                          'G0781, Maniyarwado, Paniyari, khambhat, Gujarat 388620',
-                                      phone: '+91-9029999829',
-                                      email: '-',
-                                      bankName: 'HDFC Bank - KHAMBHAT',
-                                      bankAccountNo: '50200066523665',
-                                      bankIfscCode: 'HDFC0001685',
-                                      bankBranch: '-',
-                                      bankAddress: '-',
-                                      panNumber: '-',
-                                    ),
-                                  ];
-                                  final selected = await showCompanyPicker(
-                                      context, companies);
-                                  if (selected != null) {
-                                    showInvoicePreview(context, row, selected);
-                                  }
+                                  showInvoicePreview(
+                                      context,
+                                      row,
+                                      widget.selectedFirm ??
+                                          CompanyModel(
+                                            name: 'Default Company',
+                                            gstin: '',
+                                            address: '',
+                                            phone: '',
+                                          ));
                                 },
                                 child: Text(
                                   invoiceStore.getFieldValue(row, col.key),
@@ -389,6 +370,13 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
         content: SingleChildScrollView(
           child: InvoiceForm(
             existingInvoice: existingInvoice,
+            selectedFirm: widget.selectedFirm ??
+                CompanyModel(
+                  name: 'Default Company',
+                  gstin: '',
+                  address: '',
+                  phone: '',
+                ),
             onSubmit: (invoiceData) {
               if (invoiceStore.itemSelectionType == 'existing') {
                 invoiceStockStore.updateStockItem(
@@ -447,6 +435,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         content:
                             Text('Invoice ${invoiceData.invoiceId} added')),
                   );
+                  showInvoicePreview(
+                      context,
+                      invoiceData,
+                      widget.selectedFirm ??
+                          CompanyModel(
+                            name: 'Default Company',
+                            gstin: '',
+                            address: '',
+                            phone: '',
+                          ));
                 }).onError(
                   (error, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -605,7 +603,7 @@ class CompanyModel {
   final String? bankAddress;
   final String? panNumber;
 
-  CompanyModel({
+  const CompanyModel({
     required this.name,
     required this.gstin,
     required this.address,
@@ -618,4 +616,18 @@ class CompanyModel {
     this.bankAddress,
     this.panNumber,
   });
+
+  Map<String, dynamic> toMap() => {
+        'name': name,
+        'gstin': gstin,
+        'address': address,
+        'phone': phone,
+        'email': email,
+        'bankName': bankName,
+        'bankAccountNo': bankAccountNo,
+        'bankIfscCode': bankIfscCode,
+        'bankBranch': bankBranch,
+        'bankAddress': bankAddress,
+        'panNumber': panNumber,
+      };
 }

@@ -6,6 +6,7 @@ import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/models/app_enum.dart';
 import 'package:sales_data_dashboard/models/invoice_stock_model.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
+import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
 import 'package:sales_data_dashboard/screens/invoice/store/invoice_store.dart';
 import 'package:sales_data_dashboard/widgets/custom_radio_button.dart';
 import 'package:sales_data_dashboard/widgets/normal_button.dart';
@@ -16,6 +17,7 @@ class InvoiceForm extends StatefulWidget {
   final List<Party>? customers;
   final List<InvoiceStockModel>? products;
   final InvoiceStore invoiceStore;
+  final CompanyModel selectedFirm;
 
   const InvoiceForm({
     super.key,
@@ -24,6 +26,7 @@ class InvoiceForm extends StatefulWidget {
     this.customers,
     this.products,
     required this.invoiceStore,
+    required this.selectedFirm,
   });
 
   @override
@@ -50,8 +53,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
 
   TransactionTypeEnum? _transactionType;
   UsertypeEnum? _custType;
-  PaymentStatusEnum? _paymentStatus;
-  PaymentTypeEnum? _paymentType;
   Party? _selectedCustomer;
 
   @override
@@ -70,8 +71,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
       _noteController.text = invoice.note ?? '';
       _transactionType = invoice.transactionType;
       _custType = invoice.custType;
-      _paymentStatus = invoice.paymentStatus;
-      _paymentType = invoice.paymentType;
+      // _paymentStatus = invoice.paymentStatus;
+      // _paymentType = invoice.paymentType;
       _hsnCodeController.text = invoice.hsnCode;
       _prodNameController.text = invoice.productName ?? '';
       _custAddressController.text = invoice.custAddress ?? '';
@@ -111,8 +112,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
   void _submitForm() {
     if (_formKey.currentState!.validate() &&
         _transactionType != null &&
-        _custType != null &&
-        _paymentStatus != null) {
+        _custType != null) {
       final invoiceData = InvoiceModel(
         invoiceId: _invoiceIdController.text,
         date: _dateController.text,
@@ -124,14 +124,13 @@ class _InvoiceFormState extends State<InvoiceForm> {
         note: _noteController.text,
         transactionType: _transactionType!,
         custType: _custType!,
-        paymentStatus: _paymentStatus!,
-        paymentType: _paymentType!,
         productName: _prodNameController.text,
         hsnCode: _hsnCodeController.text,
         custAddress: _custAddressController.text,
         custPhone: _custPhoneController.text,
         custGst: _custGstController.text,
         itemId: _itemIdController.text,
+        selectedFirm: widget.selectedFirm,
       );
       clearControllers();
       widget.onSubmit(invoiceData);
@@ -155,8 +154,6 @@ class _InvoiceFormState extends State<InvoiceForm> {
     _custGstController.clear();
     _transactionType = null;
     _custType = null;
-    _paymentStatus = null;
-    _paymentType = null;
     _selectedCustomer = null;
     _itemIdController.clear();
   }
@@ -643,47 +640,47 @@ class _InvoiceFormState extends State<InvoiceForm> {
               SizedBox(height: 12.dp),
               Row(
                 children: [
-                  Expanded(
-                    child: DropdownButtonFormField<PaymentStatusEnum>(
-                      value: _paymentStatus,
-                      focusColor: Colors.white,
-                      decoration: _inputDecoration('Payment Status'),
-                      items: [
-                        PaymentStatusEnum.paid,
-                        PaymentStatusEnum.unpaid,
-                      ].map((e) {
-                        return DropdownMenuItem(
-                          value: e,
-                          child: Text(e.name.toUpperCase()),
-                        );
-                      }).toList(),
-                      onChanged: (value) =>
-                          setState(() => _paymentStatus = value),
-                      validator: (value) => value == null ? 'Required' : null,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: DropdownButtonFormField<PaymentTypeEnum>(
-                      value: _paymentType,
-                      focusColor: Colors.white,
-                      decoration: _inputDecoration('Payment Type'),
-                      items: [
-                        PaymentTypeEnum.cash,
-                        PaymentTypeEnum.cheque,
-                        PaymentTypeEnum.online,
-                      ].map((e) {
-                        return DropdownMenuItem(
-                          value: e,
-                          child: Text(e.name.toUpperCase()),
-                        );
-                      }).toList(),
-                      onChanged: (value) => setState(
-                        () => _paymentType = value,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12.dp),
+                  // Expanded(
+                  //   child: DropdownButtonFormField<PaymentStatusEnum>(
+                  //     value: _paymentStatus,
+                  //     focusColor: Colors.white,
+                  //     decoration: _inputDecoration('Payment Status'),
+                  //     items: [
+                  //       PaymentStatusEnum.paid,
+                  //       PaymentStatusEnum.unpaid,
+                  //     ].map((e) {
+                  //       return DropdownMenuItem(
+                  //         value: e,
+                  //         child: Text(e.name.toUpperCase()),
+                  //       );
+                  //     }).toList(),
+                  //     onChanged: (value) =>
+                  //         setState(() => _paymentStatus = value),
+                  //     validator: (value) => value == null ? 'Required' : null,
+                  //   ),
+                  // ),
+                  // const SizedBox(width: 12),
+                  // Expanded(
+                  //   child: DropdownButtonFormField<PaymentTypeEnum>(
+                  //     value: _paymentType,
+                  //     focusColor: Colors.white,
+                  //     decoration: _inputDecoration('Payment Type'),
+                  //     items: [
+                  //       PaymentTypeEnum.cash,
+                  //       PaymentTypeEnum.cheque,
+                  //       PaymentTypeEnum.online,
+                  //     ].map((e) {
+                  //       return DropdownMenuItem(
+                  //         value: e,
+                  //         child: Text(e.name.toUpperCase()),
+                  //       );
+                  //     }).toList(),
+                  //     onChanged: (value) => setState(
+                  //       () => _paymentType = value,
+                  //     ),
+                  //   ),
+                  // ),
+                  // SizedBox(width: 12.dp),
                   Expanded(
                     child: DropdownButtonFormField<TransactionTypeEnum>(
                       value: _transactionType,
