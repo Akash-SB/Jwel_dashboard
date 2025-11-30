@@ -6,8 +6,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: Padding(
+    return Padding(
       padding: EdgeInsets.all(20.sp),
       child: Text(
         'Sahajanand Gems\nHarikrishna Enterprises',
@@ -18,6 +17,6 @@ class HomeScreen extends StatelessWidget {
         maxLines: 4,
         textAlign: TextAlign.left,
       ),
-    ));
+    );
   }
 }
