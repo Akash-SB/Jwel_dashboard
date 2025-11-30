@@ -8,17 +8,15 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
         child: Padding(
-      padding: EdgeInsets.all(40.sp),
-      child: Center(
-        child: Text(
-          'Sahajanand Jwellers / Harikrishna Interprises Dashboard',
-          style: TextStyle(
-              fontSize: 24.sp,
-              letterSpacing: 1.2.sp,
-              fontWeight: FontWeight.w800),
-          maxLines: 4,
-          textAlign: TextAlign.center,
-        ),
+      padding: EdgeInsets.all(20.sp),
+      child: Text(
+        'Sahajanand Gems\nHarikrishna Enterprises',
+        style: TextStyle(
+            fontSize: 10.sp,
+            letterSpacing: 1.2.sp,
+            fontWeight: FontWeight.w800),
+        maxLines: 4,
+        textAlign: TextAlign.left,
       ),
     ));
   }

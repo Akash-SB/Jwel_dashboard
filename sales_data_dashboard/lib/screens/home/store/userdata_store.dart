@@ -78,7 +78,7 @@ abstract class _UserDataStore with Store {
   List<SidebarItem> sidebarItems = [
     SidebarItem(
       icon: Icons.receipt_long,
-      label: "Sahajanand Jwellers Bills",
+      label: "Sahajanand Gems Bills",
       isExpanded: true,
       subItems: [
         SidebarItem(
@@ -108,7 +108,7 @@ abstract class _UserDataStore with Store {
     ),
     SidebarItem(
       icon: Icons.receipt_long,
-      label: "Harikrishna Int. Bills",
+      label: "Harikrishna Enterprises Bills",
       subItems: [
         SidebarItem(
           icon: Icons.receipt,

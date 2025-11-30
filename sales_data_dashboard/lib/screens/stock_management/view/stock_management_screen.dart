@@ -121,23 +121,6 @@ class _StockManagementScreenScreenState extends State<StockManagementScreen> {
                           return SizedBox(
                             child: Row(
                               children: [
-                                IntrinsicWidth(
-                                  child: CommonDropdown(
-                                    label: 'Firm',
-                                    value: stockStore.selectedFirm,
-                                    onChanged: (p0) {
-                                      stockStore.setSelectedFirm(p0!);
-                                      stockStore.isFiltersApplied();
-                                    },
-                                    options: [
-                                      Firm.sahajanand.name,
-                                      Firm.harikrishnaEnterprise.name,
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 12.dp,
-                                ),
                                 SizedBox(
                                   width: 300.dp,
                                   child: CustomSearchBar(
