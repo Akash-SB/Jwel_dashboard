@@ -48,9 +48,9 @@ Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: recursesu
 ;------------------------------------------
 [Icons]
 ; Create Desktop Shortcut
-Name: "{autodesktop}\Gems Dashboard App"; Filename: "{app}\GemsDashboard.exe"; IconFilename: "{app}\GemsDashboard.exe"
+Name: "{autodesktop}\Gems Dashboard App"; Filename: "{app}\sales_data_dashboard.exe"; IconFilename: "{app}\sales_data_dashboard.exe"
 ; Create Start Menu Shortcut
-Name: "{autoprograms}\Gems Dashboard App\Gems Dashboard App"; Filename: "{app}\GemsDashboard.exe"; IconFilename: "{app}\GemsDashboard.exe"
+Name: "{autoprograms}\Gems Dashboard App\Gems Dashboard App"; Filename: "{app}\sales_data_dashboard.exe"; IconFilename: "{app}\sales_data_dashboard.exe"
 ; Uninstall Shortcut
 Name: "{autoprograms}\Gems Dashboard App\Uninstall Gems Dashboard App"; Filename: "{uninstallexe}"
 
@@ -72,5 +72,5 @@ Root: HKLM; Subkey: "Software\Gems Dashboard App"; Flags: uninsdeletekey
 ; Run after install (optional)
 ;------------------------------------------
 [Run]
-Filename: "{app}\GemsDashboard.exe"; Description: "Launch Gems Dashboard App"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\sales_data_dashboard.exe"; Description: "Launch Gems Dashboard App"; Flags: nowait postinstall skipifsilent
 
