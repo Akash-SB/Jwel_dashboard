@@ -5,17 +5,24 @@ import 'package:sales_data_dashboard/Utils/common_utils.dart';
 import 'package:sales_data_dashboard/models/payment_model.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/party_details/store/party_details_screen_store.dart';
+import 'package:sales_data_dashboard/screens/party_details/view/ledger_preview_screen.dart';
+import 'package:sales_data_dashboard/screens/party_details/view/party_ledger.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
+
+import '../../../models/party_model.dart';
+import '../../payment/store/payment_screen_store.dart';
 
 class ShowPartyInfoWidget extends StatelessWidget {
   const ShowPartyInfoWidget({
     super.key,
     required this.partyDetailsStore,
     required this.userDataStore,
+    required this.paymentScreenStore,
   });
 
   final PartyDetailsStore partyDetailsStore;
   final UserDataStore userDataStore;
+  final PaymentScreenStore paymentScreenStore;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +82,13 @@ class ShowPartyInfoWidget extends StatelessWidget {
           ),
           Observer(builder: (context) {
             return InkWell(
-              onTap: () {},
+              onTap: () {
+                showLedgerPreview(
+                  context,
+                  partyDetailsStore.selectedParty!.value,
+                  partyDetailsStore.paymentList,
+                );
+              },
               child: Container(
                 padding: EdgeInsets.all(16.dp),
                 decoration: BoxDecoration(
@@ -266,6 +279,10 @@ class ShowPartyInfoWidget extends StatelessWidget {
                             columns: columns.map((col) {
                               return DataColumn(
                                 label: InkWell(
+                                  onTap: col.isSortable
+                                      ? () =>
+                                          paymentScreenStore.setSortKey(col.key)
+                                      : null,
                                   child: Row(
                                     children: [
                                       Text(
@@ -277,6 +294,14 @@ class ShowPartyInfoWidget extends StatelessWidget {
                                           ),
                                         ),
                                       ),
+                                      if (col.isSortable &&
+                                          paymentScreenStore.sortKey == col.key)
+                                        Icon(
+                                          paymentScreenStore.sortAsc
+                                              ? Icons.arrow_upward
+                                              : Icons.arrow_downward,
+                                          size: 14.dp,
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -384,4 +409,19 @@ class ShowPartyInfoWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+void showLedgerPreview(
+    BuildContext context, Party party, List<PaymentModel> payments) {
+  final ledgerMap = LedgerCalculator.calculateLedger(payments);
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.black,
+    builder: (_) => LedgerPreviewScreen(
+      party: party,
+      ledgerMap: ledgerMap,
+    ),
+  );
 }

@@ -6,6 +6,7 @@ import 'package:sales_data_dashboard/models/party_model.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/party_details/view/party_details_form_widget.dart';
 import 'package:sales_data_dashboard/screens/party_details/view/show_party_info_widget.dart';
+import 'package:sales_data_dashboard/screens/payment/store/payment_screen_store.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import '../../../widgets/common_dropdown.dart';
 import '../../../widgets/custom_searchbar.dart';
@@ -24,6 +25,7 @@ class PartyDetailsScreen extends StatefulWidget {
 class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
   late PartyDetailsStore partyDetailsStore;
   late UserDataStore userDataStore;
+  late PaymentScreenStore paymentScreenStore;
   final ScrollController horizontalScrollController = ScrollController();
 
   @override
@@ -42,7 +44,12 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
       getIt.registerFactory<PartyDetailsStore>(
           () => PartyDetailsStore(userDataStore: userDataStore));
     }
+
+    if (!getIt.isRegistered<PaymentScreenStore>()) {
+      getIt.registerFactory<PaymentScreenStore>(() => PaymentScreenStore());
+    }
     partyDetailsStore = getIt<PartyDetailsStore>();
+    paymentScreenStore = getIt<PaymentScreenStore>();
     partyDetailsStore.setPartiesList(userDataStore.partiesList);
     partyDetailsStore.calculateTotalPages();
   }
@@ -63,6 +70,7 @@ class _PartyDetailsScreenState extends State<PartyDetailsScreen> {
           ? ShowPartyInfoWidget(
               partyDetailsStore: partyDetailsStore,
               userDataStore: userDataStore,
+              paymentScreenStore: paymentScreenStore,
             )
           : Container(
               color: Colors.white,
