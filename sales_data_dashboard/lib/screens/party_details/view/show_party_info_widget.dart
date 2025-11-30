@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
-import 'package:sales_data_dashboard/models/app_enum.dart';
+import 'package:sales_data_dashboard/Utils/common_utils.dart';
+import 'package:sales_data_dashboard/models/payment_model.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import 'package:sales_data_dashboard/screens/party_details/store/party_details_screen_store.dart';
-import 'package:sales_data_dashboard/screens/party_details/view/generate_ledger.dart';
-import 'package:sales_data_dashboard/widgets/common_dropdown.dart';
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
-import '../../../models/stock_party_ledger.dart';
 
 class ShowPartyInfoWidget extends StatelessWidget {
   const ShowPartyInfoWidget({
@@ -25,37 +23,16 @@ class ShowPartyInfoWidget extends StatelessWidget {
       TableColumn(label: 'Transaction ID', key: 'transId', isSortable: true),
       TableColumn(
           label: 'Transaction Date', key: 'transDate', isSortable: true),
-      TableColumn(
-        label: 'Transaction Type',
-        key: 'transType',
-      ),
-      TableColumn(label: 'Customer Id', key: 'custId'),
-      TableColumn(label: 'Customer Name', key: 'custName'),
       TableColumn(label: 'Product Id', key: 'prodId', isSortable: true),
-      TableColumn(label: 'Product Quantity', key: 'quantity', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),
-      TableColumn(label: 'Due Days', key: 'dueDays', isSortable: true),
       TableColumn(
-        label: 'Agent Name',
-        key: 'agentName',
+        label: 'Payment Type',
+        key: 'paymentType',
       ),
       TableColumn(
-        label: 'Brokerage',
-        key: 'brokerage',
+        label: 'Payment Nature',
+        key: 'paymentNature',
       ),
-      TableColumn(
-        label: 'Payment Status',
-        key: 'paymentStatus',
-      ),
-      TableColumn(
-        label: 'Payment Option',
-        key: 'paymentOption',
-      ),
-      TableColumn(
-        label: 'Firm',
-        key: 'firm',
-      ),
-      TableColumn(label: 'Description', key: 'description'),
     ];
 
     return Container(
@@ -98,23 +75,7 @@ class ShowPartyInfoWidget extends StatelessWidget {
           ),
           Observer(builder: (context) {
             return InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LedgerPreviewScreen(
-                      buildPdf: () => buildLedgerPDFBytes(
-                        party: partyDetailsStore.selectedParty!.value,
-                        allEntries: partyDetailsStore.partyLedgerList,
-                        fromDate: DateTime(2025, 1, 1),
-                        toDate: DateTime(2025, 12, 31),
-                        firmName: "Your Firm",
-                        firmAddress: "123 Business Street",
-                      ),
-                    ),
-                  ),
-                );
-              },
+              onTap: () {},
               child: Container(
                 padding: EdgeInsets.all(16.dp),
                 decoration: BoxDecoration(
@@ -176,91 +137,91 @@ class ShowPartyInfoWidget extends StatelessWidget {
             ),
           ),
           SizedBox(height: 24.dp),
-          Observer(builder: (context) {
-            return SizedBox(
-              child: Row(
-                children: [
-                  IntrinsicWidth(
-                    child: CommonDropdown(
-                      label: 'Transaction Type',
-                      value: partyDetailsStore.selectedTransType,
-                      onChanged: (p0) {
-                        partyDetailsStore.setSelectedTransType(p0!);
-                        partyDetailsStore.isInfoFilterAppliedCheck();
-                      },
-                      options: [
-                        TransType.all.name,
-                        TransType.sale.name,
-                        TransType.purchase.name,
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 12.dp,
-                  ),
-                  IntrinsicWidth(
-                    child: CommonDropdown(
-                      label: 'Payment Status',
-                      value: partyDetailsStore.selectedTransStatus,
-                      onChanged: (p0) {
-                        partyDetailsStore.setSelectedTransStatus(p0!);
-                        partyDetailsStore.isInfoFilterAppliedCheck();
-                      },
-                      options: [
-                        PaymentStatusEnum.all.name,
-                        PaymentStatusEnum.paid.name,
-                        PaymentStatusEnum.unpaid.name,
-                      ],
-                    ),
-                  ),
-                  const Spacer(),
-                  // CustomImageButton(
-                  //   imagePath: 'assets/icons/excel_icon.png',
-                  //   text: 'Excel',
-                  //   borderColor: const Color(0xffE5E7EB),
-                  //   buttonColor: Colors.white,
-                  //   onClicked: () {},
-                  // ),
-                  // SizedBox(
-                  //   width: 12.dp,
-                  // ),
-                  Observer(builder: (context) {
-                    return Container(
-                      height: 30.dp,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: partyDetailsStore.isInfoFilterApplied
-                                ? Colors.red
-                                : Colors.grey,
-                          )),
-                      child: IconButton(
-                        splashColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        focusColor: Colors.transparent,
-                        padding: EdgeInsets.zero,
-                        onPressed: partyDetailsStore.clearInfoFilter,
-                        icon: Image.asset(
-                          'assets/icons/cross_icon.png',
-                          color: partyDetailsStore.isInfoFilterApplied
-                              ? Colors.red
-                              : Colors.grey,
-                          width: 30.dp,
-                          height: 30.dp,
-                        ),
-                        tooltip: 'Clear All Filters',
-                      ),
-                    );
-                  }),
-                ],
-              ),
-            );
-          }),
-          SizedBox(height: 8.dp),
+          // Observer(builder: (context) {
+          //   return SizedBox(
+          //     child: Row(
+          //       children: [
+          //         // IntrinsicWidth(
+          //         //   child: CommonDropdown(
+          //         //     label: 'Payment Type',
+          //         //     value: partyDetailsStore.selectedTransType,
+          //         //     onChanged: (p0) {
+          //         //       partyDetailsStore.setSelectedTransType(p0!);
+          //         //       partyDetailsStore.isInfoFilterAppliedCheck();
+          //         //     },
+          //         //     options: [
+          //         //       PaymentTypeEnum.all.name,
+          //         //       PaymentTypeEnum.cash.name,
+          //         //       PaymentTypeEnum.cheque.name,
+          //         //       PaymentTypeEnum.online.name,
+          //         //     ],
+          //         //   ),
+          //         // ),
+          //         // SizedBox(
+          //         //   width: 12.dp,
+          //         // ),
+          //         // IntrinsicWidth(
+          //         //   child: CommonDropdown(
+          //         //     label: 'Payment Nature',
+          //         //     value: partyDetailsStore.selectedTransStatus,
+          //         //     onChanged: (p0) {
+          //         //       partyDetailsStore.setSelectedTransStatus(p0!);
+          //         //       partyDetailsStore.isInfoFilterAppliedCheck();
+          //         //     },
+          //         //     options: [
+          //         //       PaymentNature.credit.name,
+          //         //       PaymentNature.debit.name,
+          //         //     ],
+          //         //   ),
+          //         // ),
+          //         const Spacer(),
+          //         // CustomImageButton(
+          //         //   imagePath: 'assets/icons/excel_icon.png',
+          //         //   text: 'Excel',
+          //         //   borderColor: const Color(0xffE5E7EB),
+          //         //   buttonColor: Colors.white,
+          //         //   onClicked: () {},
+          //         // ),
+          //         // SizedBox(
+          //         //   width: 12.dp,
+          //         // ),
+          //         Observer(builder: (context) {
+          //           return Container(
+          //             height: 30.dp,
+          //             decoration: BoxDecoration(
+          //                 shape: BoxShape.circle,
+          //                 border: Border.all(
+          //                   color: partyDetailsStore.isInfoFilterApplied
+          //                       ? Colors.red
+          //                       : Colors.grey,
+          //                 )),
+          //             child: IconButton(
+          //               splashColor: Colors.transparent,
+          //               hoverColor: Colors.transparent,
+          //               highlightColor: Colors.transparent,
+          //               focusColor: Colors.transparent,
+          //               padding: EdgeInsets.zero,
+          //               onPressed: partyDetailsStore.clearInfoFilter,
+          //               icon: Image.asset(
+          //                 'assets/icons/cross_icon.png',
+          //                 color: partyDetailsStore.isInfoFilterApplied
+          //                     ? Colors.red
+          //                     : Colors.grey,
+          //                 width: 30.dp,
+          //                 height: 30.dp,
+          //               ),
+          //               tooltip: 'Clear All Filters',
+          //             ),
+          //           );
+          //         }),
+          //       ],
+          //     ),
+          //   );
+          // }),
+          // SizedBox(height: 8.dp),
           Observer(builder: (context) {
             return Expanded(
-              child: partyDetailsStore.partyLedgerList.isEmpty
+              child: partyDetailsStore.paymentList.isEmpty
                   ? Center(
                       child: Column(
                         children: [
@@ -375,36 +336,20 @@ class ShowPartyInfoWidget extends StatelessWidget {
     );
   }
 
-  String getCellValue(String key, [StockPartyLedger? info]) {
+  String getCellValue(String key, [PaymentModel? info]) {
     switch (key) {
       case 'transId':
         return info?.id ?? '';
       case 'transDate':
-        return info?.createdAt.toIso8601String() ?? 'NA';
-      case 'transType':
-        return info?.transType ?? 'NA';
-      case 'custId':
-        return info?.customerId ?? 'N/A';
-      case 'custName':
-        return info?.customerName ?? 'N/A';
+        return CommonUtils.formatDate(info?.date ?? DateTime.now());
       case 'prodId':
-        return info?.productId ?? 'N/A';
-      case 'quantity':
-        return info?.quantity ?? 'N/A';
+        return info?.stockDetails.itemId ?? 'N/A';
       case 'amount':
-        return info?.amount ?? 'N/A';
-      case 'dueDays':
-        return info?.dueDays.toString() ?? 'N/A';
-      case 'agentName':
-        return info?.agentName ?? 'N/A';
-      case 'brokerage':
-        return info?.brokerage ?? 'N/A';
-      case 'paymentStatus':
-        return info?.paymentStatus ?? 'N/A';
-      case 'firm':
-        return info?.firm ?? 'N/A';
-      case 'description':
-        return info?.description ?? 'N/A';
+        return info?.amount.toString() ?? 'N/A';
+      case 'paymentType':
+        return info?.paymentType.name ?? 'N/A';
+      case 'paymentNature':
+        return info?.paymentNature.name ?? 'N/A';
       default:
         return '';
     }

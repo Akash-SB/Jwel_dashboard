@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:pdf/pdf.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/Utils/generate_invoice.dart';
 import 'package:sales_data_dashboard/models/firm_model.dart';
@@ -602,6 +603,8 @@ class CompanyModel {
   final String? bankBranch;
   final String? bankAddress;
   final String? panNumber;
+  final String? logoPath;
+  final PdfColor? bgColor;
 
   const CompanyModel({
     required this.name,
@@ -615,6 +618,8 @@ class CompanyModel {
     this.bankBranch,
     this.bankAddress,
     this.panNumber,
+    this.logoPath,
+    this.bgColor,
   });
 
   Map<String, dynamic> toMap() => {
@@ -629,5 +634,7 @@ class CompanyModel {
         'bankBranch': bankBranch,
         'bankAddress': bankAddress,
         'panNumber': panNumber,
+        'logoPath': logoPath,
+        'bgColor': bgColor,
       };
 }

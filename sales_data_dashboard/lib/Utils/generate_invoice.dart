@@ -54,57 +54,71 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
   final double grandTotal = rawTotal + roundOff;
 
   final formatter = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
+  final PdfColor pdfColor = selectedParentCompany.bgColor ?? PdfColors.grey300;
   pdf.addPage(
     pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(16),
       header: (context) {
         // ✅ HEADER with logo and company name
-        return pw.Container(
-          color: PdfColors.grey300,
-          padding: const pw.EdgeInsets.all(8),
-          child: pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
-            children: [
-              pw.Row(children: [
-                pw.Image(pw.MemoryImage(logoBytes), width: 50, height: 50),
-                pw.SizedBox(width: 8),
-                pw.Text(
-                  selectedParentCompany.name,
+        return pw.Column(
+          children: [
+            pw.Center(
+              child: pw.Text('|| Shree Hari ||',
                   style: pw.TextStyle(
-                    fontSize: 20,
-                    fontWeight: pw.FontWeight.bold,
-                    font: robotoFont,
-                    color: PdfColor.fromInt(0xFFFFD700),
-                  ),
-                ),
-              ]),
-              pw.SizedBox(
-                width: 150,
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("Dealers in :",
-                        style: pw.TextStyle(
-                          fontSize: 7,
-                          font: robotoFont,
-                          color: PdfColor.fromInt(0xFFFFD700),
-                        )),
-                    pw.SizedBox(height: 8),
+                      fontSize: 12,
+                      fontWeight: pw.FontWeight.bold,
+                      font: robotoFont)),
+            ),
+            pw.SizedBox(height: 8),
+            pw.Container(
+              color: pdfColor,
+              padding: const pw.EdgeInsets.all(8),
+              child: pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                children: [
+                  pw.Row(children: [
+                    // pw.Image(pw.MemoryImage(logoBytes), width: 50, height: 50),
+                    pw.SizedBox(width: 8),
                     pw.Text(
-                        "Real Diamond & Colour Stones Jewellery, Precious Stones, Semi Precious Stones Jewellery, Fancy Gold Ornament, Wholesale Temple Jewellery",
-                        textAlign: pw.TextAlign.left,
-                        style: pw.TextStyle(
-                          fontSize: 7,
-                          font: robotoFont,
-                          color: PdfColors.black,
-                        )),
-                  ],
-                ),
+                      selectedParentCompany.name,
+                      style: pw.TextStyle(
+                        fontSize: 20,
+                        fontWeight: pw.FontWeight.bold,
+                        font: robotoFont,
+                        color: PdfColors.black,
+                      ),
+                    ),
+                  ]),
+                  pw.SizedBox(
+                    width: 150,
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text("Dealers in :",
+                            style: pw.TextStyle(
+                              fontSize: 7,
+                              font: robotoFont,
+                              color: PdfColors.black,
+                              fontWeight: pw.FontWeight.bold,
+                            )),
+                        pw.SizedBox(height: 8),
+                        pw.Text(
+                            "Real Diamond & Colour Stones Jewellery, Precious Stones, Semi Precious Stones Jewellery, Fancy Gold Ornament, Wholesale Temple Jewellery",
+                            textAlign: pw.TextAlign.left,
+                            style: pw.TextStyle(
+                              fontSize: 7,
+                              font: robotoFont,
+                              color: PdfColors.black,
+                            )),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
       build: (context) => [
@@ -112,7 +126,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
         pw.Container(
           padding: const pw.EdgeInsets.all(8),
           decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: PdfColors.grey300),
+            border: pw.Border.all(color: pdfColor),
           ),
           child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -130,7 +144,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
         pw.Container(
           padding: const pw.EdgeInsets.all(8),
           decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: PdfColors.grey300),
+            border: pw.Border.all(color: pdfColor),
           ),
           child: pw.Center(
             child: pw.Text('Cash / Credit',
@@ -140,8 +154,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
 
         // ✅ INVOICE INFO BLOCK
         pw.Container(
-          decoration:
-              pw.BoxDecoration(border: pw.Border.all(color: PdfColors.grey300)),
+          decoration: pw.BoxDecoration(border: pw.Border.all(color: pdfColor)),
           child: pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
@@ -150,8 +163,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                 child: pw.Container(
                   padding: const pw.EdgeInsets.all(4),
                   decoration: pw.BoxDecoration(
-                      border: pw.Border(
-                          right: pw.BorderSide(color: PdfColors.grey300))),
+                      border: pw.Border(right: pw.BorderSide(color: pdfColor))),
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
@@ -193,8 +205,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
         ),
         // ✅ RECIPIENT BLOCK
         pw.Container(
-          decoration:
-              pw.BoxDecoration(border: pw.Border.all(color: PdfColors.grey300)),
+          decoration: pw.BoxDecoration(border: pw.Border.all(color: pdfColor)),
           child: pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
@@ -202,8 +213,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                 child: pw.Container(
                   padding: const pw.EdgeInsets.all(4),
                   decoration: pw.BoxDecoration(
-                      border: pw.Border(
-                          right: pw.BorderSide(color: PdfColors.grey300))),
+                      border: pw.Border(right: pw.BorderSide(color: pdfColor))),
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
@@ -360,12 +370,10 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
           width: double.infinity,
           decoration: pw.BoxDecoration(
               border: pw.Border.symmetric(
-                  vertical:
-                      pw.BorderSide(width: 0.8, color: PdfColors.grey300))),
+                  vertical: pw.BorderSide(width: 0.8, color: pdfColor))),
         ),
         pw.Container(
-          decoration:
-              pw.BoxDecoration(border: pw.Border.all(color: PdfColors.grey300)),
+          decoration: pw.BoxDecoration(border: pw.Border.all(color: pdfColor)),
           child: pw.Row(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
@@ -384,7 +392,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                           width: double.infinity,
                           padding: const pw.EdgeInsets.all(4),
                           decoration: pw.BoxDecoration(
-                              border: pw.Border.all(color: PdfColors.grey300)),
+                              border: pw.Border.all(color: pdfColor)),
                           child: pw.Column(
                               crossAxisAlignment: pw.CrossAxisAlignment.start,
                               children: [
@@ -414,7 +422,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                           width: double.infinity,
                           padding: const pw.EdgeInsets.all(4),
                           decoration: pw.BoxDecoration(
-                              border: pw.Border.all(color: PdfColors.grey300)),
+                              border: pw.Border.all(color: pdfColor)),
                           child: pw.Column(
                               crossAxisAlignment: pw.CrossAxisAlignment.start,
                               children: [
@@ -439,23 +447,23 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                   crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                   children: [
                     rowTax('TAXABLE VALUE', formatter.format(baseAmount),
-                        robotoFont),
-                    rowTax(
-                        'Add CGST 0.125%', formatter.format(cgst), robotoFont),
-                    rowTax(
-                        'Add SGST 0.125%', formatter.format(sgst), robotoFont),
+                        robotoFont, pdfColor),
+                    rowTax('Add CGST 0.125%', formatter.format(cgst),
+                        robotoFont, pdfColor),
+                    rowTax('Add SGST 0.125%', formatter.format(sgst),
+                        robotoFont, pdfColor),
                     rowTax('Add IGST 0.25%', formatter.format(gstAmount),
-                        robotoFont),
-                    rowTax(
-                        'Rounding Off', formatter.format(roundOff), robotoFont),
-                    rowTax(
-                        'TOTAL VALUE', formatter.format(grandTotal), robotoFont,
+                        robotoFont, pdfColor),
+                    rowTax('Rounding Off', formatter.format(roundOff),
+                        robotoFont, pdfColor),
+                    rowTax('TOTAL VALUE', formatter.format(grandTotal),
+                        robotoFont, pdfColor,
                         bold: true),
                     pw.Container(
                       height: 80,
                       padding: const pw.EdgeInsets.all(4),
                       decoration: pw.BoxDecoration(
-                          border: pw.Border.all(color: PdfColors.grey300)),
+                          border: pw.Border.all(color: pdfColor)),
                       child: pw.Column(
                         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -483,9 +491,9 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
         return pw.Container(
           width: double.infinity,
           padding: const pw.EdgeInsets.only(top: 8),
-          decoration: const pw.BoxDecoration(
+          decoration: pw.BoxDecoration(
             border: pw.Border(
-              top: pw.BorderSide(width: 0.5, color: PdfColors.grey300),
+              top: pw.BorderSide(width: 0.5, color: pdfColor),
             ),
           ),
           child: pw.Column(
@@ -570,12 +578,11 @@ pw.Widget dataCell(String text, pw.Font font,
   );
 }
 
-pw.Widget rowTax(String label, String value, pw.Font font,
+pw.Widget rowTax(String label, String value, pw.Font font, PdfColor pdfColor,
     {bool bold = false}) {
   return pw.Container(
     padding: const pw.EdgeInsets.all(4),
-    decoration:
-        pw.BoxDecoration(border: pw.Border.all(color: PdfColors.grey300)),
+    decoration: pw.BoxDecoration(border: pw.Border.all(color: pdfColor)),
     child: pw.Row(
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [

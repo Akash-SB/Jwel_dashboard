@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/models/app_enum.dart';
+import 'package:sales_data_dashboard/models/payment_model.dart';
 import 'package:sales_data_dashboard/models/stock_party_ledger.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 
@@ -26,8 +27,7 @@ abstract class _PartyDetailsStore with Store {
   ObservableList<Party> partiesList = ObservableList<Party>();
 
   @observable
-  ObservableList<StockPartyLedger> partyLedgerList =
-      ObservableList<StockPartyLedger>();
+  ObservableList<PaymentModel> paymentList = ObservableList<PaymentModel>();
 
   @observable
   String? sortKey;
@@ -83,8 +83,8 @@ abstract class _PartyDetailsStore with Store {
   TransactionTypeEnum selectedFilterTransactionType = TransactionTypeEnum.sell;
 
   @action
-  void setPartyLedgerList(final List<StockPartyLedger> list) {
-    partyLedgerList
+  void setPartyLedgerList(final List<PaymentModel> list) {
+    paymentList
       ..clear()
       ..addAll(list);
   }
@@ -148,30 +148,15 @@ abstract class _PartyDetailsStore with Store {
 
   @action
   void filterLedgerList() {
-    List<StockPartyLedger> ledgers = [];
+    List<PaymentModel> ledgers = [];
     ledgers.addAll(
       userDataStore.paymentList
           .where((final purchase) =>
               purchase.party.name == selectedParty?.value.name)
-          .map(
-            (final purchase) => StockPartyLedger(
-              id: purchase.id,
-              createdAt: purchase.date ?? DateTime.now(),
-              customerId: purchase.party.id,
-              customerName: purchase.party.name,
-              productId: purchase.stockDetails.itemId,
-              quantity: purchase.stockDetails.availableQuantity.toString(),
-              amount: purchase.amount.toString(),
-              firm: '',
-              transType: TransType.purchase.name,
-              description: '',
-              agentName: '',
-              paymentStatus: '',
-            ),
-          ),
+          .toList(),
     );
-    ledgers.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    partyLedgerList.clear();
+    ledgers.sort((a, b) => b.date!.compareTo(a.date!));
+    paymentList.clear();
     setPartyLedgerList(ledgers);
   }
 
@@ -240,18 +225,18 @@ abstract class _PartyDetailsStore with Store {
   }
 
   @computed
-  List<StockPartyLedger> get filteredInfoData {
-    List<StockPartyLedger> filtered = partyLedgerList.toList();
+  List<PaymentModel> get filteredInfoData {
+    List<PaymentModel> filtered = paymentList.toList();
     return filtered.where((item) {
       final typeMatch = selectedTransType == 'All'
           ? true
-          : item.transType == selectedTransType;
+          : item.paymentType == selectedTransType;
       return typeMatch;
     }).toList();
   }
 
   @computed
-  List<StockPartyLedger> get paginatedInfoData {
+  List<PaymentModel> get paginatedInfoData {
     final start = currentInfoTablePage * int.parse(selectedRowCount);
     final end =
         (start + int.parse(selectedRowCount)).clamp(0, filteredInfoData.length);

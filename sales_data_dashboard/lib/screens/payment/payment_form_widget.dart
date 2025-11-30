@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/models/app_enum.dart';
 import 'package:sales_data_dashboard/models/payment_model.dart';
 import 'package:sales_data_dashboard/models/stock_item.dart';
 import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
@@ -291,17 +292,23 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
                       Expanded(
                         child: CommonDropdown(
                           label: 'Payment Type',
-                          value: ['cash', 'card', 'online', 'cheque', 'other']
-                                  .contains(paymentTypeController.text)
+                          value: [
+                            PaymentTypeEnum.cash.name,
+                            PaymentTypeEnum.online.name,
+                            PaymentTypeEnum.cheque.name,
+                            PaymentTypeEnum.all.name,
+                          ].contains(paymentTypeController.text)
                               ? paymentTypeController.text
                               : null,
-                          options: const [
-                            'cash',
-                            'card',
-                            'online',
-                            'cheque',
-                            'other'
+                          options: [
+                            PaymentTypeEnum.cash.name,
+                            PaymentTypeEnum.online.name,
+                            PaymentTypeEnum.cheque.name,
+                            PaymentTypeEnum.all.name,
                           ],
+                          onChanged: (p0) {
+                            paymentTypeController.text = p0 ?? '';
+                          },
                         ),
                       ),
                       SizedBox(width: 12.dp),
@@ -316,6 +323,9 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
                             'credit',
                             'debit',
                           ],
+                          onChanged: (p0) {
+                            paymentNatureController.text = p0 ?? '';
+                          },
                         ),
                       ),
                     ],
@@ -343,9 +353,11 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               final payment = PaymentModel(
-                                id: DateTime.now()
-                                    .millisecondsSinceEpoch
-                                    .toString(),
+                                id: widget.existingPayment != null
+                                    ? widget.existingPayment!.id
+                                    : DateTime.now()
+                                        .millisecondsSinceEpoch
+                                        .toString(),
                                 party: Party(
                                   name: partyNameController.text,
                                   address: addressController.text,
@@ -388,16 +400,25 @@ class _PaymentFormWidgetState extends State<PaymentFormWidget> {
                                     ? DateTime.tryParse(
                                         paymentDateController.text)
                                     : null,
+                                paymentType: paymentTypeController.text ==
+                                        'cash'
+                                    ? PaymentTypeEnum.cash
+                                    : paymentTypeController.text == 'online'
+                                        ? PaymentTypeEnum.online
+                                        : paymentTypeController.text == 'cheque'
+                                            ? PaymentTypeEnum.cheque
+                                            : PaymentTypeEnum.all,
+                                paymentNature:
+                                    paymentNatureController.text == 'credit'
+                                        ? PaymentNature.credit
+                                        : PaymentNature.debit,
                               );
 
                               if (widget.existingPayment != null) {
                                 widget.paymentScreenStore
                                     .updatePayment(payment)
                                     .then((final onValue) {
-                                  widget.userDataStore.setPaymentList([
-                                    ...widget.userDataStore.paymentList,
-                                    payment
-                                  ]);
+                                  widget.paymentScreenStore.fetchPayments();
                                   Navigator.pop(context);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(

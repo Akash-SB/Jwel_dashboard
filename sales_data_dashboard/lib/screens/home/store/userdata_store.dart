@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobx/mobx.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import 'package:sales_data_dashboard/app_routes.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
 import 'package:sales_data_dashboard/models/invoice_notification_model.dart';
@@ -98,6 +99,7 @@ abstract class _UserDataStore with Store {
               bankBranch: '-',
               bankAddress: '-',
               panNumber: '-',
+              bgColor: PdfColors.grey300,
             )),
         SidebarItem(
           icon: Icons.store,
@@ -126,6 +128,7 @@ abstract class _UserDataStore with Store {
             bankBranch: '-',
             bankAddress: '-',
             panNumber: '-',
+            bgColor: PdfColors.blue100,
           ),
         ),
       ],

@@ -9,21 +9,20 @@ part of 'party_details_screen_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
-  Computed<List<StockPartyLedger>>? _$filteredInfoDataComputed;
+  Computed<List<PaymentModel>>? _$filteredInfoDataComputed;
 
   @override
-  List<StockPartyLedger> get filteredInfoData => (_$filteredInfoDataComputed ??=
-          Computed<List<StockPartyLedger>>(() => super.filteredInfoData,
+  List<PaymentModel> get filteredInfoData => (_$filteredInfoDataComputed ??=
+          Computed<List<PaymentModel>>(() => super.filteredInfoData,
               name: '_PartyDetailsStore.filteredInfoData'))
       .value;
-  Computed<List<StockPartyLedger>>? _$paginatedInfoDataComputed;
+  Computed<List<PaymentModel>>? _$paginatedInfoDataComputed;
 
   @override
-  List<StockPartyLedger> get paginatedInfoData =>
-      (_$paginatedInfoDataComputed ??= Computed<List<StockPartyLedger>>(
-              () => super.paginatedInfoData,
+  List<PaymentModel> get paginatedInfoData => (_$paginatedInfoDataComputed ??=
+          Computed<List<PaymentModel>>(() => super.paginatedInfoData,
               name: '_PartyDetailsStore.paginatedInfoData'))
-          .value;
+      .value;
   Computed<List<Party>>? _$paginatedDataComputed;
 
   @override
@@ -62,19 +61,19 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
     });
   }
 
-  late final _$partyLedgerListAtom =
-      Atom(name: '_PartyDetailsStore.partyLedgerList', context: context);
+  late final _$paymentListAtom =
+      Atom(name: '_PartyDetailsStore.paymentList', context: context);
 
   @override
-  ObservableList<StockPartyLedger> get partyLedgerList {
-    _$partyLedgerListAtom.reportRead();
-    return super.partyLedgerList;
+  ObservableList<PaymentModel> get paymentList {
+    _$paymentListAtom.reportRead();
+    return super.paymentList;
   }
 
   @override
-  set partyLedgerList(ObservableList<StockPartyLedger> value) {
-    _$partyLedgerListAtom.reportWrite(value, super.partyLedgerList, () {
-      super.partyLedgerList = value;
+  set paymentList(ObservableList<PaymentModel> value) {
+    _$paymentListAtom.reportWrite(value, super.paymentList, () {
+      super.paymentList = value;
     });
   }
 
@@ -478,7 +477,7 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
   }
 
   @override
-  void setPartyLedgerList(List<StockPartyLedger> list) {
+  void setPartyLedgerList(List<PaymentModel> list) {
     final _$actionInfo = _$_PartyDetailsStoreActionController.startAction(
         name: '_PartyDetailsStore.setPartyLedgerList');
     try {
@@ -712,7 +711,7 @@ mixin _$PartyDetailsStore on _PartyDetailsStore, Store {
   String toString() {
     return '''
 partiesList: ${partiesList},
-partyLedgerList: ${partyLedgerList},
+paymentList: ${paymentList},
 sortKey: ${sortKey},
 totalPages: ${totalPages},
 sortAsc: ${sortAsc},

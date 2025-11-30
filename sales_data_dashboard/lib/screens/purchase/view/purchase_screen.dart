@@ -7,6 +7,7 @@ import 'package:sales_data_dashboard/screens/purchase/view/purchase_form_widget.
 import 'package:sales_data_dashboard/widgets/custom_data_table.dart';
 import 'package:sales_data_dashboard/widgets/custom_searchbar.dart';
 
+import '../../../Utils/common_utils.dart';
 import '../../../models/app_enum.dart';
 import '../../../models/firm_model.dart';
 import '../../../widgets/common_dropdown.dart';
@@ -560,7 +561,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
   String _getCellValue(Purchase row, String key) {
     switch (key) {
       case 'date':
-        return row.createdAt.toIso8601String();
+        return CommonUtils.formatDate(row.createdAt);
       case 'itemId':
         return row.stockDetails.itemId;
       case 'quantity':

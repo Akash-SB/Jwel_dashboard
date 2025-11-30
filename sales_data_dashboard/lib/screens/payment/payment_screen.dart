@@ -65,6 +65,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
       TableColumn(label: 'Item ID', key: 'itemId', isSortable: true),
       TableColumn(label: 'Party', key: 'party', isSortable: true),
       TableColumn(label: 'Payment type', key: 'paymentType', isSortable: true),
+      TableColumn(
+          label: 'Payment Nature', key: 'paymentNature', isSortable: true),
       TableColumn(label: 'Actions', key: 'actions', isAction: true),
     ];
     return Container(
@@ -557,6 +559,8 @@ String _getCellValue(PaymentModel row, String key) {
       return row.id;
     case 'paymentType':
       return row.paymentType.name;
+    case 'paymentNature':
+      return row.paymentNature.name;
     default:
       return '';
   }

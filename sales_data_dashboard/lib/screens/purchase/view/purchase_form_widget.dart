@@ -592,9 +592,11 @@ class _PurchaseFormWidgetState extends State<PurchaseFormWidget> {
                                 ),
                                 firm: widget.purchaseStore.selectedFirmType,
                                 description: descriptionController.text,
-                                id: DateTime.now()
-                                    .millisecondsSinceEpoch
-                                    .toString(),
+                                id: widget.existingPurchase != null
+                                    ? widget.existingPurchase!.id
+                                    : DateTime.now()
+                                        .millisecondsSinceEpoch
+                                        .toString(),
                                 partyDetails: partyDetails!,
                                 stockDetails: selectedItem,
                                 agentDetails: agentDetails,

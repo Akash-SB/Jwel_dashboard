@@ -556,7 +556,7 @@ class _SalesScreenState extends State<SalesScreen> {
       case 'itemId':
         return row.stockDetails.itemId;
       case 'quantity':
-        return row.stockDetails.quantity ?? '0';
+        return row.quantity.toString();
       case 'rate':
         return row.stockDetails.rate.toString();
       case 'amount':

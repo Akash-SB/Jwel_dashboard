@@ -87,19 +87,18 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       mobileController.text = sale.partyDetails.mobileNumber ?? '';
       partyTypeController.text = sale.partyDetails.partyType;
       itemNameController.text = sale.stockDetails.itemName;
-      sizeController.text = sale.stockDetails.quantity ?? '0';
+      sizeController.text = sale.stockDetails.size;
       rateController.text = sale.stockDetails.rate.toString();
       availableQuantController.text =
           sale.stockDetails.availableQuantity.toString();
       amountController.text = sale.stockDetails.amount.toString();
-      descriptionController.text = sale.description ?? '';
       dueDaysController.text = sale.dueDays.toString();
       noteController.text = sale.description ?? '';
       intrstPerController.text = sale.interestPercent?.toString() ?? '';
       intrstAmountController.text = sale.interestAmount?.toString() ?? '';
       brokPerController.text = sale.brokeragePercent?.toString() ?? '';
       brokAmountController.text = sale.brokerageAmount?.toString() ?? '';
-      sellQuantController.text = sale.stockDetails.quantity.toString();
+      sellQuantController.text = sale.quantity.toString();
       agentNameController.text = sale.agentDetails?.name ?? '';
       agentAddressController.text = sale.agentDetails?.address ?? '';
       agentMobileController.text = sale.agentDetails?.mobileNumber ?? '';
@@ -517,7 +516,6 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                           itemNameController.text = item?.itemName ?? '';
                           sizeController.text = item?.quantity ?? '';
                           rateController.text = item?.rate.toString() ?? '';
-                          descriptionController.text = item?.description ?? '';
                           hsnCodeController.text = item?.hsnCode ?? '';
                           availableQuantController.text =
                               item?.availableQuantity.toString() ?? '';
@@ -633,6 +631,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                         ? dueDaysController.text
                         : null,
                     options: const ['0', '30', '60', '45', '90', '120'],
+                    onChanged: (p0) => dueDaysController.text = p0!,
                   ),
                   SizedBox(height: 8.dp),
                   CommonTextField(
@@ -662,9 +661,11 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               final sale = Sale(
-                                id: DateTime.now()
-                                    .millisecondsSinceEpoch
-                                    .toString(),
+                                id: widget.existingSale != null
+                                    ? widget.existingSale!.id
+                                    : DateTime.now()
+                                        .millisecondsSinceEpoch
+                                        .toString(),
                                 partyDetails: Party(
                                   name: nameController.text,
                                   address: addressController.text,
@@ -711,7 +712,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                 dueDays: dueDaysController.text.isEmpty
                                     ? 60
                                     : int.parse(dueDaysController.text),
-                                description: descriptionController.text,
+                                description: noteController.text,
                                 createdAt: DateTime.now(),
                                 quantity:
                                     double.tryParse(sellQuantController.text) ??
@@ -722,10 +723,15 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                 widget.salesScreenStore
                                     .updateSale(sale)
                                     .then((final onValue) {
-                                  widget.userDataStore.setSalesList([
-                                    ...widget.userDataStore.salesList,
-                                    sale
-                                  ]);
+                                  final updatedSalesList =
+                                      widget.userDataStore.salesList.map((e) {
+                                    if (e.id == sale.id) {
+                                      return sale;
+                                    }
+                                    return e;
+                                  }).toList();
+                                  widget.userDataStore
+                                      .setSalesList(updatedSalesList);
                                   Navigator.pop(context);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
