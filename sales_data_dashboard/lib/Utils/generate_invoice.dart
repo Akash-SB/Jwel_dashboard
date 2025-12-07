@@ -15,7 +15,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
   final pdf = pw.Document();
 
   // Load logo
-  final ByteData logoData = await rootBundle.load('assets/logo.png');
+  final ByteData logoData = await rootBundle
+      .load(selectedParentCompany.logoPath ?? 'assets/logo.png');
   final Uint8List logoBytes = logoData.buffer.asUint8List();
 
   // Gems and Jwellary
@@ -33,6 +34,10 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
 
   final ByteData diamond = await rootBundle.load('assets/diamond.png');
   final Uint8List diamondBytes = diamond.buffer.asUint8List();
+
+  final ByteData leftWaterMark =
+      await rootBundle.load('assets/leftWaterMark.jpg');
+  final Uint8List leftWaterMarkBytes = leftWaterMark.buffer.asUint8List();
 
   // Load font for ₹ symbol
   final robotoFont =
@@ -57,8 +62,21 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
   final PdfColor pdfColor = selectedParentCompany.bgColor ?? PdfColors.grey300;
   pdf.addPage(
     pw.MultiPage(
-      pageFormat: PdfPageFormat.a4,
-      margin: const pw.EdgeInsets.all(16),
+      pageTheme: pw.PageTheme(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(16),
+        buildBackground: (context) {
+          return pw.FullPage(
+            ignoreMargins: true,
+            child: pw.Opacity(
+              opacity: 0.3,
+              child: pw.Image(
+                pw.MemoryImage(leftWaterMarkBytes),
+              ),
+            ),
+          );
+        },
+      ),
       header: (context) {
         // ✅ HEADER with logo and company name
         return pw.Column(
@@ -79,7 +97,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
                   pw.Row(children: [
-                    // pw.Image(pw.MemoryImage(logoBytes), width: 50, height: 50),
+                    pw.Image(pw.MemoryImage(logoBytes), width: 50, height: 50),
                     pw.SizedBox(width: 8),
                     pw.Text(
                       selectedParentCompany.name,
@@ -167,7 +185,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text("Invoice No : ${tx.invoiceId}",
+                      pw.Text(
+                          "Invoice No : ${tx.date.replaceAll('-', '')}${tx.invoiceId.substring(0, 2)}",
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),
                       pw.Text("Invoice Date : ${tx.date}",
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),
@@ -269,7 +288,11 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
         ),
         // ✅ TABLE
         pw.Table(
-          border: pw.TableBorder.all(width: 0.8, color: PdfColors.grey700),
+          border: pw.TableBorder.all(
+              width: 0.8,
+              color: selectedParentCompany.companyType == CompanyType.Partner
+                  ? PdfColors.grey300
+                  : selectedParentCompany.bgColor ?? PdfColors.grey300),
           columnWidths: {
             0: const pw.FlexColumnWidth(0.6),
             1: const pw.FlexColumnWidth(3),
@@ -474,7 +497,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                                   fontSize: 9,
                                   fontWeight: pw.FontWeight.bold)),
                           pw.SizedBox(height: 4),
-                          pw.Text('Partner',
+                          pw.Text(selectedParentCompany.companyType?.name ?? '',
                               style:
                                   pw.TextStyle(font: robotoFont, fontSize: 9)),
                         ],
@@ -655,8 +678,8 @@ Future<void> showInvoicePreview(
                   label: const Text('Download'),
                   onPressed: () async {
                     final downloadsPath = getDownloadsPath();
-                    final file =
-                        File('$downloadsPath/invoice_${tx.invoiceId}.pdf');
+                    final file = File(
+                        '$downloadsPath/invoice_${tx.date.replaceAll('-', '')}${tx.invoiceId.substring(0, 2)}.pdf');
                     await file.writeAsBytes(bytes).then((final onValue) {
                       Navigator.of(ctx).pop();
                       ScaffoldMessenger.of(context).showSnackBar(

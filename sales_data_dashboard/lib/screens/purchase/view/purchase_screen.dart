@@ -60,8 +60,8 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     final List<TableColumn> columns = [
       TableColumn(label: 'Date', key: 'date', isSortable: true),
       TableColumn(label: 'Item Id', key: 'itemId', isSortable: true),
-      TableColumn(label: 'Pcs/Size', key: 'size'),
-      TableColumn(label: 'Carat', key: 'carat', isSortable: true),
+      // TableColumn(label: 'Pcs/Size', key: 'size'),
+      // TableColumn(label: 'Carat', key: 'carat', isSortable: true),
       TableColumn(label: 'Rate', key: 'rate', isSortable: true),
       TableColumn(label: 'Buy Quantity', key: 'buyQuantity', isSortable: true),
       TableColumn(label: 'Amount', key: 'amount', isSortable: true),

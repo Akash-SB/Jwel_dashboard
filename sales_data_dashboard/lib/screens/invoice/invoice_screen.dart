@@ -605,6 +605,7 @@ class CompanyModel {
   final String? panNumber;
   final String? logoPath;
   final PdfColor? bgColor;
+  final CompanyType? companyType;
 
   const CompanyModel({
     required this.name,
@@ -620,6 +621,7 @@ class CompanyModel {
     this.panNumber,
     this.logoPath,
     this.bgColor,
+    this.companyType,
   });
 
   Map<String, dynamic> toMap() => {
@@ -636,5 +638,8 @@ class CompanyModel {
         'panNumber': panNumber,
         'logoPath': logoPath,
         'bgColor': bgColor,
+        'companyType': companyType?.toString(),
       };
 }
+
+enum CompanyType { Proprietor, Partner, privateLimited, publicLimited, llp }
