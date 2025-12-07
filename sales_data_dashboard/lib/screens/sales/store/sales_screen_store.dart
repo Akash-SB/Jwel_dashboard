@@ -281,6 +281,17 @@ abstract class _SalesScreenStore with Store {
     try {
       await _collection.doc(sale.id).set(sale.toMap());
       sales.add(sale);
+
+      // Update stock quantity
+      final stockRef =
+          _firestore.collection('StockItems').doc(sale.stockDetails.itemId);
+      final currentStock = await stockRef.get();
+      if (currentStock.exists) {
+        final currentQuantity = int.parse(currentStock['quantity'] ?? '0');
+        final newQuantity =
+            currentQuantity - int.parse(sale.stockDetails.quantity ?? '0');
+        await stockRef.update({'quantity': newQuantity.toString()});
+      }
     } catch (e) {
       setErrorMessage(e.toString());
     }
@@ -291,8 +302,24 @@ abstract class _SalesScreenStore with Store {
     try {
       await _collection.doc(sale.id).update(sale.toMap());
       final index = sales.indexWhere((s) => s.id == sale.id);
+
       if (index != -1) {
-        sales[index] = sale;
+        final oldSale = sales[index];
+        final oldQuantity = int.parse(oldSale.stockDetails.quantity ?? '0');
+        final newQuantity = int.parse(sale.stockDetails.quantity ?? '0');
+        final quantityDifference = newQuantity - oldQuantity;
+
+        // Update stock if quantity changed
+        if (quantityDifference != 0) {
+          final stockRef =
+              _firestore.collection('StockItems').doc(sale.stockDetails.itemId);
+          final currentStock = await stockRef.get();
+          if (currentStock.exists) {
+            final currentQuantity = int.parse(currentStock['quantity'] ?? '0');
+            final updatedQuantity = currentQuantity - quantityDifference;
+            await stockRef.update({'quantity': updatedQuantity.toString()});
+          }
+        }
       }
     } catch (e) {
       setErrorMessage(e.toString());
