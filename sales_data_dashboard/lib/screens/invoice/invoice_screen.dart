@@ -607,6 +607,7 @@ class CompanyModel {
   final PdfColor? bgColor;
   final CompanyType? companyType;
   final double gstRate; // 0.25%
+  final String? watermarkPath;
 
   const CompanyModel({
     required this.name,
@@ -624,6 +625,7 @@ class CompanyModel {
     this.bgColor,
     this.companyType,
     this.gstRate = 0.0025,
+    this.watermarkPath,
   });
 
   Map<String, dynamic> toMap() => {
@@ -642,6 +644,7 @@ class CompanyModel {
         'bgColor': bgColor,
         'companyType': companyType?.toString(),
         'gstRate': gstRate,
+        'watermarkPath': watermarkPath,
       };
 }
 

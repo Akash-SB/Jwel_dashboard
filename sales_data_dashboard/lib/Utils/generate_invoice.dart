@@ -35,8 +35,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
   final ByteData diamond = await rootBundle.load('assets/diamond.png');
   final Uint8List diamondBytes = diamond.buffer.asUint8List();
 
-  final ByteData leftWaterMark =
-      await rootBundle.load('assets/leftWaterMark.jpg');
+  final ByteData leftWaterMark = await rootBundle
+      .load(selectedParentCompany.watermarkPath ?? 'assets/leftWaterMark.jpg');
   final Uint8List leftWaterMarkBytes = leftWaterMark.buffer.asUint8List();
 
   // Load font for ₹ symbol

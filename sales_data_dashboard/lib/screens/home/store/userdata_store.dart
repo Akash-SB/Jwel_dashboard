@@ -102,6 +102,7 @@ abstract class _UserDataStore with Store {
               bgColor: PdfColors.grey100,
               companyType: CompanyType.Partner,
               logoPath: 'assets/sahajanand.png',
+              watermarkPath: 'assets/background2.png',
             )),
         SidebarItem(
           icon: Icons.store,
@@ -134,6 +135,7 @@ abstract class _UserDataStore with Store {
             companyType: CompanyType.Proprietor,
             logoPath: 'assets/harikrishna.png',
             gstRate: 0.0,
+            watermarkPath: 'assets/leftWaterMark.jpg',
           ),
         ),
       ],
