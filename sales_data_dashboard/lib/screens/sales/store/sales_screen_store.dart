@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:sales_data_dashboard/models/party_model.dart';
+import 'package:sales_data_dashboard/screens/home/store/userdata_store.dart';
 import '../../../models/sales_model.dart';
 import '../../../models/stock_item.dart';
 
@@ -287,10 +288,11 @@ abstract class _SalesScreenStore with Store {
           _firestore.collection('StockItems').doc(sale.stockDetails.itemId);
       final currentStock = await stockRef.get();
       if (currentStock.exists) {
-        final currentQuantity = int.parse(currentStock['quantity'] ?? '0');
-        final newQuantity =
-            currentQuantity - int.parse(sale.stockDetails.quantity ?? '0');
-        await stockRef.update({'quantity': newQuantity.toString()});
+        final currentQuantity = currentStock['availableQuantity'] != null
+            ? currentStock['availableQuantity']
+            : 0;
+        final newQuantity = currentQuantity - (sale.quantity ?? 0);
+        await stockRef.update({'availableQuantity': newQuantity});
       }
     } catch (e) {
       setErrorMessage(e.toString());
@@ -315,9 +317,11 @@ abstract class _SalesScreenStore with Store {
               _firestore.collection('StockItems').doc(sale.stockDetails.itemId);
           final currentStock = await stockRef.get();
           if (currentStock.exists) {
-            final currentQuantity = int.parse(currentStock['quantity'] ?? '0');
-            final updatedQuantity = currentQuantity - quantityDifference;
-            await stockRef.update({'quantity': updatedQuantity.toString()});
+            final currentQuantity = currentStock['availableQuantity'] != null
+                ? currentStock['availableQuantity']
+                : 0;
+            final newQuantity = currentQuantity - (sale.quantity ?? 0);
+            await stockRef.update({'availableQuantity': newQuantity});
           }
         }
       }

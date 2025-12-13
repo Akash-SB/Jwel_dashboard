@@ -46,6 +46,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
   final TextEditingController brokAmountController = TextEditingController();
   final TextEditingController hsnCodeController = TextEditingController();
   final TextEditingController itemNameController = TextEditingController();
+  final TextEditingController itemIdController = TextEditingController();
   final TextEditingController sizeController = TextEditingController();
   final TextEditingController rateController = TextEditingController();
   final TextEditingController availableQuantController =
@@ -80,6 +81,15 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
   void initState() {
     super.initState();
     if (widget.existingSale != null) {
+      final stockData = widget.userDataStore.stockList.firstWhere(
+          (element) =>
+              element.itemId == widget.existingSale!.stockDetails.itemId,
+          orElse: () => StockItem(
+                itemId: '',
+                itemName: '',
+                size: '',
+              ));
+
       final sale = widget.existingSale!;
       nameController.text = sale.partyDetails.name;
       salesDateController.text = sale.createdAt.toString().split(' ')[0];
@@ -87,10 +97,10 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
       mobileController.text = sale.partyDetails.mobileNumber ?? '';
       partyTypeController.text = sale.partyDetails.partyType;
       itemNameController.text = sale.stockDetails.itemName;
+      itemIdController.text = sale.stockDetails.itemId;
       sizeController.text = sale.stockDetails.size;
       rateController.text = sale.stockDetails.rate.toString();
-      availableQuantController.text =
-          sale.stockDetails.availableQuantity.toString();
+      availableQuantController.text = stockData.availableQuantity.toString();
       amountController.text = sale.stockDetails.amount.toString();
       dueDaysController.text = sale.dueDays.toString();
       noteController.text = sale.description ?? '';
@@ -513,6 +523,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                         onSelect: (val) {
                           final item = widget.stockItemList
                               ?.firstWhere((element) => element.itemId == val);
+                          itemIdController.text = item?.itemId ?? '';
                           itemNameController.text = item?.itemName ?? '';
                           sizeController.text = item?.quantity ?? '';
                           rateController.text = item?.rate.toString() ?? '';
@@ -675,7 +686,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                   id: '${DateTime.now().millisecondsSinceEpoch}',
                                 ),
                                 stockDetails: StockItem(
-                                  itemId: itemNameController.text,
+                                  itemId: itemIdController.text,
                                   itemName: itemNameController.text,
                                   hsnCode: hsnCodeController.text,
                                   quantity: sizeController.text,
@@ -732,6 +743,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                   }).toList();
                                   widget.userDataStore
                                       .setSalesList(updatedSalesList);
+                                  widget.userDataStore.fetchStockList();
                                   Navigator.pop(context);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -755,6 +767,7 @@ class _SalesFormWidgetState extends State<SalesFormWidget> {
                                     ...widget.userDataStore.salesList,
                                     sale
                                   ]);
+                                  widget.userDataStore.fetchStockList();
                                   Navigator.pop(context);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(

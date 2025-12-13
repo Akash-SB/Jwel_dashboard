@@ -133,6 +133,7 @@ abstract class _UserDataStore with Store {
             bgColor: PdfColors.blue100,
             companyType: CompanyType.Proprietor,
             logoPath: 'assets/harikrishna.png',
+            gstRate: 0.0,
           ),
         ),
       ],

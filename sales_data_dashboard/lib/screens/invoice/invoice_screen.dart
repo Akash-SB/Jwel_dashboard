@@ -606,6 +606,7 @@ class CompanyModel {
   final String? logoPath;
   final PdfColor? bgColor;
   final CompanyType? companyType;
+  final double gstRate; // 0.25%
 
   const CompanyModel({
     required this.name,
@@ -622,6 +623,7 @@ class CompanyModel {
     this.logoPath,
     this.bgColor,
     this.companyType,
+    this.gstRate = 0.0025,
   });
 
   Map<String, dynamic> toMap() => {
@@ -639,6 +641,7 @@ class CompanyModel {
         'logoPath': logoPath,
         'bgColor': bgColor,
         'companyType': companyType?.toString(),
+        'gstRate': gstRate,
       };
 }
 

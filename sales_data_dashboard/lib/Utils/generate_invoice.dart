@@ -48,13 +48,13 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
   final double rate = double.tryParse(tx.rate) ?? 0;
   final double baseAmount = double.tryParse(tx.amount) ?? (qty * rate);
 
-  const double gstRate = 0.0025; // 0.25%
+  final gstRate = selectedParentCompany.gstRate; // 0.25%
   const double cgstRate = 0.00125; // 0.125% for CGST
   const double sgstRate = 0.00125; // 0.125% for SGST
   final double gstAmount = baseAmount * gstRate;
   final double cgst = baseAmount * cgstRate;
   final double sgst = baseAmount * sgstRate;
-  final double rawTotal = baseAmount + gstAmount;
+  final double rawTotal = baseAmount + gstAmount + cgst + sgst;
   final double roundOff = rawTotal.roundToDouble() - rawTotal;
   final double grandTotal = rawTotal + roundOff;
 
@@ -475,8 +475,10 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                         robotoFont, pdfColor),
                     rowTax('Add SGST 0.125%', formatter.format(sgst),
                         robotoFont, pdfColor),
-                    rowTax('Add IGST 0.25%', formatter.format(gstAmount),
-                        robotoFont, pdfColor),
+                    selectedParentCompany.gstRate > 0
+                        ? rowTax('Add IGST 0.25%', formatter.format(gstAmount),
+                            robotoFont, pdfColor)
+                        : pw.Container(),
                     rowTax('Rounding Off', formatter.format(roundOff),
                         robotoFont, pdfColor),
                     rowTax('TOTAL VALUE', formatter.format(grandTotal),
