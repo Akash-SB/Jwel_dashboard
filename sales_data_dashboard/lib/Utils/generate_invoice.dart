@@ -6,6 +6,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
+import 'package:sales_data_dashboard/Utils/common_utils.dart';
 import 'package:sales_data_dashboard/screens/invoice/invoice_screen.dart';
 import '../models/invoice_model.dart';
 
@@ -70,9 +71,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
             ignoreMargins: true,
             child: pw.Opacity(
               opacity: 0.3,
-              child: pw.Image(
-                pw.MemoryImage(leftWaterMarkBytes),
-              ),
+              child: pw.Image(pw.MemoryImage(leftWaterMarkBytes),
+                  fit: pw.BoxFit.cover),
             ),
           );
         },
@@ -90,7 +90,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
             ),
             pw.SizedBox(height: 8),
             pw.Container(
-              color: pdfColor,
+              color: selectedParentCompany.headerBackground,
               padding: const pw.EdgeInsets.all(8),
               child: pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -186,7 +186,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
                       pw.Text(
-                          "Invoice No : ${tx.date.replaceAll('-', '')}${tx.invoiceId.substring(0, 2)}",
+                          "Invoice No : ${CommonUtils.removeDay(tx.date)}/${tx.invoiceNumber ?? tx.invoiceId.substring(0, 2)}",
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),
                       pw.Text("Invoice Date : ${tx.date}",
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),

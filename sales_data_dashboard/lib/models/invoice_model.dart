@@ -6,6 +6,7 @@ import 'app_enum.dart';
 
 class InvoiceModel {
   final String invoiceId;
+  final String? invoiceNumber;
   final String date;
   final String size;
   final String rate;
@@ -41,6 +42,7 @@ class InvoiceModel {
     this.custGst,
     this.itemId,
     required this.selectedFirm,
+    this.invoiceNumber,
   });
 
   /// Convert to Firestore map
@@ -63,6 +65,7 @@ class InvoiceModel {
         'custGst': custGst,
         'itemId': itemId,
         'selectedFirmName': jsonEncode(selectedFirm.toMap()),
+        'invoiceNumber': invoiceNumber
       };
 
   /// Construct from Firestore map
@@ -83,6 +86,7 @@ class InvoiceModel {
           orElse: () => UsertypeEnum.broker,
         ),
         custName: map['custName'] ?? '',
+        invoiceNumber: map['invoiceNumber'] ?? '',
         note: map['note'],
         hsnCode: map['hsnCode'] ?? '',
         interestDays: map['interestDays'] ?? '',
@@ -127,6 +131,7 @@ class InvoiceModel {
       custGst: custGst,
       itemId: itemId,
       selectedFirm: selectedFirm,
+      invoiceNumber: invoiceNumber,
     );
   }
 

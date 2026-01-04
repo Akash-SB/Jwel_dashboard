@@ -131,6 +131,9 @@ class _InvoiceFormState extends State<InvoiceForm> {
         custGst: _custGstController.text,
         itemId: _itemIdController.text,
         selectedFirm: widget.selectedFirm,
+        invoiceNumber: widget.existingInvoice != null
+            ? widget.existingInvoice?.invoiceNumber
+            : (widget.invoiceStore.invoices.length + 1).toString(),
       );
       clearControllers();
       widget.onSubmit(invoiceData);

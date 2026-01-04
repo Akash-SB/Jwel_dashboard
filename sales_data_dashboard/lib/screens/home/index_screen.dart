@@ -102,7 +102,9 @@ class _IndexScreenState extends State<IndexScreen> {
                       titleAlignment: ListTileTitleAlignment.top,
                       leading: CircleAvatar(
                         radius: 20.dp,
-                        backgroundImage: const AssetImage('assets/logo.png'),
+                        backgroundImage:
+                            const AssetImage('assets/sahajanand.png'),
+                        backgroundColor: Colors.white,
                       ),
                       title: Text(
                         "SAHAJANAND GEMS",

@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
+
+import '../../../Utils/common_utils.dart';
 part 'invoice_store.g.dart';
 
 class InvoiceStore = _InvoiceStore with _$InvoiceStore;
@@ -182,7 +184,7 @@ abstract class _InvoiceStore with Store {
   String getFieldValue(InvoiceModel item, String key) {
     switch (key) {
       case 'invoiceId':
-        return item.invoiceId;
+        return '${CommonUtils.removeDay(item.date)}/${item.invoiceNumber ?? item.invoiceId.substring(0, 2)}';
       case 'date':
         return item.date;
       case 'productName':

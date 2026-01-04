@@ -291,15 +291,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                               InkWell(
                                 onTap: () async {
                                   showInvoicePreview(
-                                      context,
-                                      row,
-                                      widget.selectedFirm ??
-                                          CompanyModel(
-                                            name: 'Default Company',
-                                            gstin: '',
-                                            address: '',
-                                            phone: '',
-                                          ));
+                                    context,
+                                    row,
+                                    widget.selectedFirm ??
+                                        CompanyModel(
+                                          name: 'Default Company',
+                                          gstin: '',
+                                          address: '',
+                                          phone: '',
+                                        ),
+                                  );
                                 },
                                 child: Text(
                                   invoiceStore.getFieldValue(row, col.key),
@@ -437,15 +438,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             Text('Invoice ${invoiceData.invoiceId} added')),
                   );
                   showInvoicePreview(
-                      context,
-                      invoiceData,
-                      widget.selectedFirm ??
-                          CompanyModel(
-                            name: 'Default Company',
-                            gstin: '',
-                            address: '',
-                            phone: '',
-                          ));
+                    context,
+                    invoiceData,
+                    widget.selectedFirm ??
+                        CompanyModel(
+                          name: 'Default Company',
+                          gstin: '',
+                          address: '',
+                          phone: '',
+                        ),
+                  );
                 }).onError(
                   (error, stackTrace) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -605,6 +607,7 @@ class CompanyModel {
   final String? panNumber;
   final String? logoPath;
   final PdfColor? bgColor;
+  final PdfColor? headerBackground;
   final CompanyType? companyType;
   final double gstRate; // 0.25%
   final String? watermarkPath;
@@ -626,6 +629,7 @@ class CompanyModel {
     this.companyType,
     this.gstRate = 0.0025,
     this.watermarkPath,
+    this.headerBackground,
   });
 
   Map<String, dynamic> toMap() => {
@@ -645,6 +649,7 @@ class CompanyModel {
         'companyType': companyType?.toString(),
         'gstRate': gstRate,
         'watermarkPath': watermarkPath,
+        'headerBackground': headerBackground,
       };
 }
 

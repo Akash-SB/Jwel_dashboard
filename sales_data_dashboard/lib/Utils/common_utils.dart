@@ -9,4 +9,9 @@ class CommonUtils {
     final period = dateTime.hour >= 12 ? 'PM' : 'AM';
     return '$day-$month-$year $hourStr:$minute $period';
   }
+
+  static String removeDay(String dateStr) {
+    final date = DateTime.parse(dateStr);
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}";
+  }
 }
