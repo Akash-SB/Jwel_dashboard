@@ -54,6 +54,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
   TransactionTypeEnum? _transactionType;
   UsertypeEnum? _custType;
   Party? _selectedCustomer;
+  UnitTypeEnum? _unitType;
 
   @override
   void initState() {
@@ -71,6 +72,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
       _noteController.text = invoice.note ?? '';
       _transactionType = invoice.transactionType;
       _custType = invoice.custType;
+      _unitType = invoice.unitType;
       // _paymentStatus = invoice.paymentStatus;
       // _paymentType = invoice.paymentType;
       _hsnCodeController.text = invoice.hsnCode;
@@ -81,8 +83,8 @@ class _InvoiceFormState extends State<InvoiceForm> {
       _itemIdController.text = invoice.itemId ?? '';
     } else {
       _invoiceIdController.text =
-          DateTime.now().millisecondsSinceEpoch.toString();
-      _dateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+          '${DateTime.now().year}-${(DateTime.now().year + 1).toString().substring(2)}/00${(widget.invoiceStore.invoices.length + 1).toString()}';
+      _dateController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
     }
   }
 
@@ -124,6 +126,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
         note: _noteController.text,
         transactionType: _transactionType!,
         custType: _custType!,
+        unitType: _unitType!,
         productName: _prodNameController.text,
         hsnCode: _hsnCodeController.text,
         custAddress: _custAddressController.text,
@@ -157,6 +160,7 @@ class _InvoiceFormState extends State<InvoiceForm> {
     _custGstController.clear();
     _transactionType = null;
     _custType = null;
+    _unitType = null;
     _selectedCustomer = null;
     _itemIdController.clear();
   }
@@ -234,6 +238,23 @@ class _InvoiceFormState extends State<InvoiceForm> {
                           }
                           return null;
                         },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 24.dp),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      width: 300.dp,
+                      child: TextFormField(
+                        controller: _invoiceIdController,
+                        keyboardType: TextInputType.number,
+                        decoration: _inputDecoration('Invoice ID'),
+                        validator: (value) =>
+                            value == null || value.isEmpty ? 'Required' : null,
                       ),
                     ),
                   ),
@@ -447,8 +468,39 @@ class _InvoiceFormState extends State<InvoiceForm> {
                                 : null,
                           ),
                         ),
-                        const Flexible(child: SizedBox()),
-                        const Flexible(child: SizedBox()),
+                        SizedBox(width: 12.dp),
+                        Flexible(
+                          child: TextFormField(
+                            controller: _hsnCodeController,
+                            decoration: _inputDecoration('HSN Code'),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Required'
+                                : null,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 12.dp,
+                        ),
+                        Flexible(
+                          child: DropdownButtonFormField<UnitTypeEnum>(
+                            focusColor: Colors.white,
+                            value: _unitType,
+                            decoration: _inputDecoration('Unit Type'),
+                            items: [
+                              UnitTypeEnum.KG,
+                              UnitTypeEnum.CTS,
+                            ].map((e) {
+                              return DropdownMenuItem(
+                                value: e,
+                                child: Text(e.name.toUpperCase()),
+                              );
+                            }).toList(),
+                            onChanged: (value) =>
+                                setState(() => _unitType = value),
+                            validator: (value) =>
+                                value == null ? 'Required' : null,
+                          ),
+                        ),
                       ],
                     ),
                   ],

@@ -6,8 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
 import 'package:sales_data_dashboard/models/invoice_model.dart';
-
-import '../../../Utils/common_utils.dart';
 part 'invoice_store.g.dart';
 
 class InvoiceStore = _InvoiceStore with _$InvoiceStore;
@@ -86,7 +84,7 @@ abstract class _InvoiceStore with Store {
         snapshot.docs.map(
           (doc) => InvoiceModel.fromMap({
             ...doc.data() as Map<String, dynamic>,
-            'invoiceId': doc.id, // Ensure the Firestore doc id is set
+            'id': doc.id, // Ensure the Firestore doc id is set
           }),
         ),
       );
@@ -104,7 +102,7 @@ abstract class _InvoiceStore with Store {
     try {
       final data = invoice.toMap();
       final docRef = await invoicesRef.add(data);
-      invoices.add(invoice.copyWith(invoiceId: docRef.id, id: docRef.id));
+      invoices.add(invoice.copyWith(id: docRef.id));
     } catch (e) {
       errorMessage = e.toString();
     } finally {
@@ -118,9 +116,9 @@ abstract class _InvoiceStore with Store {
     errorMessage = null;
     try {
       await invoicesRef.doc(id).update(invoice.toMap());
-      final index = invoices.indexWhere((inv) => inv.invoiceId == id);
+      final index = invoices.indexWhere((inv) => inv.id == id);
       if (index != -1) {
-        invoices[index] = invoice.copyWith(invoiceId: id, id: id);
+        invoices[index] = invoice.copyWith(id: id);
       }
     } catch (e) {
       errorMessage = e.toString();
@@ -143,7 +141,7 @@ abstract class _InvoiceStore with Store {
     errorMessage = null;
     try {
       await invoicesRef.doc(id).delete();
-      invoices.removeWhere((inv) => inv.invoiceId == id);
+      invoices.removeWhere((inv) => inv.id == id);
     } catch (e) {
       errorMessage = e.toString();
     } finally {
@@ -184,7 +182,7 @@ abstract class _InvoiceStore with Store {
   String getFieldValue(InvoiceModel item, String key) {
     switch (key) {
       case 'invoiceId':
-        return '${CommonUtils.removeDay(item.date)}/${item.invoiceNumber ?? item.invoiceId.substring(0, 2)}';
+        return item.invoiceId;
       case 'date':
         return item.date;
       case 'productName':

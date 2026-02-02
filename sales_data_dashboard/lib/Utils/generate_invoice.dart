@@ -49,7 +49,10 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
   final double rate = double.tryParse(tx.rate) ?? 0;
   final double baseAmount = double.tryParse(tx.amount) ?? (qty * rate);
 
-  final gstRate = selectedParentCompany.gstRate; // 0.25%
+  final gstRate = getStateByGST(selectedParentCompany.gstin) ==
+          getStateByGST(tx.custGst ?? '')
+      ? 0.0
+      : selectedParentCompany.gstRate; // 0.25%
   const double cgstRate = 0.00125; // 0.125% for CGST
   const double sgstRate = 0.00125; // 0.125% for SGST
   final double gstAmount = baseAmount * gstRate;
@@ -60,7 +63,9 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
   final double grandTotal = rawTotal + roundOff;
 
   final formatter = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
-  final PdfColor pdfColor = selectedParentCompany.bgColor ?? PdfColors.grey300;
+  final PdfColor pdfColor = selectedParentCompany.bgColor != null
+      ? PdfColor.fromInt(selectedParentCompany.bgColor!)
+      : PdfColors.grey300;
   pdf.addPage(
     pw.MultiPage(
       pageTheme: pw.PageTheme(
@@ -90,7 +95,9 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
             ),
             pw.SizedBox(height: 8),
             pw.Container(
-              color: selectedParentCompany.headerBackground,
+              color: selectedParentCompany.headerBackground != null
+                  ? PdfColor.fromInt(selectedParentCompany.headerBackground!)
+                  : PdfColors.white,
               padding: const pw.EdgeInsets.all(8),
               child: pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -185,18 +192,18 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text(
-                          "Invoice No : ${CommonUtils.removeDay(tx.date)}/${tx.invoiceNumber ?? tx.invoiceId.substring(0, 2)}",
+                      pw.Text("Invoice No : ${tx.invoiceId}",
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),
                       pw.Text("Invoice Date : ${tx.date}",
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),
                       pw.Row(
                           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                           children: [
-                            pw.Text("State : Maharashtra",
+                            pw.Text("State : ${selectedParentCompany.state}",
                                 style: pw.TextStyle(
                                     font: robotoFont, fontSize: 9)),
-                            pw.Text("State Code : 27",
+                            pw.Text(
+                                "State Code : ${selectedParentCompany.stateCode}",
                                 style: pw.TextStyle(
                                     font: robotoFont, fontSize: 9)),
                           ]),
@@ -213,7 +220,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                     children: [
                       pw.Text("GSTIN NO : ${selectedParentCompany.gstin}",
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),
-                      pw.Text("PAN NO : ${selectedParentCompany.panNumber}",
+                      pw.Text(
+                          "PAN NO : ${selectedParentCompany.gstin.substring(2, 12)}",
                           style: pw.TextStyle(font: robotoFont, fontSize: 9)),
                     ],
                   ),
@@ -260,10 +268,12 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                       pw.Row(
                           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                           children: [
-                            pw.Text("State : Maharashtra",
+                            pw.Text(
+                                "State : ${getStateByGST(tx.custGst ?? '')}",
                                 style: pw.TextStyle(
                                     font: robotoFont, fontSize: 9)),
-                            pw.Text("State Code : 27",
+                            pw.Text(
+                                "State Code : ${tx.custGst != null && tx.custGst!.length >= 2 ? tx.custGst!.substring(0, 2) : ''}",
                                 style: pw.TextStyle(
                                     font: robotoFont, fontSize: 9)),
                           ]),
@@ -292,12 +302,14 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
               width: 0.8,
               color: selectedParentCompany.companyType == CompanyType.Partner
                   ? PdfColors.grey300
-                  : selectedParentCompany.bgColor ?? PdfColors.grey300),
+                  : selectedParentCompany.bgColor != null
+                      ? PdfColor.fromInt(selectedParentCompany.bgColor!)
+                      : PdfColors.grey300),
           columnWidths: {
             0: const pw.FlexColumnWidth(0.6),
-            1: const pw.FlexColumnWidth(3),
-            2: const pw.FlexColumnWidth(1),
-            3: const pw.FlexColumnWidth(0.8),
+            1: const pw.FlexColumnWidth(2.8),
+            2: const pw.FlexColumnWidth(1.4),
+            3: const pw.FlexColumnWidth(0.6),
             4: const pw.FlexColumnWidth(0.8),
             5: const pw.FlexColumnWidth(1),
             6: const pw.FlexColumnWidth(1.2),
@@ -329,7 +341,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                       top: 4, bottom: 150, left: 4, right: 4),
                 ),
                 dataCell(
-                  'CUT & POLISHED EMERALD',
+                  tx.productName ?? '',
                   robotoFont,
                   contentPadding: const pw.EdgeInsets.only(
                       top: 4, bottom: 150, left: 4, right: 4),
@@ -341,7 +353,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                       top: 4, bottom: 150, left: 4, right: 4),
                 ),
                 dataCell(
-                  'CTS.',
+                  tx.unitType.name,
                   robotoFont,
                   contentPadding: const pw.EdgeInsets.only(
                       top: 4, bottom: 150, left: 4, right: 4),
@@ -457,7 +469,7 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                                     )),
                                 pw.SizedBox(height: 8),
                                 pw.Text(
-                                  'Certified that the particulars in given above are true and correct\nSubject to MUMBAI Jurisdiction',
+                                  'Certified that the particulars in given above are true and correct\nSubject to ${selectedParentCompany.judicialPlace} Jurisdiction',
                                   style: pw.TextStyle(
                                       fontSize: 8, font: robotoFont),
                                 ),
@@ -475,7 +487,8 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                         robotoFont, pdfColor),
                     rowTax('Add SGST 0.125%', formatter.format(sgst),
                         robotoFont, pdfColor),
-                    selectedParentCompany.gstRate > 0
+                    selectedParentCompany.gstin.substring(0, 2) !=
+                            tx.custGst?.substring(0, 2)
                         ? rowTax('Add IGST 0.25%', formatter.format(gstAmount),
                             robotoFont, pdfColor)
                         : pw.Container(),
@@ -581,11 +594,11 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
 pw.Widget headerCell(String text, pw.Font font) {
   return pw.Container(
     padding: const pw.EdgeInsets.all(4),
-    alignment: pw.Alignment.center,
+    alignment: pw.Alignment.centerLeft,
     child: pw.Text(text,
         style: pw.TextStyle(
             font: font, fontSize: 8, fontWeight: pw.FontWeight.bold),
-        textAlign: pw.TextAlign.center),
+        textAlign: pw.TextAlign.left),
   );
 }
 
@@ -795,6 +808,94 @@ String _convertIntToWords(int number) {
     words += part(number);
   }
   return words.trim();
+}
+
+String getStateByGST(final String gstin) {
+  final stateCode = gstin.substring(0, 2);
+  switch (stateCode) {
+    case '01':
+      return 'Jammu & Kashmir';
+    case '02':
+      return 'Himachal Pradesh';
+    case '03':
+      return 'Punjab';
+    case '04':
+      return 'Chandigarh';
+    case '05':
+      return 'Uttarakhand';
+    case '06':
+      return 'Haryana';
+    case '07':
+      return 'Delhi';
+    case '08':
+      return 'Rajasthan';
+    case '09':
+      return 'Uttar Pradesh';
+    case '10':
+      return 'Bihar';
+    case '11':
+      return 'Sikkim';
+    case '12':
+      return 'Arunachal Pradesh';
+    case '13':
+      return 'Nagaland';
+    case '14':
+      return 'Manipur';
+    case '15':
+      return 'Mizoram';
+    case '16':
+      return 'Tripura';
+    case '17':
+      return 'Meghalaya';
+    case '18':
+      return 'Assam';
+    case '19':
+      return 'West Bengal';
+    case '20':
+      return 'Jharkhand';
+    case '21':
+      return 'Odisha';
+    case '22':
+      return 'Chhattisgarh';
+    case '23':
+      return 'Madhya Pradesh';
+    case '24':
+      return 'Gujarat';
+    case '25':
+      return 'Daman & Diu';
+    case '26':
+      return 'Dadra & Nagar Haveli';
+    case '27':
+      return 'Maharashtra';
+    case '28':
+      return 'Andhra Pradesh (Old)';
+    case '29':
+      return 'Karnataka';
+    case '30':
+      return 'Goa';
+    case '31':
+      return 'Lakshadweep';
+    case '32':
+      return 'Kerala';
+    case '33':
+      return 'Tamil Nadu';
+    case '34':
+      return 'Puducherry';
+    case '35':
+      return 'Andaman & Nicobar Islands';
+    case '36':
+      return 'Telangana';
+    case '37':
+      return 'Andhra Pradesh (New)';
+    case '38':
+      return 'Ladakh';
+    case '97':
+      return 'Other Territory';
+    case '99':
+      return 'Central Jurisdiction';
+    default:
+      return 'Unknown';
+  }
 }
 
 Future<CompanyModel?> showCompanyPicker(

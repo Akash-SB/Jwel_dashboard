@@ -26,7 +26,9 @@ abstract class _TransactionStore with Store {
         .collection('transactions')
         .add(transaction.toMap());
 
-    final newTx = transaction.copyWith(id: docRef.id, invoiceId: docRef.id);
+    final newTx = transaction.copyWith(
+      id: docRef.id,
+    );
     transactions.add(newTx);
   }
 

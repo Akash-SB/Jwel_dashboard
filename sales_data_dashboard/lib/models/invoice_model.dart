@@ -23,6 +23,8 @@ class InvoiceModel {
   final String? custGst;
   final String? itemId;
   final CompanyModel selectedFirm;
+  final UnitTypeEnum unitType;
+  final String? id;
 
   InvoiceModel({
     required this.invoiceId,
@@ -43,6 +45,8 @@ class InvoiceModel {
     this.itemId,
     required this.selectedFirm,
     this.invoiceNumber,
+    this.unitType = UnitTypeEnum.KG,
+    this.id,
   });
 
   /// Convert to Firestore map
@@ -65,7 +69,9 @@ class InvoiceModel {
         'custGst': custGst,
         'itemId': itemId,
         'selectedFirmName': jsonEncode(selectedFirm.toMap()),
-        'invoiceNumber': invoiceNumber
+        'invoiceNumber': invoiceNumber,
+        'unitType': unitType.name,
+        'id': id,
       };
 
   /// Construct from Firestore map
@@ -76,6 +82,7 @@ class InvoiceModel {
         size: map['carat'] ?? '',
         rate: map['rate'] ?? '',
         amount: map['amount'] ?? '',
+        id: map['id'] ?? '',
         productName: map['productName'] ?? '',
         transactionType: TransactionTypeEnum.values.firstWhere(
           (e) => e.name == map['transactionType'],
@@ -84,6 +91,10 @@ class InvoiceModel {
         custType: UsertypeEnum.values.firstWhere(
           (e) => e.name == map['custType'],
           orElse: () => UsertypeEnum.broker,
+        ),
+        unitType: UnitTypeEnum.values.firstWhere(
+          (e) => e.name == map['unitType'],
+          orElse: () => UnitTypeEnum.KG,
         ),
         custName: map['custName'] ?? '',
         invoiceNumber: map['invoiceNumber'] ?? '',
@@ -112,7 +123,7 @@ class InvoiceModel {
   }
 
   /// Create a copy with a new invoice ID
-  InvoiceModel copyWith({required String invoiceId, required String id}) {
+  InvoiceModel copyWith({required String id}) {
     return InvoiceModel(
       invoiceId: invoiceId,
       date: date,
@@ -132,6 +143,8 @@ class InvoiceModel {
       itemId: itemId,
       selectedFirm: selectedFirm,
       invoiceNumber: invoiceNumber,
+      unitType: unitType,
+      id: id,
     );
   }
 

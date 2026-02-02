@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:pdf/pdf.dart';
 import 'package:sales_data_dashboard/Utils/app_sizer.dart';
 import 'package:sales_data_dashboard/Utils/generate_invoice.dart';
 import 'package:sales_data_dashboard/models/firm_model.dart';
@@ -408,7 +407,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
               if (existingInvoice != null) {
                 invoiceStore
-                    .updateInvoice(existingInvoice.invoiceId, invoiceData)
+                    .updateInvoice(existingInvoice.id ?? '', invoiceData)
                     .then((final onValue) {
                   invoiceStore.fetchInvoices().then((final val) {
                     userDataStore.setInvoices(invoiceStore.invoices);
@@ -537,7 +536,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                 InkWell(
                   onTap: () {
                     invoiceStore
-                        .deleteInvoice(invoice.invoiceId)
+                        .deleteInvoice(invoice.id ?? '')
                         .then((final onValue) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -597,6 +596,8 @@ class CompanyModel {
   final String name;
   final String gstin;
   final String address;
+  final String state;
+  final String stateCode;
   final String phone;
   final String? email;
   final String? bankName;
@@ -606,11 +607,12 @@ class CompanyModel {
   final String? bankAddress;
   final String? panNumber;
   final String? logoPath;
-  final PdfColor? bgColor;
-  final PdfColor? headerBackground;
+  final int? bgColor;
+  final int? headerBackground;
   final CompanyType? companyType;
   final double gstRate; // 0.25%
   final String? watermarkPath;
+  final String judicialPlace;
 
   const CompanyModel({
     required this.name,
@@ -618,6 +620,8 @@ class CompanyModel {
     required this.address,
     required this.phone,
     this.email,
+    this.state = '',
+    this.stateCode = '',
     this.bankName,
     this.bankAccountNo,
     this.bankIfscCode,
@@ -630,6 +634,7 @@ class CompanyModel {
     this.gstRate = 0.0025,
     this.watermarkPath,
     this.headerBackground,
+    this.judicialPlace = '',
   });
 
   Map<String, dynamic> toMap() => {
@@ -650,6 +655,9 @@ class CompanyModel {
         'gstRate': gstRate,
         'watermarkPath': watermarkPath,
         'headerBackground': headerBackground,
+        'state': state,
+        'stateCode': stateCode,
+        'judicialPlace': judicialPlace,
       };
 }
 

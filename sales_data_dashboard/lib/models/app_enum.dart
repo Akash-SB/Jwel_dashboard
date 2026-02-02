@@ -1,5 +1,7 @@
 enum UsertypeEnum { broker, company }
 
+enum UnitTypeEnum { KG, CTS }
+
 enum TransactionTypeEnum {
   purchase,
   sell,
