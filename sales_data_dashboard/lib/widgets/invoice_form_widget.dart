@@ -165,6 +165,14 @@ class _InvoiceFormState extends State<InvoiceForm> {
     _itemIdController.clear();
   }
 
+  final List<Map<String, String>> _hsnSuggestions = [
+    {'label': 'Precious Gemstone', 'code': '710391'},
+    {'label': 'Semi Precious', 'code': '710399'},
+    {'label': 'Pearl', 'code': '710110'},
+    {'label': 'Diamond', 'code': '710239'},
+    {'label': 'Coral', 'code': '960110'},
+  ];
+
   Future<void> _pickDate() async {
     final initialDate =
         DateTime.tryParse(_dateController.text) ?? DateTime.now();
@@ -470,14 +478,77 @@ class _InvoiceFormState extends State<InvoiceForm> {
                         ),
                         SizedBox(width: 12.dp),
                         Flexible(
-                          child: TextFormField(
-                            controller: _hsnCodeController,
-                            decoration: _inputDecoration('HSN Code'),
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Required'
-                                : null,
-                          ),
-                        ),
+                            // child: TextFormField(
+                            //   controller: _hsnCodeController,
+                            //   decoration: _inputDecoration('HSN Code'),
+                            //   validator: (value) => value == null || value.isEmpty
+                            //       ? 'Required'
+                            //       : null,
+                            // ),
+                            child: Autocomplete<Map<String, String>>(
+                          optionsBuilder: (TextEditingValue textEditingValue) {
+                            if (textEditingValue.text.isEmpty) {
+                              return _hsnSuggestions;
+                            }
+                            return _hsnSuggestions.where((option) =>
+                                option['label']!.toLowerCase().contains(
+                                    textEditingValue.text.toLowerCase()) ||
+                                option['code']!
+                                    .contains(textEditingValue.text));
+                          },
+
+                          // IMPORTANT: Show only code in textfield
+                          displayStringForOption: (option) => option['code']!,
+
+                          fieldViewBuilder: (context, controller, focusNode,
+                              onFieldSubmitted) {
+                            controller.text = _hsnCodeController.text;
+
+                            return TextFormField(
+                              controller: controller,
+                              focusNode: focusNode,
+                              decoration: _inputDecoration('HSN Code'),
+                              validator: (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Required'
+                                      : null,
+                              onChanged: (value) {
+                                _hsnCodeController.text = value;
+                              },
+                            );
+                          },
+
+                          onSelected: (selection) {
+                            _hsnCodeController.text = selection['code']!;
+                          },
+
+                          optionsViewBuilder: (context, onSelected, options) {
+                            return Align(
+                              alignment: Alignment.topLeft,
+                              child: Material(
+                                elevation: 4,
+                                child: Container(
+                                  constraints: BoxConstraints(maxWidth: 300.dp),
+                                  child: ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    shrinkWrap: true,
+                                    itemCount: options.length,
+                                    itemBuilder: (context, index) {
+                                      final option = options.elementAt(index);
+                                      return ListTile(
+                                        title: Text(
+                                            "${option['label']} (${option['code']})"),
+                                        onTap: () {
+                                          onSelected(option);
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        )),
                         SizedBox(
                           width: 12.dp,
                         ),

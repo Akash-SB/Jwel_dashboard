@@ -53,8 +53,14 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
           getStateByGST(tx.custGst ?? '')
       ? 0.0
       : selectedParentCompany.gstRate; // 0.25%
-  const double cgstRate = 0.00125; // 0.125% for CGST
-  const double sgstRate = 0.00125; // 0.125% for SGST
+  final double cgstRate = getStateByGST(selectedParentCompany.gstin) ==
+          getStateByGST(tx.custGst ?? '')
+      ? 0.00125
+      : 0.0; // 0.125% for CGST
+  final double sgstRate = getStateByGST(selectedParentCompany.gstin) ==
+          getStateByGST(tx.custGst ?? '')
+      ? 0.00125
+      : 0.0; // 0.125% for SGST
   final double gstAmount = baseAmount * gstRate;
   final double cgst = baseAmount * cgstRate;
   final double sgst = baseAmount * sgstRate;
@@ -483,10 +489,16 @@ Future<Uint8List> generateTransactionInvoicePdfBytes(
                   children: [
                     rowTax('TAXABLE VALUE', formatter.format(baseAmount),
                         robotoFont, pdfColor),
-                    rowTax('Add CGST 0.125%', formatter.format(cgst),
-                        robotoFont, pdfColor),
-                    rowTax('Add SGST 0.125%', formatter.format(sgst),
-                        robotoFont, pdfColor),
+                    getStateByGST(selectedParentCompany.gstin) ==
+                            getStateByGST(tx.custGst ?? '')
+                        ? rowTax('Add CGST 0.125%', formatter.format(cgst),
+                            robotoFont, pdfColor)
+                        : pw.Container(),
+                    getStateByGST(selectedParentCompany.gstin) ==
+                            getStateByGST(tx.custGst ?? '')
+                        ? rowTax('Add SGST 0.125%', formatter.format(sgst),
+                            robotoFont, pdfColor)
+                        : pw.Container(),
                     selectedParentCompany.gstin.substring(0, 2) !=
                             tx.custGst?.substring(0, 2)
                         ? rowTax('Add IGST 0.25%', formatter.format(gstAmount),
